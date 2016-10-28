@@ -7,25 +7,25 @@ import java.util.List;
 import java.util.UUID;
 
 /**
- * A temporary Singleton to Make a list of cards
+ * A temporary Singleton to Make a list of Sets
  */
-public class CardMaker {
-    private static CardMaker sCardMaker;
+public class SetMaker {
+    private static SetMaker sSetMaker;
 
     private ArrayList<Set> mSets;
 
-    public static CardMaker get(Context context) {
-        if (sCardMaker == null) {
-            sCardMaker = new CardMaker(context);
+    public static SetMaker get(Context context) {
+        if (sSetMaker == null) {
+            sSetMaker = new SetMaker(context);
         }
-        return sCardMaker;
+        return sSetMaker;
     }
 
-    private CardMaker(Context context){
+    private SetMaker(Context context){
         mSets = new ArrayList<>();
         for (int i = 0; i < 100; i++){
             Set set = new Set();
-            set.setTitle("Card # " + i);
+            set.setTitle("Set # " + i);
             mSets.add(set);
         }
     }

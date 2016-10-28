@@ -3,13 +3,13 @@ package net.coronite.quizlet_math_plus;
 import java.util.UUID;
 
 /**
- * Model for Cards
+ * The model containing all of the information to produce a flashcard
  */
-public class Card {
+public class Set {
     private UUID mId;
     private String mTitle;
 
-    public Card(){
+    public Set(){
         mId = UUID.randomUUID();
     }
 
