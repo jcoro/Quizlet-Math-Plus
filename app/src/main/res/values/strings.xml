@@ -2,4 +2,8 @@
     <string name="app_name">Quizlet-Math-Plus</string>
     <string name="action_settings">Settings</string>
     <string name="title_activity_detail">DetailActivity</string>
+    <string name="show_answer">Show Answer</string>
+    <string name="hide_answer">Hide Answer</string>
+    <string name="card_question">Card Question</string>
+    <string name="card_answer">Card Answer</string>
 </resources>
