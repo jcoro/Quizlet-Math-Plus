@@ -88,8 +88,8 @@ public class MainActivityFragment extends Fragment {
 
         @Override
         public void onBindViewHolder(SetHolder holder, int position) {
-            Set crime = mSets.get(position);
-            holder.bindSet(crime);
+            Set card = mSets.get(position);
+            holder.bindSet(card);
         }
 
         @Override

@@ -1,27 +1,32 @@
 package net.coronite.quizlet_math_plus;
 
-import java.util.UUID;
-
 /**
  * Model for Cards
  */
 public class Card {
-    private UUID mId;
-    private String mTitle;
+    private int id;
+    private int term;
+    private String definition;
+    private String image;
+    private int rank;
 
-    public Card(){
-        mId = UUID.randomUUID();
+    public int getId(){
+        return id;
     }
 
-    public String getTitle() {
-        return mTitle;
+    public int getTerm(){
+        return term;
     }
 
-    public void setTitle(String mTitle) {
-        this.mTitle = mTitle;
+    public String getDefinition(){
+        return definition;
     }
 
-    public UUID getId() {
-        return mId;
+    public String getImage(){
+        return image;
+    }
+
+    public int getRank(){
+        return rank;
     }
 }
