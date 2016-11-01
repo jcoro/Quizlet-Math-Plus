@@ -6,13 +6,10 @@
     android:layout_height="match_parent">
 
 
-            <net.coronite.mathview.MathView
-                android:id="@+id/formula_one"
+            <TextView
+                android:id="@+id/term_text_view"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                auto:data=""
-                >
-            </net.coronite.mathview.MathView>
+                android:layout_height="match_parent" />
 
 
 
