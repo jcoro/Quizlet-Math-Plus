@@ -21,7 +21,6 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class DetailActivity extends AppCompatActivity {
     private static final String TAG = "DetailActivity";
     private static final String ARG_SET_ID = "arg_set_id";
-    private static final int NUM_PAGES = 5;
     private ViewPager mPager;
     private PagerAdapter mPagerAdapter;
     private List<Term> mTerms;
@@ -90,7 +89,8 @@ public class DetailActivity extends AppCompatActivity {
 
         @Override
         public int getCount() {
-            return NUM_PAGES;
+
+            return mTerms.size();
         }
     }
 
