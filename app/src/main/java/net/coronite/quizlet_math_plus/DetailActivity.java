@@ -5,7 +5,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.PagerAdapter;
-import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -21,7 +20,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class DetailActivity extends AppCompatActivity {
     private static final String TAG = "DetailActivity";
     private static final String ARG_SET_ID = "arg_set_id";
-    private ViewPager mPager;
+    private CustomViewPager mPager;
     private PagerAdapter mPagerAdapter;
     private List<Term> mTerms;
 
@@ -47,7 +46,7 @@ public class DetailActivity extends AppCompatActivity {
                 mTerms = response.body().terms;
                 Log.v("DETAIL_ACTIVITY", response.body().terms.toString());
                 // Instantiate a ViewPager and a PagerAdapter.
-                mPager = (ViewPager) findViewById(R.id.pager);
+                mPager = (CustomViewPager) findViewById(R.id.pager);
                 mPagerAdapter = new ScreenSlidePagerAdapter(getSupportFragmentManager());
                 mPager.setAdapter(mPagerAdapter);
             }
