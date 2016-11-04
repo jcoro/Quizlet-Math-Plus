@@ -1,5 +1,7 @@
 package net.coronite.quizlet_math_plus;
 
+import android.app.ProgressDialog;
+import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -23,6 +25,8 @@ public class DetailActivity extends AppCompatActivity {
     private CustomViewPager mPager;
     private PagerAdapter mPagerAdapter;
     private List<Term> mTerms;
+    private ProgressDialog pd = null;
+    private Context mContext = this;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,8 +34,12 @@ public class DetailActivity extends AppCompatActivity {
         setContentView(R.layout.activity_detail);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
-
+        if(pd == null) {
+            pd = new ProgressDialog(mContext);
+            pd.setTitle("Please wait");
+            pd.setMessage("Page is loading..");
+            pd.show();
+        }
 
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(QuizletService.ENDPOINT)
@@ -44,11 +52,13 @@ public class DetailActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<TermLists> call, Response<TermLists> response){
                 mTerms = response.body().terms;
-                Log.v("DETAIL_ACTIVITY", response.body().terms.toString());
                 // Instantiate a ViewPager and a PagerAdapter.
                 mPager = (CustomViewPager) findViewById(R.id.pager);
                 mPagerAdapter = new ScreenSlidePagerAdapter(getSupportFragmentManager());
                 mPager.setAdapter(mPagerAdapter);
+                if(pd.isShowing()) {
+                    pd.dismiss();
+                }
             }
 
             @Override
