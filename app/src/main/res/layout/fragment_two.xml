@@ -2,8 +2,7 @@
 <android.support.v7.widget.RecyclerView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:auto="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/card_recycler_view"
+    android:id="@+id/studied_sets_recycler_view"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#eaeaea" />
-

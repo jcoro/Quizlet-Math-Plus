@@ -9,9 +9,11 @@
             android:id="@+id/list_item_set_title_text_view"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textStyle="bold"
-            android:padding="24dp"
-            tools:text="Set Title"/>
+            android:padding="12dp"
+            tools:text="Set Title"
+            android:textSize="24sp"
+            android:background="#FFFFFF"
+            android:layout_margin="12dp" />
 
 </LinearLayout>
 

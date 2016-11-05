@@ -3,20 +3,46 @@ package net.coronite.quizlet_math_plus;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.design.widget.TabLayout;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 public class MainActivity extends AppCompatActivity {
+
+    private Toolbar toolbar;
+    private TabLayout tabLayout;
+    private ViewPager viewPager;
+    private List<Set> mUserSets;
+    private List<StudiedSet> mStudiedSets;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        fetchSets();
+
+        viewPager = (ViewPager) findViewById(R.id.tab_viewpager);
+        tabLayout = (TabLayout) findViewById(R.id.tabs);
+        tabLayout.setupWithViewPager(viewPager);
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -27,6 +53,84 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
+
+    private void fetchSets(){
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl("https://api.quizlet.com/2.0/users/")
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+
+        // prepare call in Retrofit 2.0
+        QuizletSetsAPI quizletSetsAPI = retrofit.create(QuizletSetsAPI.class);
+
+        Call<SetList> call = quizletSetsAPI.loadSets();
+        //asynchronous call
+        call.enqueue(new Callback<SetList>(){
+            @Override
+            public void onResponse(Call<SetList> call, Response<SetList> response){
+                mUserSets = response.body().sets;
+                mStudiedSets = response.body().studied;
+
+                setupViewPager(viewPager);
+            }
+
+            @Override
+            public void onFailure (Call<SetList> call, Throwable t){
+            }
+        });
+    }
+
+    private void setupViewPager(ViewPager viewPager) {
+        ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
+
+        ArrayList<Set> userArray = (ArrayList<Set>)mUserSets;
+        Bundle argsUser = new Bundle();
+        argsUser.putParcelableArrayList("USER_CREATED_SETS", userArray);
+        Fragment fragOne = new MainActivityFragment();
+        fragOne.setArguments(argsUser);
+        adapter.addFragment(fragOne, "ONE");
+
+        ArrayList<StudiedSet> studiedArray = (ArrayList<StudiedSet>)mStudiedSets;
+        Bundle argsStudied = new Bundle();
+        argsStudied.putParcelableArrayList("USER_STUDIED_SETS", studiedArray);
+        Fragment fragTwo = new TwoFragment();
+        fragTwo.setArguments(argsStudied);
+        adapter.addFragment(fragTwo, "TWO");
+
+        adapter.addFragment(new ThreeFragment(), "THREE");
+        viewPager.setAdapter(adapter);
+    }
+
+    class ViewPagerAdapter extends FragmentPagerAdapter {
+        private final List<Fragment> mFragmentList = new ArrayList<>();
+        private final List<String> mFragmentTitleList = new ArrayList<>();
+
+        public ViewPagerAdapter(FragmentManager manager) {
+            super(manager);
+        }
+
+        @Override
+        public Fragment getItem(int position) {
+            return mFragmentList.get(position);
+        }
+
+        @Override
+        public int getCount() {
+            return mFragmentList.size();
+        }
+
+        public void addFragment(Fragment fragment, String title) {
+            mFragmentList.add(fragment);
+            mFragmentTitleList.add(title);
+        }
+
+        @Override
+        public CharSequence getPageTitle(int position) {
+            return mFragmentTitleList.get(position);
+        }
+    }
+
+
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

@@ -1,33 +1,29 @@
 package net.coronite.quizlet_math_plus;
 
+
 import android.os.Parcel;
 import android.os.Parcelable;
 
-/**
- * The model for Sets
- */
-public class Set implements Parcelable {
+public class StudiedSet implements Parcelable {
     String id;
-    String url;
-    String title;
+    Set set;
 
     @Override
     public int describeContents() {
         return 0;
     }
 
-    public String getTitle() {
-        return(title);
+    public Set getSet() {
+        return(set);
     }
 
     public String getId(){
         return(id);
     }
 
-    private Set(Parcel in) {
+    private StudiedSet(Parcel in) {
         id = in.readString();
-        url = in.readString();
-        title = in.readString();
+        set = in.readParcelable(Set.class.getClassLoader());
     }
 
     /**
@@ -38,23 +34,22 @@ public class Set implements Parcelable {
     @Override
     public void writeToParcel(Parcel parcel, int i) {
         parcel.writeString(id);
-        parcel.writeString(url);
-        parcel.writeString(title);
+        parcel.writeParcelable(set, i);
     }
 
     /**
      * Interface that must be implemented and provided as a public CREATOR field that generates instances of your Parcelable class from a Parcel.
      */
-    public static final Parcelable.Creator<Set> CREATOR = new Parcelable.Creator<Set>() {
+    public static final Parcelable.Creator<StudiedSet> CREATOR = new Parcelable.Creator<StudiedSet>() {
 
         /**
          * Create a new instance of the Parcelable class, instantiating it from the given Parcel whose data had previously been written by Parcelable.writeToParcel().
-         * @param parcel The Parcel containing the Set data.
-         * @return the Parcel as a Set.
+         * @param parcel The Parcel containing the StudiedSet data.
+         * @return the Parcel as a StudiedSet.
          */
         @Override
-        public Set createFromParcel(Parcel parcel) {
-            return new Set(parcel);
+        public StudiedSet createFromParcel(Parcel parcel) {
+            return new StudiedSet(parcel);
         }
 
         /**
@@ -63,8 +58,8 @@ public class Set implements Parcelable {
          * @return an array of the Parcelable class, with every entry initialized to null.
          */
         @Override
-        public Set[] newArray(int i) {
-            return new Set[i];
+        public StudiedSet[] newArray(int i) {
+            return new StudiedSet[i];
         }
 
     };

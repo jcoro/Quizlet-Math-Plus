@@ -67,7 +67,7 @@ public class Term implements Parcelable {
         /**
          * Create a new instance of the Parcelable class, instantiating it from the given Parcel whose data had previously been written by Parcelable.writeToParcel().
          * @param parcel The Parcel containing the Term data.
-         * @return the Parcel as a MovieItem.
+         * @return the Parcel as a Term.
          */
         @Override
         public Term createFromParcel(Parcel parcel) {
@@ -76,7 +76,7 @@ public class Term implements Parcelable {
 
         /**
          * Create a new array of the Parcelable class.
-         * @param i the size of the array (the number of movies).
+         * @param i the size of the array (the number of terms).
          * @return an array of the Parcelable class, with every entry initialized to null.
          */
         @Override

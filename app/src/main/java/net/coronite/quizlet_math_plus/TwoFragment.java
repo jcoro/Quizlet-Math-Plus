@@ -1,10 +1,12 @@
 package net.coronite.quizlet_math_plus;
 
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,18 +14,18 @@ import android.widget.TextView;
 
 import java.util.List;
 
+
 /**
- * A placeholder fragment containing a simple view.
+ * A simple {@link Fragment} subclass.
  */
-public class MainActivityFragment extends Fragment {
+public class TwoFragment extends Fragment {
 
     private static final String EXTRA_SET_ID = "SET_ID";
 
-    private RecyclerView mSetRecyclerView;
-    private SetAdapter mAdapter;
-    private List<Set> mUserSets;
+    private List<StudiedSet> mStudiedSetList;
 
-    public MainActivityFragment() {
+    public TwoFragment() {
+        // Required empty public constructor
     }
 
     @Override
@@ -31,38 +33,38 @@ public class MainActivityFragment extends Fragment {
         super.onCreate(savedInstanceState);
         Bundle arguments = getArguments();
         if (arguments != null) {
-            mUserSets = arguments.getParcelableArrayList("USER_CREATED_SETS");
+            mStudiedSetList = arguments.getParcelableArrayList("USER_STUDIED_SETS");
+            Log.v("NOT NULL", Integer.toString(mStudiedSetList.size()));
         }
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view =  inflater.inflate(R.layout.fragment_main, container, false);
-        mSetRecyclerView = (RecyclerView) view
-                .findViewById(R.id.card_recycler_view);
+        View view =  inflater.inflate(R.layout.fragment_two, container, false);
+        RecyclerView mSetRecyclerView = (RecyclerView) view
+                .findViewById(R.id.studied_sets_recycler_view);
         mSetRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        mAdapter = new SetAdapter(mUserSets);
+        StudiedSetAdapter mAdapter = new StudiedSetAdapter(mStudiedSetList);
         mSetRecyclerView.setAdapter(mAdapter);
 
         return view;
     }
-
-    private class SetHolder extends RecyclerView.ViewHolder
+    private class StudiedSetHolder extends RecyclerView.ViewHolder
             implements View.OnClickListener {
 
         private TextView mTitleTextView;
         private Set mSet;
         private String mSetId;
 
-        public SetHolder(View itemView) {
+        public StudiedSetHolder(View itemView) {
             super(itemView);
             itemView.setOnClickListener(this);
-            mTitleTextView = (TextView) itemView.findViewById(R.id.list_item_set_title_text_view);
+            mTitleTextView = (TextView) itemView.findViewById(R.id.list_item_studied_set_title_text_view);
         }
 
-        public void bindSet(Set set) {
-            mSet = set;
+        public void bindSet(StudiedSet studySet) {
+            mSet = studySet.getSet();
             mSetId = mSet.getId();
             mTitleTextView.setText(mSet.getTitle());
         }
@@ -75,30 +77,31 @@ public class MainActivityFragment extends Fragment {
         }
     }
 
-    private class SetAdapter extends RecyclerView.Adapter<SetHolder> {
+    private class StudiedSetAdapter extends RecyclerView.Adapter<StudiedSetHolder> {
 
-        private List<Set> mSets;
+        private List<StudiedSet> mStudiedSets;
 
-        public SetAdapter(List<Set> sets) {
-            mSets = sets;
+        public StudiedSetAdapter(List<StudiedSet> sets) {
+            mStudiedSets = sets;
         }
 
         @Override
-        public SetHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        public StudiedSetHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             LayoutInflater layoutInflater = LayoutInflater.from(getActivity());
-            View view = layoutInflater.inflate(R.layout.users_set_list_item, parent, false);
-            return new SetHolder(view);
+            View view = layoutInflater.inflate(R.layout.studied_set_list_item, parent, false);
+            return new StudiedSetHolder(view);
         }
 
         @Override
-        public void onBindViewHolder(SetHolder holder, int position) {
-            Set set = mSets.get(position);
+        public void onBindViewHolder(StudiedSetHolder holder, int position) {
+            StudiedSet set = mStudiedSets.get(position);
             holder.bindSet(set);
         }
 
         @Override
         public int getItemCount() {
-            return mSets.size();
+            return mStudiedSets.size();
         }
     }
+
 }

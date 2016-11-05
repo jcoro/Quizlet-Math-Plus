@@ -3,7 +3,7 @@
     xmlns:auto="http://schemas.android.com/apk/res-auto"
     android:id="@+id/mathview_text"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="match_parent"
     auto:data=""
     auto:definition=""
     >

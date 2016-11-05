@@ -6,4 +6,10 @@
     <string name="hide_answer">Hide Answer</string>
     <string name="card_question">Card Question</string>
     <string name="card_answer">Card Answer</string>
+    <string name="one">One</string>
+    <string name="two">Two</string>
+    <string name="three">Three</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>
