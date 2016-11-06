@@ -11,6 +11,10 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 
+import net.coronite.quizlet_math_plus.data.QuizletTermsAPI;
+import net.coronite.quizlet_math_plus.data.models.Term;
+import net.coronite.quizlet_math_plus.data.models.TermList;
+
 import java.util.List;
 
 import retrofit2.Call;
@@ -21,16 +25,19 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class DetailActivity extends AppCompatActivity {
     private static final String TAG = "DetailActivity";
+    private static final String EXTRA_SET_ID = "SET_ID";
     private static final String ARG_SET_ID = "arg_set_id";
     private CustomViewPager mPager;
     private PagerAdapter mPagerAdapter;
     private List<Term> mTerms;
     private ProgressDialog pd = null;
     private Context mContext = this;
+    private String mSetId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mSetId = getIntent().getStringExtra(EXTRA_SET_ID);
         setContentView(R.layout.activity_detail);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -42,15 +49,15 @@ public class DetailActivity extends AppCompatActivity {
         }
 
         Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(QuizletService.ENDPOINT)
+                .baseUrl(QuizletTermsAPI.ENDPOINT)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
 
-        QuizletService service = retrofit.create(QuizletService.class);
-        Call<TermLists> call = service.getFeed();
-        call.enqueue(new Callback<TermLists>(){
+        QuizletTermsAPI service = retrofit.create(QuizletTermsAPI.class);
+        Call<TermList> call = service.getFeed(mSetId);
+        call.enqueue(new Callback<TermList>(){
             @Override
-            public void onResponse(Call<TermLists> call, Response<TermLists> response){
+            public void onResponse(Call<TermList> call, Response<TermList> response){
                 mTerms = response.body().terms;
                 // Instantiate a ViewPager and a PagerAdapter.
                 mPager = (CustomViewPager) findViewById(R.id.pager);
@@ -62,7 +69,7 @@ public class DetailActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onFailure (Call<TermLists> call, Throwable t){
+            public void onFailure (Call<TermList> call, Throwable t){
                 Log.e(TAG, t.toString());
             }
         });

@@ -14,6 +14,11 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
+import net.coronite.quizlet_math_plus.data.QuizletSetsAPI;
+import net.coronite.quizlet_math_plus.data.models.Set;
+import net.coronite.quizlet_math_plus.data.models.SetList;
+import net.coronite.quizlet_math_plus.data.models.StudiedSet;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,6 +29,8 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 public class MainActivity extends AppCompatActivity {
+    private final String USER_CREATED_SETS = "USER_CREATED_SETS";
+    private final String USER_STUDIED_SETS = "USER_STUDIED_SETS";
 
     private Toolbar toolbar;
     private TabLayout tabLayout;
@@ -83,21 +90,24 @@ public class MainActivity extends AppCompatActivity {
     private void setupViewPager(ViewPager viewPager) {
         ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
 
-        ArrayList<Set> userArray = (ArrayList<Set>)mUserSets;
-        Bundle argsUser = new Bundle();
-        argsUser.putParcelableArrayList("USER_CREATED_SETS", userArray);
-        Fragment fragOne = new MainActivityFragment();
-        fragOne.setArguments(argsUser);
-        adapter.addFragment(fragOne, "ONE");
+        Fragment fragOne = new UserSetFragment();
+        if(mUserSets != null){
+            ArrayList<Set> userArray = (ArrayList<Set>)mUserSets;
+            Bundle argsUser = new Bundle();
+            argsUser.putParcelableArrayList(USER_CREATED_SETS, userArray);
+            fragOne.setArguments(argsUser);
+        }
+        adapter.addFragment(fragOne, getString(R.string.your_sets));
 
-        ArrayList<StudiedSet> studiedArray = (ArrayList<StudiedSet>)mStudiedSets;
-        Bundle argsStudied = new Bundle();
-        argsStudied.putParcelableArrayList("USER_STUDIED_SETS", studiedArray);
-        Fragment fragTwo = new TwoFragment();
-        fragTwo.setArguments(argsStudied);
-        adapter.addFragment(fragTwo, "TWO");
+        Fragment fragTwo = new UserStudiedFragment();
+        if(mStudiedSets != null){
+            ArrayList<StudiedSet> studiedArray = (ArrayList<StudiedSet>)mStudiedSets;
+            Bundle argsStudied = new Bundle();
+            argsStudied.putParcelableArrayList(USER_STUDIED_SETS, studiedArray);
+            fragTwo.setArguments(argsStudied);
+        }
+        adapter.addFragment(fragTwo, getString(R.string.studied_sets));
 
-        adapter.addFragment(new ThreeFragment(), "THREE");
         viewPager.setAdapter(adapter);
     }
 

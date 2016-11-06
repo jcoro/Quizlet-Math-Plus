@@ -1,0 +1,144 @@
+body {
+    margin: 0;
+    -webkit-touch-callout: none!important;
+    -webkit-user-select: none!important;
+    user-select: none!important;
+}
+
+.answer-button {
+    font-family: sans-serif;
+    font-size: 12px;
+    border: 1px solid #696969;
+    margin: 10px;
+    border-radius: 6px;
+    height: 35px;
+    width: 100px;
+    background: linear-gradient(#dadada, #FFFFFF, #dadada);
+    box-shadow: 1px 1px 1px #444;
+    color: rgba(70, 70, 70, 0.8);
+    text-shadow: 1px 1px 1px #fff, 0 0 0 #000, 1px 1px 1px #fff;
+}
+
+.answer-button:focus {
+    outline: 0;
+}
+
+.flash-card {
+    position: relative;
+    box-sizing: border-box;
+    width: 100%;
+    height: 100%;
+    padding: 25px;
+    margin-bottom: 20px;
+    background: #e6e6e6;
+    border: 6px solid #FFF;
+    border-radius: 6px;
+    cursor: pointer;
+    font-family: 'Roboto', sans-serif;
+    color: #444;
+    text-align: center;
+    box-shadow: 0px 0px 10px #aaa;
+}
+
+.card-answer {
+    background: #c8e8ff;
+    font-size: .875em;
+    color: #444;
+    padding: 10px 20px;
+    border-radius: 6px;
+    text-align: left;
+}
+
+.display-none {
+    display:none;
+}
+
+div.card-number {
+    position: absolute;
+    top: 10px;
+    left: 15px;
+    font-weight: 700;
+}
+
+a.card-link {
+
+}
+
+.flash-card-link-container{
+    position:absolute;
+    width: auto;
+    right: 15px;
+    top: 10px;
+    z-index:100;
+}
+
+p.small-font, p.small-font a, p.small-font a span, .card-answer ol.problemset-list li.small-font span  {
+    font-size: 16px;
+}
+
+p.xsmall {
+    font-size:.7em;
+}
+
+ol.problemset-list {
+    list-style: none;
+    padding: 0;
+}
+
+ol.problemset-list li {
+    font-weight:bold;
+}
+
+ol.problemset-list.none {
+    list-style: none;
+    padding-left: 0px;
+}
+
+ol.problemset-list.lower-alpha {
+    list-style: lower-alpha;
+    padding-left: 40px;
+}
+
+ol.problemset-list.lower-alpha li {
+    font-weight:bold;
+    font-weight:normal;
+}
+
+ol.problemset-list.upper-alpha {
+    list-style: upper-alpha;
+    padding-left: 40px;
+}
+
+ol.problemset-list.upper-alpha li {
+    font-weight:normal;
+}
+
+ol.problemset-list.lower-roman {
+    list-style: lower-roman;
+    padding-left: 40px;
+}
+
+ol.problemset-list.lower-roman li {
+    font-weight:normal;
+}
+
+ol.problemset-list.upper-roman {
+    list-style: upper-roman;
+    padding-left: 40px;
+}
+
+ol.problemset-list.upper-roman li {
+    font-weight:normal;
+}
+
+.card-answer ol.problemset-list li {
+    margin-bottom:20px;
+}
+
+.branding {
+    position: absolute;
+    bottom: 8px;
+    right: 10px;
+    font-size: .6em;
+    text-transform: uppercase;
+}

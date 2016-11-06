@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <link href="https://fonts.googleapis.com/css?family=Roboto:400,700" rel="stylesheet">
+        <link rel="stylesheet" type="text/css" href="file:///android_asset/themes/style.css">
+        <script type="text/x-mathjax-config">
+            MathJax.Hub.Config({
+                messageStyle: 'none',
+                tex2jax: {preview: 'none'}
+            });
+        </script>
+        <script type="text/x-mathjax-config">
+            {$config}
+        </script>
+        <script type="text/javascript"
+            src="file:///android_asset/MathJax/MathJax.js?config=TeX-MML-AM_CHTML">
+        </script>
+        <script>
+            var APP = {};
+            APP.plainText = false;
+            APP.errorMessage = "There was a problem loading the necessary data.";
+            APP.flashCardData={$data};
+            APP.flashCardDefinition = {$definition};
+
+            APP.buildCards = (function(){
+                var bindings = {};
+                function setupBindings() {
+                    bindings.container = document.querySelector("#card-container");
+                }
+
+                function toggleAnswer() {
+                    var flashCard = this.parentNode;
+                    var answer = flashCard.querySelector(".card-answer");
+                    if ( answer.classList.contains("display-none") ){
+                        answer.className = "card-answer";
+                        this.innerHTML = "Hide Answer";
+                    } else {
+                        answer.className += " display-none";
+                        this.innerHTML = "Show Answer";
+                    }
+                }
+
+                function build(){
+                    var term = APP.flashCardData;
+                    var definition = APP.flashCardDefinition;
+
+                    bindings.container = document.querySelector("#card-container");
+                    var card = document.createElement("div");
+                    card.className = "flash-card";
+
+                    var paragraph = document.createElement("p");
+
+                    if (!APP.plainText) {
+                        if (term.meta.id !== null) {
+                            var cardNumber = document.createElement("div");
+                            cardNumber.className = "card-number";
+                            cardNumber.innerHTML = term.meta.id;
+                            card.appendChild(cardNumber);
+                        }
+                        if (term.meta["link-text"] !== null && term.meta["link-href"] !== null ){
+                            var flashCardLinkContainer = document.createElement("div");
+                            var cardLink = document.createElement("a");
+                            flashCardLinkContainer.className = "flash-card-link-container";
+                            cardLink.className = "card-link";
+                            cardLink.innerHTML = term.meta["link-text"];
+                            cardLink.href=term.meta["link-href"];
+                            flashCardLinkContainer.appendChild(cardLink);
+                            card.appendChild(flashCardLinkContainer);
+                        }
+                        if (term.header !== null){
+                            var questionP = document.createElement("p");
+                            questionP.innerHTML = term.header;
+                            card.appendChild(questionP);
+                        }
+                        if (term.paragraphs !== null){
+                            for ( var l = 0; l < term.paragraphs.length; l++ ) {
+                                paragraph.innerHTML = term.paragraphs[l];
+                                card.appendChild(paragraph);
+                            }
+                        }
+                        if (term["list-items"].length > 0){
+                            var problemSetList = document.createElement("ol");
+                            problemSetList.className = "problemset-list " + term["list-style-type"];
+                            for ( var j = 0; j < term["list-items"].length; j++ ) {
+                                var li = document.createElement("li");
+                                problemSetList.appendChild(li);
+                                li.innerHTML = term["list-items"][j];
+                            }
+                        card.appendChild(problemSetList);
+                    } else {
+                        // if the card data is plain text
+                        paragraph.innerHTML = term;
+                        card.appendChild(paragraph);
+                            }
+                }
+
+                var button = document.createElement("button");
+                button.className = "answer-button";
+                button.innerHTML = "Show Answer";
+                button.addEventListener("click", toggleAnswer, false);
+                card.appendChild(button);
+
+                var cardAnswer = document.createElement("div");
+                cardAnswer.className = "card-answer display-none";
+                var answerP = document.createElement("p");
+
+                if (!APP.plainText) {
+                    if (definition.header !== null) {
+                        answerP.innerHTML = definition.header;
+                        cardAnswer.appendChild(answerP);
+                        if (definition["list-items"].length > 0){
+                            var answerList = document.createElement("ol");
+                            answerList.className = "problemset-list " + definition["list-style-type"];
+                            for (var k = 0; k < definition["list-items"].length; k++) {
+                                var answerLi = document.createElement("li");
+                                answerList.appendChild(answerLi);
+                                answerLi.innerHTML = definition["list-items"][k];
+                            }
+                            cardAnswer.appendChild(answerList);
+                        }
+                        card.appendChild(cardAnswer);
+                    }
+                    if (term.meta["branding-text"] !== null && term.meta["branding-url"] !== null) {
+                        var branding = document.createElement("div");
+                        var brandingLink = document.createElement("a");
+                        branding.className = "branding";
+                        brandingLink.href = term.meta["branding-url"];
+                        brandingLink.innerHTML = term.meta["branding-text"];
+                        branding.appendChild(brandingLink);
+                        card.appendChild(branding);
+                    }
+                } else {
+                    answerP.innerHTML = definition;
+                    cardAnswer.appendChild(answerP);
+                    card.appendChild(cardAnswer);
+                }
+                bindings.container.appendChild(card);
+                }
+
+                var init = function() {
+                    setupBindings();
+                    build();
+                };
+
+                return {
+                    init: init
+                };
+
+            })();
+            window.onload = function () {
+                APP.buildCards.init();
+            };
+        </script>
+    </head>
+    <body>
+        <section id="card-container">
+        </section>
+    </body>
+</html>

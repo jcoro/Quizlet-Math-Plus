@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import net.coronite.mathview.MathView;
+import net.coronite.quizlet_math_plus.data.models.Term;
 
 /**
  * A placeholder fragment containing a simple view.
