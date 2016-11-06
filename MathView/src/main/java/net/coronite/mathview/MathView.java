@@ -12,10 +12,6 @@ import com.x5.template.Theme;
 import com.x5.template.providers.AndroidTemplates;
 
 public class MathView extends WebView {
-    private String mConfig;
-    private String mData;
-    private String mDefinition;
-
 
     public MathView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -45,20 +41,13 @@ public class MathView extends WebView {
     }
 
     public void setData(String data, String definition) {
-        mData = data;
-        mDefinition = definition;
         Chunk chunk = getChunk();
         String TAG_DATA = "data";
-        String TAG_CONFIG = "config";
         String TAG_DEFINITION = "definition";
-        chunk.set(TAG_DATA, mData);
-        chunk.set(TAG_CONFIG, mConfig);
-        chunk.set(TAG_DEFINITION, mDefinition);
+        chunk.set(TAG_DATA, data);
+        chunk.set(TAG_DEFINITION, definition);
         this.loadDataWithBaseURL(null, chunk.toString(), "text/html", "utf-8", "about:blank");
     }
 
-    public void config(String config) {
-            this.mConfig = config;
-    }
 
 }
