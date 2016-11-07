@@ -43,11 +43,12 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mUsername = Utility.getUsername(this);
+
         setContentView(R.layout.activity_main);
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        mUsername = Utility.getUsername(this);
         fetchSets();
 
         viewPager = (ViewPager) findViewById(R.id.tab_viewpager);

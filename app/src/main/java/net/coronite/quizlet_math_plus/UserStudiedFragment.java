@@ -23,6 +23,7 @@ import java.util.List;
 public class UserStudiedFragment extends Fragment {
 
     private static final String EXTRA_SET_ID = "SET_ID";
+    private static final String EXTRA_SET_TITLE = "SET_TITLE";
     private static final String USER_STUDIED_SETS = "USER_STUDIED_SETS";
 
     private List<StudiedSet> mStudiedSetList;
@@ -63,6 +64,7 @@ public class UserStudiedFragment extends Fragment {
         private TextView mTitleTextView;
         private Set mSet;
         private String mSetId;
+        private String mSetTitle;
 
         public StudiedSetHolder(View itemView) {
             super(itemView);
@@ -73,6 +75,7 @@ public class UserStudiedFragment extends Fragment {
         public void bindSet(StudiedSet studySet) {
             mSet = studySet.getSet();
             mSetId = mSet.getId();
+            mSetTitle = mSet.getTitle();
             mTitleTextView.setText(mSet.getTitle());
         }
 
@@ -80,6 +83,7 @@ public class UserStudiedFragment extends Fragment {
         public void onClick(View v) {
             Intent intent = new Intent(getActivity(), DetailActivity.class);
             intent.putExtra(EXTRA_SET_ID, mSetId);
+            intent.putExtra(EXTRA_SET_TITLE, mSetTitle);
             startActivity(intent);
         }
     }

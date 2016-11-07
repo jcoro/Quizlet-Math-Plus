@@ -7,6 +7,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.PagerAdapter;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -26,21 +27,27 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class DetailActivity extends AppCompatActivity {
     private static final String TAG = "DetailActivity";
     private static final String EXTRA_SET_ID = "SET_ID";
+    private static final String EXTRA_SET_TITLE = "SET_TITLE";
+    private static final String ARG_SET_COUNT = "SET_COUNT";
+    private static final String ARG_SET_TITLE = "ARG_SET_TITLE";
     private static final String ARG_SET_ID = "arg_set_id";
+    private static final String ARG_CARD_NUM = "CARD_NUM";
     private CustomViewPager mPager;
     private PagerAdapter mPagerAdapter;
     private List<Term> mTerms;
     private ProgressDialog pd = null;
     private Context mContext = this;
-    private String mSetId;
+    private String mSetTitle;
+    private int mSetCount;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mSetId = getIntent().getStringExtra(EXTRA_SET_ID);
+        String mSetId = getIntent().getStringExtra(EXTRA_SET_ID);
+        mSetTitle = getIntent().getStringExtra(EXTRA_SET_TITLE);
         setContentView(R.layout.activity_detail);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+        setupActionBar();
+
         if(pd == null) {
             pd = new ProgressDialog(mContext);
             pd.setTitle("Please wait");
@@ -59,6 +66,7 @@ public class DetailActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call<TermList> call, Response<TermList> response){
                 mTerms = response.body().terms;
+                mSetCount = mTerms.size();
                 // Instantiate a ViewPager and a PagerAdapter.
                 mPager = (CustomViewPager) findViewById(R.id.pager);
                 mPagerAdapter = new ScreenSlidePagerAdapter(getSupportFragmentManager());
@@ -73,6 +81,17 @@ public class DetailActivity extends AppCompatActivity {
                 Log.e(TAG, t.toString());
             }
         });
+    }
+
+    private void setupActionBar() {
+        Toolbar toolbar = (Toolbar) findViewById(R.id.detail_toolbar);
+        setSupportActionBar(toolbar);
+        ActionBar actionBar = getSupportActionBar();
+        if (actionBar != null) {
+            // Show the Up button in the action bar.
+            actionBar.setDisplayHomeAsUpEnabled(true);
+            actionBar.setTitle(mSetTitle);
+        }
     }
 
     @Override
@@ -98,6 +117,9 @@ public class DetailActivity extends AppCompatActivity {
 
             Bundle args = new Bundle();
             args.putParcelable(ARG_SET_ID, term);
+            args.putInt(ARG_SET_COUNT, mSetCount);
+            args.putInt(ARG_CARD_NUM, position);
+            args.putString(ARG_SET_TITLE, mSetTitle);
             Fragment fragment = new DetailActivityFragment();
             fragment.setArguments(args);
             return fragment;

@@ -20,6 +20,7 @@ import java.util.List;
 public class UserSetFragment extends Fragment {
 
     private static final String EXTRA_SET_ID = "SET_ID";
+    private static final String EXTRA_SET_TITLE = "SET_TITLE";
     private static final String USER_CREATED_SETS = "USER_CREATED_SETS";
 
     private List<Set> mUserSets;
@@ -61,6 +62,7 @@ public class UserSetFragment extends Fragment {
         private TextView mTitleTextView;
         private Set mSet;
         private String mSetId;
+        private String mSetTitle;
 
         public SetHolder(View itemView) {
             super(itemView);
@@ -71,13 +73,15 @@ public class UserSetFragment extends Fragment {
         public void bindSet(Set set) {
             mSet = set;
             mSetId = mSet.getId();
-            mTitleTextView.setText(mSet.getTitle());
+            mSetTitle = mSet.getTitle();
+            mTitleTextView.setText(mSetTitle);
         }
 
         @Override
         public void onClick(View v) {
             Intent intent = new Intent(getActivity(), DetailActivity.class);
             intent.putExtra(EXTRA_SET_ID, mSetId);
+            intent.putExtra(EXTRA_SET_TITLE, mSetTitle);
             startActivity(intent);
         }
     }
