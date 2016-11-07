@@ -9,5 +9,19 @@
     <string name="your_sets">Your Sets</string>
     <string name="studied_sets">Studied Sets</string>
     <string name="no_sets_found">No Sets Found</string>
+    <string name="title_activity_settings">Settings</string>
+
+    <!-- Strings related to Settings -->
+
+    <!-- Example General settings -->
+    <string name="pref_header_general">General</string>
+    <string name="username_key">username</string>
+    <string name="default_username">DefaultUsername</string>
+    <string name="show_term_key">show_term_hide_definition</string>
+    <string name="show_term_tile">Show Term and Hide Definition</string>
+
+    <string name="pref_title_display_name">Quizlet Username</string>
+
+
 
 </resources>

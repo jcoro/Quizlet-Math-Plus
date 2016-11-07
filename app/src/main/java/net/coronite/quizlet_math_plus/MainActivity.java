@@ -1,5 +1,6 @@
 package net.coronite.quizlet_math_plus;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -37,10 +38,12 @@ public class MainActivity extends AppCompatActivity {
     private ViewPager viewPager;
     private List<Set> mUserSets;
     private List<StudiedSet> mStudiedSets;
+    private String mUsername;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mUsername = Utility.getUsername(this);
         setContentView(R.layout.activity_main);
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -70,7 +73,7 @@ public class MainActivity extends AppCompatActivity {
         // prepare call in Retrofit 2.0
         QuizletSetsAPI quizletSetsAPI = retrofit.create(QuizletSetsAPI.class);
 
-        Call<SetList> call = quizletSetsAPI.loadSets();
+        Call<SetList> call = quizletSetsAPI.loadSets(mUsername);
         //asynchronous call
         call.enqueue(new Callback<SetList>(){
             @Override
@@ -158,6 +161,7 @@ public class MainActivity extends AppCompatActivity {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
+            startActivity(new Intent(this, SettingsActivity.class));
             return true;
         }
 

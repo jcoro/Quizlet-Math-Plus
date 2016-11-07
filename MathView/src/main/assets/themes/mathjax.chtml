@@ -14,168 +14,195 @@
         </script>
         <script>
             var APP = {};
+            APP.showDefinition = true;
             APP.plainText = true;
             APP.errorMessage = "There was a problem loading the necessary data.";
             APP.flashCardData = "{$data}";
             APP.flashCardDefinition = "{$definition}";
 
             APP.buildCards = (function(){
-                var bindings = {};
-                function setupBindings() {
-                    bindings.container = document.querySelector("#card-container");
+            var bindings = {};
+            function setupBindings() {
+                bindings.container = document.querySelector("#card-container");
+            }
+
+            function formatData() {
+              if ( APP.flashCardData != null) {
+                APP.flashCardData = tryParseJSON(APP.flashCardData);
+              } else {
+                APP.flashCardData = APP.errorMessage;
+              }
+
+              if ( APP.flashCardDefinition != null) {
+                APP.flashCardDefinition = tryParseJSON(APP.flashCardDefinition);
+              } else {
+                APP.flashCardDefinition = APP.errorMessage;
+              }
+
+              function tryParseJSON(string){
+                try {
+                  var o = JSON.parse(string);
+                  if (o && typeof o === "object") {
+                    APP.plainText = false;
+                    return o;
+                  }
                 }
+                catch (e) { }
 
-                function formatData() {
-                    if ( APP.flashCardData != null) {
-                        APP.flashCardData = tryParseJSON(APP.flashCardData);
-                    } else {
-                        APP.flashCardData = APP.errorMessage;
-                    }
+                return string;
 
-                    if ( APP.flashCardDefinition != null) {
-                        APP.flashCardDefinition = tryParseJSON(APP.flashCardDefinition);
-                    } else {
-                        APP.flashCardDefinition = APP.errorMessage;
-                    }
+              };
+            }
 
-                    function tryParseJSON(string){
-                        try {
-                            var o = JSON.parse(string);
-                            if (o && typeof o === "object") {
-                                APP.plainText = false;
-                                return o;
-                            }
-                        }
-                        catch (e) { }
-
-                        return string;
-
-                    };
+            function toggleAnswer() {
+                var flashCard = this.parentNode;
+                var answer = flashCard.querySelector(".card-answer");
+                var question = flashCard.querySelector(".card-question");
+                if (!APP.showDefinition){
+                  if ( answer.classList.contains("display-none") ){
+                    answer.className = "card-answer";
+                    this.innerHTML = "Hide Answer";
+                  } else {
+                    answer.className += " display-none";
+                    this.innerHTML = "Show Answer";
+                  }
+                } else {
+                  if ( question.classList.contains("display-none") ){
+                    question.className = "card-question";
+                    this.innerHTML = "Hide Answer";
+                  } else {
+                    question.className += " display-none";
+                    this.innerHTML = "Show Answer";
+                  }
                 }
+            }
 
-                function toggleAnswer() {
-                    var flashCard = this.parentNode;
-                    var answer = flashCard.querySelector(".card-answer");
-                    if ( answer.classList.contains("display-none") ){
-                        answer.className = "card-answer";
-                        this.innerHTML = "Hide Answer";
-                    } else {
-                        answer.className += " display-none";
-                        this.innerHTML = "Show Answer";
-                    }
-                }
+            function build(){
+              var term = APP.flashCardData;
+              var definition = APP.flashCardDefinition;
 
-                function build(){
-                    var term = APP.flashCardData;
-                    var definition = APP.flashCardDefinition;
+              bindings.container = document.querySelector("#card-container");
+              var card = document.createElement("div");
+              card.className = "flash-card";
+              var cardQuestion = document.createElement("div");
+              cardQuestion.className = "card-question";
+              if (APP.showDefinition){
+                cardQuestion.className += " display-none";
+              }
 
-                    bindings.container = document.querySelector("#card-container");
-                    var card = document.createElement("div");
-                    card.className = "flash-card";
-
-                    if (!APP.plainText) {
-                        if (term.meta.id != null) {
-                            var cardNumber = document.createElement("div");
-                            cardNumber.className = "card-number";
-                            cardNumber.innerHTML = term.meta.id;
-                            card.appendChild(cardNumber);
-                        }
-                        if (term.meta["link-text"] != null && term.meta["link-href"] != null ){
-                            var flashCardLinkContainer = document.createElement("div");
-                            var cardLink = document.createElement("a");
-                            flashCardLinkContainer.className = "flash-card-link-container";
-                            cardLink.className = "card-link";
-                            cardLink.innerHTML = term.meta["link-text"];
-                            cardLink.href=term.meta["link-href"];
-                            flashCardLinkContainer.appendChild(cardLink);
-                            card.appendChild(flashCardLinkContainer);
-                        }
-                        if (term.header != null){
-                            var questionP = document.createElement("p");
-                            questionP.innerHTML = term.header;
-                            card.appendChild(questionP);
-                        }
-                        if (term.paragraphs != null){
-                            for ( var l = 0; l < term.paragraphs.length; l++ ) {
-                                var paragraph = document.createElement("p");
-                                paragraph.innerHTML = term.paragraphs[l];
-                                card.appendChild(paragraph);
-                            }
-                        }
-                        if (term["list-items"].length > 0){
-                            var problemSetList = document.createElement("ol");
-                            problemSetList.className = "problemset-list " + term["list-style-type"];
-                            for ( var j = 0; j < term["list-items"].length; j++ ) {
-                                var li = document.createElement("li");
-                                problemSetList.appendChild(li);
-                                li.innerHTML = term["list-items"][j];
-                                card.appendChild(problemSetList);
-                            }
-                        }
-                    } else {
-                        // if the card data is plain text
+              if (!APP.plainText) {
+                  if (term.meta.id != null) {
+                      var cardNumber = document.createElement("div");
+                      cardNumber.className = "card-number";
+                      cardNumber.innerHTML = term.meta.id;
+                      card.appendChild(cardNumber);
+                  }
+                  if (term.meta["link-text"] != null && term.meta["link-href"] != null ){
+                      var flashCardLinkContainer = document.createElement("div");
+                      var cardLink = document.createElement("a");
+                      flashCardLinkContainer.className = "flash-card-link-container";
+                      cardLink.className = "card-link";
+                      cardLink.innerHTML = term.meta["link-text"];
+                      cardLink.href=term.meta["link-href"];
+                      flashCardLinkContainer.appendChild(cardLink);
+                      card.appendChild(flashCardLinkContainer);
+                  }
+                  if (term.header != null){
+                      var questionP = document.createElement("p");
+                      questionP.innerHTML = term.header;
+                      cardQuestion.appendChild(questionP);
+                  }
+                  if (term.paragraphs != null){
+                      for ( var l = 0; l < term.paragraphs.length; l++ ) {
                         var paragraph = document.createElement("p");
-                        paragraph.innerHTML = term;
-                        card.appendChild(paragraph);
+                        paragraph.innerHTML = term.paragraphs[l];
+                        cardQuestion.appendChild(paragraph);
+                      }
+                  }
+                  if (term["list-items"].length > 0){
+                    var problemSetList = document.createElement("ol");
+                    problemSetList.className = "problemset-list " + term["list-style-type"];
+                    for ( var j = 0; j < term["list-items"].length; j++ ) {
+                      var li = document.createElement("li");
+                      problemSetList.appendChild(li);
+                      li.innerHTML = term["list-items"][j];
+                      cardQuestion.appendChild(problemSetList);
                     }
+                  }
 
-                    var button = document.createElement("button");
-                    button.className = "answer-button";
-                    button.innerHTML = "Show Answer";
-                    button.addEventListener("click", toggleAnswer, false);
-                    card.appendChild(button);
+              } else {
+                  // if the card data is plain text
+                  var paragraph = document.createElement("p");
+                  paragraph.innerHTML = term;
+                  cardQuestion.appendChild(paragraph);
+              }
 
-                    var cardAnswer = document.createElement("div");
-                    cardAnswer.className = "card-answer display-none";
+              var button = document.createElement("button");
+              button.className = "answer-button";
+              button.innerHTML = "Show Answer";
+              button.addEventListener("click", toggleAnswer, false);
 
 
-                    if (!APP.plainText) {
-                        if (definition.header != null) {
-                            var answerP = document.createElement("p");
-                            answerP.innerHTML = definition.header;
-                            cardAnswer.appendChild(answerP);
-                            if (definition["list-items"].length > 0){
-                                var answerList = document.createElement("ol");
-                                answerList.className = "problemset-list " + definition["list-style-type"];
-                                for (var k = 0; k < definition["list-items"].length; k++) {
-                                    var answerLi = document.createElement("li");
-                                    answerList.appendChild(answerLi);
-                                    answerLi.innerHTML = definition["list-items"][k];
-                                }
-                                cardAnswer.appendChild(answerList);
-                            }
-                            card.appendChild(cardAnswer);
+              var cardAnswer = document.createElement("div");
+              cardAnswer.className = "card-answer";
+              if (!APP.showDefinition){
+                cardAnswer.className += " display-none";
+              }
+
+              if (!APP.plainText) {
+                if (definition.header != null) {
+                  var answerP = document.createElement("p");
+                  answerP.innerHTML = definition.header;
+                  cardAnswer.appendChild(answerP);
+                    if (definition["list-items"].length > 0){
+                      var answerList = document.createElement("ol");
+                      answerList.className = "problemset-list " + definition["list-style-type"];
+                        for (var k = 0; k < definition["list-items"].length; k++) {
+                          var answerLi = document.createElement("li");
+                          answerList.appendChild(answerLi);
+                          answerLi.innerHTML = definition["list-items"][k];
                         }
-                        if (term.meta["branding-text"] != null && term.meta["branding-url"] != null) {
-                            var branding = document.createElement("div");
-                            var brandingLink = document.createElement("a");
-                            branding.className = "branding";
-                            brandingLink.href = term.meta["branding-url"];
-                            brandingLink.innerHTML = term.meta["branding-text"];
-                            branding.appendChild(brandingLink);
-                            card.appendChild(branding);
-                        }
-                    } else {
-                        var answerP = document.createElement("p");
-                        answerP.innerHTML = definition;
-                        cardAnswer.appendChild(answerP);
-                        card.appendChild(cardAnswer);
+                        cardAnswer.appendChild(answerList);
                     }
-
-                    bindings.container.appendChild(card);
                 }
+                if (term.meta["branding-text"] != null && term.meta["branding-url"] != null) {
+                  var branding = document.createElement("div");
+                  var brandingLink = document.createElement("a");
+                  branding.className = "branding";
+                  brandingLink.href = term.meta["branding-url"];
+                  brandingLink.innerHTML = term.meta["branding-text"];
+                  branding.appendChild(brandingLink);
+                  card.appendChild(branding);
+                }
+              } else {
+                var answerP = document.createElement("p");
+                answerP.innerHTML = definition;
+                cardAnswer.appendChild(answerP);
+                card.appendChild(cardAnswer);
+              }
+              if (APP.showDefinition){
+                card.appendChild(cardAnswer);
+                card.appendChild(button);
+                card.appendChild(cardQuestion);
+              } else {
+                card.appendChild(cardQuestion);
+                card.appendChild(button);
+                card.appendChild(cardAnswer);
+              }
+              bindings.container.appendChild(card);
+            }
 
-                var init = function() {
-                    setupBindings();
-                    formatData();
-                    build();
-                };
+            var init = function() {
+              setupBindings();
+              formatData();
+              build();
+            };
 
-                return {
-                    init: init
-                };
+            return {
+                init: init
+            };
 
-            })();
+          })();
             window.onload = function () {
                 APP.buildCards.init();
             };
