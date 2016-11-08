@@ -2,6 +2,7 @@ package net.coronite.quizlet_math_plus;
 
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -11,6 +12,7 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.MenuItem;
 
 import net.coronite.quizlet_math_plus.data.QuizletTermsAPI;
 import net.coronite.quizlet_math_plus.data.models.Term;
@@ -32,6 +34,7 @@ public class DetailActivity extends AppCompatActivity {
     private static final String ARG_SET_TITLE = "ARG_SET_TITLE";
     private static final String ARG_SET_ID = "arg_set_id";
     private static final String ARG_CARD_NUM = "CARD_NUM";
+    private static final String ARG_SHOW_TERM = "ARG_SHOW_TERM";
     private CustomViewPager mPager;
     private PagerAdapter mPagerAdapter;
     private List<Term> mTerms;
@@ -39,12 +42,14 @@ public class DetailActivity extends AppCompatActivity {
     private Context mContext = this;
     private String mSetTitle;
     private int mSetCount;
+    private Boolean mShowTerm;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         String mSetId = getIntent().getStringExtra(EXTRA_SET_ID);
         mSetTitle = getIntent().getStringExtra(EXTRA_SET_TITLE);
+        mShowTerm = Utility.getShowTermBoolean(mContext);
         setContentView(R.layout.activity_detail);
         setupActionBar();
 
@@ -106,6 +111,22 @@ public class DetailActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+
+        //noinspection SimplifiableIfStatement
+        if (id == R.id.action_settings) {
+            startActivity(new Intent(this, SettingsActivity.class));
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
     private class ScreenSlidePagerAdapter extends FragmentStatePagerAdapter {
         public ScreenSlidePagerAdapter(FragmentManager fm) {
             super(fm);
@@ -120,6 +141,7 @@ public class DetailActivity extends AppCompatActivity {
             args.putInt(ARG_SET_COUNT, mSetCount);
             args.putInt(ARG_CARD_NUM, position);
             args.putString(ARG_SET_TITLE, mSetTitle);
+            args.putBoolean(ARG_SHOW_TERM, mShowTerm);
             Fragment fragment = new DetailActivityFragment();
             fragment.setArguments(args);
             return fragment;

@@ -5,6 +5,7 @@ import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.content.res.TypedArray;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.ListPreference;
@@ -13,7 +14,13 @@ import android.preference.PreferenceActivity;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
 import android.support.v7.app.ActionBar;
+import android.support.v7.widget.Toolbar;
+import android.util.TypedValue;
+import android.view.LayoutInflater;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ListView;
 
 import java.util.List;
 
@@ -100,9 +107,38 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
      * Set up the {@link android.app.ActionBar}, if the API is available.
      */
     private void setupActionBar() {
+        getLayoutInflater().inflate(R.layout.toolbar, (ViewGroup)findViewById(android.R.id.content));
+        Toolbar toolbar = (Toolbar)findViewById(R.id.preference_toolbar);
+        setSupportActionBar(toolbar);
         ActionBar actionBar = getSupportActionBar();
+
         if (actionBar != null) {
+            final TypedArray styledAttributes = this.getTheme().obtainStyledAttributes(
+                    new int[] { android.R.attr.actionBarSize });
+            int mActionBarSize = (int) styledAttributes.getDimension(0, 0);
+            styledAttributes.recycle();
+            int statusBarHeight = (int)Math.ceil(25 * this.getResources().getDisplayMetrics().density);
+
+        int horizontalMargin = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 2, getResources().getDisplayMetrics());
+        int verticalMargin = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 2, getResources().getDisplayMetrics());
+        int topMargin = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, (mActionBarSize + statusBarHeight), getResources().getDisplayMetrics());
+        getListView().setPadding(horizontalMargin, topMargin, horizontalMargin, verticalMargin);
+
+            actionBar.setDisplayHomeAsUpEnabled(true);
             // Show the Up button in the action bar.
+        }
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(final MenuItem item) {
+
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                onBackPressed();
+                return true;
+
+            default:
+                return super.onOptionsItemSelected(item);
         }
     }
 
@@ -149,6 +185,27 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             // updated to reflect the new value, per the Android Design
             // guidelines.
             bindPreferenceSummaryToValue(findPreference( getString(R.string.username_key) ));
+        }
+
+        @Override
+        public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                                 Bundle savedInstanceState) {
+            View v = super.onCreateView(inflater, container, savedInstanceState);
+            if(v != null) {
+                ListView lv = (ListView) v.findViewById(android.R.id.list);
+                final TypedArray styledAttributes = getActivity().getTheme().obtainStyledAttributes(
+                        new int[] { android.R.attr.actionBarSize });
+                int mActionBarSize = (int) styledAttributes.getDimension(0, 0);
+                styledAttributes.recycle();
+                int statusBarHeight = (int)Math.ceil(25 * this.getResources().getDisplayMetrics().density);
+
+                int horizontalMargin = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 2, getResources().getDisplayMetrics());
+                int verticalMargin = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 2, getResources().getDisplayMetrics());
+                int topMargin = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, (mActionBarSize + statusBarHeight), getResources().getDisplayMetrics());
+
+                lv.setPadding(horizontalMargin, topMargin, horizontalMargin, verticalMargin);
+            }
+            return v;
         }
 
         @Override

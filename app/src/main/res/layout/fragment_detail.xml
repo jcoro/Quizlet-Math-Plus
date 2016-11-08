@@ -4,8 +4,9 @@
     android:id="@+id/mathview_text"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    auto:data=""
-    auto:definition=""
+    auto:data = ""
+    auto:definition = ""
+    auto:show_term = "true"
     >
 </net.coronite.mathview.MathView>
 

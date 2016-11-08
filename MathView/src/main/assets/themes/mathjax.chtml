@@ -14,11 +14,11 @@
         </script>
         <script>
             var APP = {};
-            APP.showDefinition = true;
+            APP.showTerm = {$show_term};
             APP.plainText = true;
             APP.errorMessage = "There was a problem loading the necessary data.";
-            APP.flashCardData = "{$data}";
-            APP.flashCardDefinition = "{$definition}";
+            APP.flashCardData = {$data};
+            APP.flashCardDefinition = {$definition};
 
             APP.buildCards = (function(){
             var bindings = {};
@@ -28,29 +28,27 @@
 
             function formatData() {
               if ( APP.flashCardData != null) {
-                APP.flashCardData = tryParseJSON(APP.flashCardData);
+                APP.flashCardData = isDataJSON(APP.flashCardData);
               } else {
                 APP.flashCardData = APP.errorMessage;
               }
 
               if ( APP.flashCardDefinition != null) {
-                APP.flashCardDefinition = tryParseJSON(APP.flashCardDefinition);
+                APP.flashCardDefinition = isDataJSON(APP.flashCardDefinition);
               } else {
                 APP.flashCardDefinition = APP.errorMessage;
               }
 
-              function tryParseJSON(string){
+              function isDataJSON(data){
                 try {
-                  var o = JSON.parse(string);
-                  if (o && typeof o === "object") {
+                  if (data && typeof data === "object") {
                     APP.plainText = false;
-                    return o;
+                    return data;
                   }
                 }
                 catch (e) { }
 
-                return string;
-
+                return data;
               };
             }
 
@@ -58,7 +56,7 @@
                 var flashCard = this.parentNode;
                 var answer = flashCard.querySelector(".card-answer");
                 var question = flashCard.querySelector(".card-question");
-                if (!APP.showDefinition){
+                if (APP.showTerm){
                   if ( answer.classList.contains("display-none") ){
                     answer.className = "card-answer";
                     this.innerHTML = "Hide Answer";
@@ -86,7 +84,7 @@
               card.className = "flash-card";
               var cardQuestion = document.createElement("div");
               cardQuestion.className = "card-question";
-              if (APP.showDefinition){
+              if (!APP.showTerm){
                 cardQuestion.className += " display-none";
               }
 
@@ -145,7 +143,7 @@
 
               var cardAnswer = document.createElement("div");
               cardAnswer.className = "card-answer";
-              if (!APP.showDefinition){
+              if (APP.showTerm){
                 cardAnswer.className += " display-none";
               }
 
@@ -180,7 +178,7 @@
                 cardAnswer.appendChild(answerP);
                 card.appendChild(cardAnswer);
               }
-              if (APP.showDefinition){
+              if (!APP.showTerm){
                 card.appendChild(cardAnswer);
                 card.appendChild(button);
                 card.appendChild(cardQuestion);

@@ -11,6 +11,8 @@ import com.x5.template.Chunk;
 import com.x5.template.Theme;
 import com.x5.template.providers.AndroidTemplates;
 
+import org.json.JSONObject;
+
 public class MathView extends WebView {
 
     public MathView(Context context, AttributeSet attrs) {
@@ -28,7 +30,9 @@ public class MathView extends WebView {
         );
 
         try {
-            setData(mTypeArray.getString(R.styleable.MathView_data), mTypeArray.getString(R.styleable.MathView_definition));
+            setData(mTypeArray.getString(R.styleable.MathView_data),
+                    mTypeArray.getString(R.styleable.MathView_definition),
+                    mTypeArray.getBoolean(R.styleable.MathView_show_term, true));
         } finally {
             mTypeArray.recycle();
         }
@@ -40,12 +44,25 @@ public class MathView extends WebView {
         return new Theme(loader).makeChunk(TEMPLATE_MATHJAX);
     }
 
-    public void setData(String data, String definition) {
+    public void setData(String data, String definition, Boolean showTerm) {
         Chunk chunk = getChunk();
         String TAG_DATA = "data";
         String TAG_DEFINITION = "definition";
-        chunk.set(TAG_DATA, data);
-        chunk.set(TAG_DEFINITION, definition);
+        String TAG_SHOW_TERM = "show_term";
+        try {
+            JSONObject jsonData = new JSONObject(data);
+            chunk.set(TAG_DATA, jsonData);
+        } catch(Exception e){
+            chunk.set(TAG_DATA, "\"" + data + "\"");
+        }
+        try {
+            JSONObject jsonDef = new JSONObject(definition);
+            chunk.set(TAG_DEFINITION, jsonDef);
+        } catch (Exception e) {
+            chunk.set(TAG_DEFINITION, "\"" + definition + "\"");
+        }
+        chunk.set(TAG_SHOW_TERM, showTerm.toString());
+
         this.loadDataWithBaseURL(null, chunk.toString(), "text/html", "utf-8", "about:blank");
     }
 

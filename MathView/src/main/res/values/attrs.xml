@@ -3,5 +3,6 @@
     <declare-styleable name="MathView">
         <attr name="data" format="string"/>
         <attr name="definition" format="string"/>
+        <attr name="show_term" format="boolean"/>
     </declare-styleable>
 </resources>

@@ -22,9 +22,11 @@ public class DetailActivityFragment extends Fragment {
     private static final String ARG_SET_ID = "arg_set_id";
     private static final String ARG_CARD_NUM = "CARD_NUM";
     private static final String ARG_SET_TITLE = "ARG_SET_TITLE";
+    private static final String ARG_SHOW_TERM = "ARG_SHOW_TERM";
     private int mSetCount;
     private int mCardNumber;
     private String mSetTitle;
+    private Boolean mShowTerm;
 
     public DetailActivityFragment() {
     }
@@ -38,6 +40,7 @@ public class DetailActivityFragment extends Fragment {
             mSetCount = arguments.getInt(ARG_SET_COUNT);
             mCardNumber = arguments.getInt(ARG_CARD_NUM);
             mSetTitle = arguments.getString(ARG_SET_TITLE);
+            mShowTerm = arguments.getBoolean(ARG_SHOW_TERM);
         }
     }
 
@@ -53,7 +56,7 @@ public class DetailActivityFragment extends Fragment {
         }
         MathView mv = (MathView) view.findViewById(R.id.mathview_text);
             if (mTerm != null) {
-                mv.setData(mTerm.getTerm(), mTerm.getDefinition());
+                mv.setData(mTerm.getTerm(), mTerm.getDefinition(), mShowTerm);
             }
 
 
