@@ -2,10 +2,6 @@ package net.coronite.quizlet_math_plus;
 
 
 import android.annotation.TargetApi;
-import android.content.Context;
-import android.content.Intent;
-import android.content.res.Configuration;
-import android.content.res.TypedArray;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.ListPreference;
@@ -13,16 +9,13 @@ import android.preference.Preference;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
+import android.support.v4.app.NavUtils;
 import android.support.v7.app.ActionBar;
-import android.support.v7.widget.Toolbar;
-import android.util.TypedValue;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ListView;
-
-import java.util.List;
 
 /**
  * A {@link PreferenceActivity} that presents a set of application settings. On
@@ -68,15 +61,6 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
     };
 
     /**
-     * Helper method to determine if the device has an extra-large screen. For
-     * example, 10" tablets are extra-large.
-     */
-    private static boolean isXLargeTablet(Context context) {
-        return (context.getResources().getConfiguration().screenLayout
-                & Configuration.SCREENLAYOUT_SIZE_MASK) >= Configuration.SCREENLAYOUT_SIZE_XLARGE;
-    }
-
-    /**
      * Binds a preference's summary to its value. More specifically, when the
      * preference's value is changed, its summary (line of text below the
      * preference title) is updated to reflect the value. The summary is also
@@ -101,63 +85,23 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setupActionBar();
+        getFragmentManager().beginTransaction().replace(android.R.id.content, new GeneralPreferenceFragment()).commit();
     }
 
     /**
      * Set up the {@link android.app.ActionBar}, if the API is available.
      */
+
     private void setupActionBar() {
-        getLayoutInflater().inflate(R.layout.toolbar, (ViewGroup)findViewById(android.R.id.content));
-        Toolbar toolbar = (Toolbar)findViewById(R.id.preference_toolbar);
-        setSupportActionBar(toolbar);
         ActionBar actionBar = getSupportActionBar();
-
         if (actionBar != null) {
-            final TypedArray styledAttributes = this.getTheme().obtainStyledAttributes(
-                    new int[] { android.R.attr.actionBarSize });
-            int mActionBarSize = (int) styledAttributes.getDimension(0, 0);
-            styledAttributes.recycle();
-            int statusBarHeight = (int)Math.ceil(25 * this.getResources().getDisplayMetrics().density);
-
-        int horizontalMargin = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 2, getResources().getDisplayMetrics());
-        int verticalMargin = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 2, getResources().getDisplayMetrics());
-        int topMargin = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, (mActionBarSize + statusBarHeight), getResources().getDisplayMetrics());
-        getListView().setPadding(horizontalMargin, topMargin, horizontalMargin, verticalMargin);
-
-            actionBar.setDisplayHomeAsUpEnabled(true);
+            Log.v("ACTIONBAR", "ACTIONBAR");
             // Show the Up button in the action bar.
+            actionBar.setDisplayHomeAsUpEnabled(true);
         }
     }
 
-    @Override
-    public boolean onOptionsItemSelected(final MenuItem item) {
 
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                onBackPressed();
-                return true;
-
-            default:
-                return super.onOptionsItemSelected(item);
-        }
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    public boolean onIsMultiPane() {
-        return isXLargeTablet(this);
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    @Override
-    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
-    public void onBuildHeaders(List<Header> target) {
-        loadHeadersFromResource(R.xml.pref_headers, target);
-    }
 
     /**
      * This method stops fragment injection in malicious applications.
@@ -166,6 +110,17 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
     protected boolean isValidFragment(String fragmentName) {
         return PreferenceFragment.class.getName().equals(fragmentName)
                 || GeneralPreferenceFragment.class.getName().equals(fragmentName);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        if (id == android.R.id.home) {
+            NavUtils.navigateUpFromSameTask(this);
+            //startActivity(new Intent(this, MainActivity.class));
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     /**
@@ -178,7 +133,6 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
         public void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
             addPreferencesFromResource(R.xml.pref_general);
-            setHasOptionsMenu(true);
 
             // Bind the summaries of EditText/List/Dialog/Ringtone preferences
             // to their values. When their values change, their summaries are
@@ -191,32 +145,9 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
             View v = super.onCreateView(inflater, container, savedInstanceState);
-            if(v != null) {
-                ListView lv = (ListView) v.findViewById(android.R.id.list);
-                final TypedArray styledAttributes = getActivity().getTheme().obtainStyledAttributes(
-                        new int[] { android.R.attr.actionBarSize });
-                int mActionBarSize = (int) styledAttributes.getDimension(0, 0);
-                styledAttributes.recycle();
-                int statusBarHeight = (int)Math.ceil(25 * this.getResources().getDisplayMetrics().density);
-
-                int horizontalMargin = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 2, getResources().getDisplayMetrics());
-                int verticalMargin = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 2, getResources().getDisplayMetrics());
-                int topMargin = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, (mActionBarSize + statusBarHeight), getResources().getDisplayMetrics());
-
-                lv.setPadding(horizontalMargin, topMargin, horizontalMargin, verticalMargin);
-            }
             return v;
         }
 
-        @Override
-        public boolean onOptionsItemSelected(MenuItem item) {
-            int id = item.getItemId();
-            if (id == android.R.id.home) {
-                startActivity(new Intent(getActivity(), SettingsActivity.class));
-                return true;
-            }
-            return super.onOptionsItemSelected(item);
-        }
     }
 
 }

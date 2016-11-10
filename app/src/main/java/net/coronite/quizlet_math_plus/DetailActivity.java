@@ -93,6 +93,7 @@ public class DetailActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
+            Log.v("ACTIONBAR", "DETAIL_ACTIONBAR");
             // Show the Up button in the action bar.
             actionBar.setDisplayHomeAsUpEnabled(true);
             actionBar.setTitle(mSetTitle);
