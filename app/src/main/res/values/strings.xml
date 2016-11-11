@@ -22,4 +22,8 @@
 
     <string name="pref_title_display_name">Quizlet Username</string>
 
+    <!-- SyncAdapter related -->
+    <string name="sync_account_type">quizlet_math_plus.coronite.net</string>
+    <string name="content_authority">net.coronite.quizlet_math_plus</string>
+
 </resources>

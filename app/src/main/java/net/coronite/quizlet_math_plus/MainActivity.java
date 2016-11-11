@@ -16,6 +16,7 @@ import net.coronite.quizlet_math_plus.data.QuizletSetsAPI;
 import net.coronite.quizlet_math_plus.data.models.Set;
 import net.coronite.quizlet_math_plus.data.models.SetList;
 import net.coronite.quizlet_math_plus.data.models.StudiedSet;
+import net.coronite.quizlet_math_plus.sync.FlashCardSyncAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -45,9 +46,6 @@ public class MainActivity extends AppCompatActivity {
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        mUsername = Utility.getUsername(this);
-        fetchSets();
-
         viewPager = (ViewPager) findViewById(R.id.tab_viewpager);
         tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(viewPager);
@@ -60,6 +58,8 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(modifySettings);
             }
         });
+
+        FlashCardSyncAdapter.initializeSyncAdapter(this);
     }
 
     private void fetchSets(){
@@ -141,28 +141,4 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-
-
-    //@Override
-    //public boolean onCreateOptionsMenu(Menu menu) {
-    //    // Inflate the menu; this adds items to the action bar if it is present.
-    //    getMenuInflater().inflate(R.menu.menu_main, menu);
-    //    return true;
-    //}
-    //
-    //@Override
-    //public boolean onOptionsItemSelected(MenuItem item) {
-    //    // Handle action bar item clicks here. The action bar will
-    //    // automatically handle clicks on the Home/Up button, so long
-    //    // as you specify a parent activity in AndroidManifest.xml.
-    //    int id = item.getItemId();
-    //
-    //    //noinspection SimplifiableIfStatement
-    //    if (id == R.id.action_settings) {
-    //        startActivity(new Intent(this, SettingsActivity.class));
-    //        return true;
-    //    }
-    //
-    //    return super.onOptionsItemSelected(item);
-    //}
 }

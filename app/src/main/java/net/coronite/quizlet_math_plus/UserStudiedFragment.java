@@ -74,7 +74,7 @@ public class UserStudiedFragment extends Fragment {
 
         public void bindSet(StudiedSet studySet) {
             mSet = studySet.getSet();
-            mSetId = mSet.getId();
+            mSetId = mSet.getQuizletSetId();
             mSetTitle = mSet.getTitle();
             mTitleTextView.setText(mSet.getTitle());
         }
