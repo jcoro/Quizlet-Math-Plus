@@ -40,8 +40,8 @@ public class Set implements Parcelable {
         // if Cursor is contains results
         if(cursor != null) {
             String quizlet_id = cursor.getString(UserSetFragment.INDEX_COLUMN_SET_ID);
-            String url = cursor.getString(UserSetFragment.INDEX_SET_URL);
-            String title = cursor.getString(UserSetFragment.INDEX_SET_TITLE);
+            String url = cursor.getString(UserSetFragment.INDEX_COLUMN_SET_URL);
+            String title = cursor.getString(UserSetFragment.INDEX_COLUMN_SET_TITLE);
             set = new Set(quizlet_id, url, title);
         }
         return set;

@@ -6,12 +6,16 @@ import android.content.ContentUris;
 import android.net.Uri;
 import android.provider.BaseColumns;
 
+/**
+ * Defines table, column and URI names for the database.
+ */
+
 public class FlashCardContract {
 
     public static final String CONTENT_AUTHORITY = "net.coronite.quizlet_math_plus";
     public static final Uri BASE_CONTENT_URI = Uri.parse("content://" + CONTENT_AUTHORITY);
-    public static final String PATH_SET = "sets";
-    public static final String PATH_TERM = "terms";
+    public static final String PATH_SET = "set";
+    public static final String PATH_TERM = "term";
 
     public static final class SetEntry implements BaseColumns {
         public static final Uri CONTENT_URI = BASE_CONTENT_URI.buildUpon().appendPath(PATH_SET).build();
@@ -29,14 +33,17 @@ public class FlashCardContract {
 
         public static Uri buildSetUri(long id) {
             return ContentUris.withAppendedId(CONTENT_URI, id);
+            // content://net.coronite.quizlet_math_plus/set/#
         }
 
-        // public static Uri buildUserSetUri() {
-        //     return CONTENT_URI.buildUpon().appendQueryParameter(COLUMN_SET_STUDIED, "0").build();
-        // }
-        // public static Uri buildStudiedSetUri() {
-        //     return CONTENT_URI.buildUpon().appendQueryParameter(COLUMN_SET_STUDIED, "1").build();
-        // }
+        public static Uri buildGetUserSetUri() {
+            return CONTENT_URI.buildUpon().appendQueryParameter(COLUMN_SET_STUDIED, "0").build();
+            // content://net.coronite.quizlet_math_plus/set/?set_studied=0
+        }
+        public static Uri buildGetStudiedSetUri() {
+            return CONTENT_URI.buildUpon().appendQueryParameter(COLUMN_SET_STUDIED, "1").build();
+            // content://net.coronite.quizlet_math_plus/set/?set_studied=1
+        }
     }
 
     public static final class TermEntry implements BaseColumns {
@@ -56,10 +63,12 @@ public class FlashCardContract {
 
         public static Uri buildTermUri(long id) {
             return ContentUris.withAppendedId(CONTENT_URI, id);
+            // content://net.coronite.quizlet_math_plus/term/#
         }
 
-        public static Uri buildTermUriWithSetId(String setId) {
+        public static Uri buildTermsOfSetUri(String setId) {
             return CONTENT_URI.buildUpon().appendQueryParameter(COLUMN_SET_ID, setId).build();
+            // content://net.coronite.quizlet_math_plus/term/?set_id=#
         }
     }
 }

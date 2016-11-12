@@ -58,6 +58,7 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(modifySettings);
             }
         });
+        setupViewPager(viewPager);
 
         FlashCardSyncAdapter.initializeSyncAdapter(this);
     }
