@@ -12,20 +12,10 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 
-import net.coronite.quizlet_math_plus.data.QuizletSetsAPI;
-import net.coronite.quizlet_math_plus.data.models.Set;
-import net.coronite.quizlet_math_plus.data.models.SetList;
-import net.coronite.quizlet_math_plus.data.models.StudiedSet;
 import net.coronite.quizlet_math_plus.sync.FlashCardSyncAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
 
 public class MainActivity extends AppCompatActivity {
     private final String USER_CREATED_SETS = "USER_CREATED_SETS";
@@ -34,9 +24,6 @@ public class MainActivity extends AppCompatActivity {
     private Toolbar toolbar;
     private TabLayout tabLayout;
     private ViewPager viewPager;
-    private List<Set> mUserSets;
-    private List<StudiedSet> mStudiedSets;
-    private String mUsername;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,51 +50,14 @@ public class MainActivity extends AppCompatActivity {
         FlashCardSyncAdapter.initializeSyncAdapter(this);
     }
 
-    private void fetchSets(){
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("https://api.quizlet.com/2.0/users/")
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-
-        // prepare call in Retrofit 2.0
-        QuizletSetsAPI quizletSetsAPI = retrofit.create(QuizletSetsAPI.class);
-
-        Call<SetList> call = quizletSetsAPI.loadSets(mUsername);
-        //asynchronous call
-        call.enqueue(new Callback<SetList>(){
-            @Override
-            public void onResponse(Call<SetList> call, Response<SetList> response){
-                mUserSets = response.body().sets;
-                mStudiedSets = response.body().studied;
-
-                setupViewPager(viewPager);
-            }
-
-            @Override
-            public void onFailure (Call<SetList> call, Throwable t){
-            }
-        });
-    }
 
     private void setupViewPager(ViewPager viewPager) {
         ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
 
         Fragment fragOne = new UserSetFragment();
-        if(mUserSets != null){
-            ArrayList<Set> userArray = (ArrayList<Set>)mUserSets;
-            Bundle argsUser = new Bundle();
-            argsUser.putParcelableArrayList(USER_CREATED_SETS, userArray);
-            fragOne.setArguments(argsUser);
-        }
         adapter.addFragment(fragOne, getString(R.string.your_sets));
 
         Fragment fragTwo = new UserStudiedFragment();
-        if(mStudiedSets != null){
-            ArrayList<StudiedSet> studiedArray = (ArrayList<StudiedSet>)mStudiedSets;
-            Bundle argsStudied = new Bundle();
-            argsStudied.putParcelableArrayList(USER_STUDIED_SETS, studiedArray);
-            fragTwo.setArguments(argsStudied);
-        }
         adapter.addFragment(fragTwo, getString(R.string.studied_sets));
 
         viewPager.setAdapter(adapter);

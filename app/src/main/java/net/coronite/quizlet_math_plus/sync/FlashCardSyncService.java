@@ -13,7 +13,7 @@ public class FlashCardSyncService extends Service {
 
     @Override
     public void onCreate() {
-        Log.d("SunshineSyncService", "onCreate - SunshineSyncService");
+        Log.d("FlashCardSyncService", "onCreate - FlashCardSyncService");
         synchronized (sSyncAdapterLock) {
             if (sFlashCardSyncAdapter == null) {
                 sFlashCardSyncAdapter = new FlashCardSyncAdapter(getApplicationContext(), true);
@@ -24,6 +24,7 @@ public class FlashCardSyncService extends Service {
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
-        return null;
+
+        return sFlashCardSyncAdapter.getSyncAdapterBinder();
     }
 }

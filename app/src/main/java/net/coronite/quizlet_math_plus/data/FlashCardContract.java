@@ -5,6 +5,7 @@ import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.net.Uri;
 import android.provider.BaseColumns;
+import android.util.Log;
 
 /**
  * Defines table, column and URI names for the database.
@@ -25,7 +26,8 @@ public class FlashCardContract {
         public static final String CONTENT_ITEM_TYPE =
                 ContentResolver.CURSOR_ITEM_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_SET;
 
-        public static final String TABLE_NAME = "set";
+        public static final String TABLE_NAME = "CARDSET";
+        public static final String ID = "_id";
         public static final String COLUMN_SET_ID = "quizlet_set_id";
         public static final String COLUMN_SET_STUDIED = "set_studied";
         public static final String COLUMN_SET_URL = "set_url";
@@ -36,12 +38,17 @@ public class FlashCardContract {
             // content://net.coronite.quizlet_math_plus/set/#
         }
 
-        public static Uri buildGetUserSetUri() {
-            return CONTENT_URI.buildUpon().appendQueryParameter(COLUMN_SET_STUDIED, "0").build();
+        public static Uri buildGetUserSetUri(String num) {
+            Uri uri = CONTENT_URI.buildUpon().appendQueryParameter(COLUMN_SET_STUDIED, num).build();
+            Log.d("Contract UserSetUri", uri.toString());
+            return CONTENT_URI.buildUpon().appendQueryParameter(COLUMN_SET_STUDIED, num).build();
             // content://net.coronite.quizlet_math_plus/set/?set_studied=0
+
         }
-        public static Uri buildGetStudiedSetUri() {
-            return CONTENT_URI.buildUpon().appendQueryParameter(COLUMN_SET_STUDIED, "1").build();
+        public static Uri buildGetStudiedSetUri(String num) {
+            Uri uri = CONTENT_URI.buildUpon().appendQueryParameter(COLUMN_SET_STUDIED, num).build();
+            Log.d("Contract StudiedSetUri", uri.toString());
+            return CONTENT_URI.buildUpon().appendQueryParameter(COLUMN_SET_STUDIED, num).build();
             // content://net.coronite.quizlet_math_plus/set/?set_studied=1
         }
     }
@@ -54,7 +61,7 @@ public class FlashCardContract {
         public static final String CONTENT_ITEM_TYPE =
                 ContentResolver.CURSOR_ITEM_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_TERM;
 
-        public static final String TABLE_NAME = "term";
+        public static final String TABLE_NAME = "TERM";
         public static final String COLUMN_SET_ID = "quizlet_set_id";
         public static final String COLUMN_TERM = "term";
         public static final String COLUMN_DEFINITION = "definition";

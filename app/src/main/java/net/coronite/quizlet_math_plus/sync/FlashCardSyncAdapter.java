@@ -25,8 +25,6 @@ import java.util.List;
 import java.util.Vector;
 
 import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
@@ -34,7 +32,7 @@ public class FlashCardSyncAdapter extends AbstractThreadedSyncAdapter {
 
     // Interval at which to sync with the weather, in seconds.
     // 60 seconds (1 minute) * 180 = 3 hours
-    public static final int SYNC_INTERVAL = 60 * 180;
+    public static final int SYNC_INTERVAL = 30; //60 * 180;
     public static final int SYNC_FLEXTIME = SYNC_INTERVAL / 3;
     private static final long DAY_IN_MILLIS = 1000 * 60 * 60 * 24;
     private static final int FLASHCARD_NOTIFICATION_ID = 3004;
@@ -62,6 +60,8 @@ public class FlashCardSyncAdapter extends AbstractThreadedSyncAdapter {
 
     @Override
     public void onPerformSync(Account account, Bundle bundle, String s, ContentProviderClient contentProviderClient, SyncResult syncResult) {
+
+        Log.d("SYNC_ADAPTER", "Starting sync");
         String username = Utility.getUsername(getContext());
 
         Retrofit retrofit = new Retrofit.Builder()
@@ -73,18 +73,15 @@ public class FlashCardSyncAdapter extends AbstractThreadedSyncAdapter {
         QuizletSetsAPI quizletSetsAPI = retrofit.create(QuizletSetsAPI.class);
 
         Call<SetList> call = quizletSetsAPI.loadSets(username);
-        //asynchronous call
-        call.enqueue(new Callback<SetList>() {
-            @Override
-            public void onResponse(Call<SetList> call, Response<SetList> response) {
-                mUserSets = response.body().sets;
-                mStudiedSets = response.body().studied;
-            }
-
-            @Override
-            public void onFailure(Call<SetList> call, Throwable t) {
-            }
-        });
+        try {
+            SetList setList = (SetList) call.execute().body();
+            mUserSets = setList.getSets();
+            mStudiedSets = setList.getStudiedSets();
+            Log.v( "M_USER_SETS", mUserSets.get(0).getQuizletSetId() );
+            Log.v( "M_STUDIED_SETS", mStudiedSets.get(0).getSet().getQuizletSetId() );
+        } catch(Exception e) {
+            Log.e("IOException", e.toString());
+        }
 
         // delete old data so we don't build up an endless history
         getContext().getContentResolver().delete( FlashCardContract.SetEntry.CONTENT_URI, null, null );
@@ -146,11 +143,13 @@ public class FlashCardSyncAdapter extends AbstractThreadedSyncAdapter {
      * @param context The context used to access the account service
      */
     public static void syncImmediately(Context context) {
+        Log.d("syncImmediately", "syncImmediately");
         Bundle bundle = new Bundle();
         bundle.putBoolean(ContentResolver.SYNC_EXTRAS_EXPEDITED, true);
         bundle.putBoolean(ContentResolver.SYNC_EXTRAS_MANUAL, true);
         ContentResolver.requestSync(getSyncAccount(context),
                 context.getString(R.string.content_authority), bundle);
+        Log.d(".requestSync", ".requestSync");
     }
 
     /**
@@ -183,10 +182,10 @@ public class FlashCardSyncAdapter extends AbstractThreadedSyncAdapter {
             /*
              * If you don't set android:syncable="true" in
              * in your <provider> element in the manifest,
-             * then call ContentResolver.setIsSyncable(account, AUTHORITY, 1)
+             * then call ContentResolver.setIsSyncable(newAccount, context.getString(R.string.content_authority), 1);
              * here.
              */
-
+            ContentResolver.setIsSyncable(newAccount, context.getString(R.string.content_authority), 1);
             onAccountCreated(newAccount, context);
         }
         return newAccount;
@@ -202,7 +201,6 @@ public class FlashCardSyncAdapter extends AbstractThreadedSyncAdapter {
          * Without calling setSyncAutomatically, our periodic sync will not be enabled.
          */
         ContentResolver.setSyncAutomatically(newAccount, context.getString(R.string.content_authority), true);
-
         /*
          * Finally, let's do a sync to get things started
          */

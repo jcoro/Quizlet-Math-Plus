@@ -21,24 +21,22 @@ public class FlashCardDbHelper extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
         // Create a table to hold set data.
         final String SQL_CREATE_SET_TABLE = "CREATE TABLE " + SetEntry.TABLE_NAME + " (" +
-                SetEntry._ID + " INTEGER PRIMARY KEY," +
+                SetEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
                 SetEntry.COLUMN_SET_ID + " TEXT UNIQUE NOT NULL, " +
                 SetEntry.COLUMN_SET_STUDIED + " INTEGER NOT NULL, " +
                 SetEntry.COLUMN_SET_URL + " TEXT, " +
-                SetEntry.COLUMN_SET_TITLE + " TEXT, " +
+                SetEntry.COLUMN_SET_TITLE + " TEXT " +
                 " );";
         // Create a table to hold Term data i.e., data for each card.
         final String SQL_CREATE_TERM_TABLE = "CREATE TABLE " + TermEntry.TABLE_NAME + " (" +
-                 TermEntry._ID + " INTEGER PRIMARY KEY," +
+                 TermEntry._ID + " INTEGER PRIMARY KEY, AUTOINCREMENT" +
                  TermEntry.COLUMN_SET_ID + " TEXT UNIQUE NOT NULL, " +
                  TermEntry.COLUMN_TERM + " TEXT, " +
                  TermEntry.COLUMN_DEFINITION + " TEXT, " +
                  TermEntry.COLUMN_IMAGE + " TEXT, " +
-                 TermEntry.COLUMN_RANK + " INTEGER, " +
+                 TermEntry.COLUMN_RANK + " INTEGER " +
+                " );";
 
-                // Set up the SET_ID column as a foreign key to the SET table.
-                " FOREIGN KEY (" +  TermEntry.COLUMN_SET_ID + ") REFERENCES " +
-                SetEntry.TABLE_NAME + " (" + SetEntry.COLUMN_SET_ID + ");";
 
 
         sqLiteDatabase.execSQL(SQL_CREATE_SET_TABLE);

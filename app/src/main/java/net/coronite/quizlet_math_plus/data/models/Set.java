@@ -10,12 +10,12 @@ import net.coronite.quizlet_math_plus.UserSetFragment;
  * The model for Sets
  */
 public class Set implements Parcelable {
-    String quizlet_id;
+    String id;
     String url;
     String title;
 
     public Set (String id, String url, String title){
-        this.quizlet_id = id;
+        this.id = id;
         this.url = url;
         this.title = title;
     }
@@ -30,25 +30,26 @@ public class Set implements Parcelable {
     }
 
     public String getQuizletSetId(){
-        return(quizlet_id);
+        return(id);
     }
 
     public String getUrl() { return(url); }
 
     public static Set fromCursor(Cursor cursor){
         Set set= null;
-        // if Cursor is contains results
+        // if Cursor contains results
         if(cursor != null) {
-            String quizlet_id = cursor.getString(UserSetFragment.INDEX_COLUMN_SET_ID);
+            //String _id = cursor.getString(UserSetFragment.INDEX_COLUMN_AUTO_ID);
+            String id = cursor.getString(UserSetFragment.INDEX_COLUMN_SET_ID);
             String url = cursor.getString(UserSetFragment.INDEX_COLUMN_SET_URL);
             String title = cursor.getString(UserSetFragment.INDEX_COLUMN_SET_TITLE);
-            set = new Set(quizlet_id, url, title);
+            set = new Set(id, url, title);
         }
         return set;
     }
 
     private Set(Parcel in) {
-        quizlet_id = in.readString();
+        id = in.readString();
         url = in.readString();
         title = in.readString();
     }
@@ -60,7 +61,7 @@ public class Set implements Parcelable {
      */
     @Override
     public void writeToParcel(Parcel parcel, int i) {
-        parcel.writeString(quizlet_id);
+        parcel.writeString(id);
         parcel.writeString(url);
         parcel.writeString(title);
     }

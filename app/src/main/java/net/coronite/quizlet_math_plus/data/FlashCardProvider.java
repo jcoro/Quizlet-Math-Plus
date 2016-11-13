@@ -10,6 +10,7 @@ import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.util.Log;
 
 public class FlashCardProvider extends ContentProvider {
 
@@ -100,10 +101,10 @@ public class FlashCardProvider extends ContentProvider {
         final String authority = FlashCardContract.CONTENT_AUTHORITY;
 
         // For each type of URI you want to add, create a corresponding code.
-        matcher.addURI(authority, "sets", SETS);
-        matcher.addURI(authority, "terms", TERMS);
-        matcher.addURI(authority, "sets/*", SETS_TYPE);
-        matcher.addURI(authority, "terms/*", TERMS_OF_SET);
+        matcher.addURI(authority, "set", SETS);
+        matcher.addURI(authority, "term", TERMS);
+        matcher.addURI(authority, "set/*", SETS_TYPE);
+        matcher.addURI(authority, "term/*", TERMS_OF_SET);
 
         return matcher;
     }
@@ -140,6 +141,7 @@ public class FlashCardProvider extends ContentProvider {
         Cursor cursor;
         switch(sUriMatcher.match(uri)){
             case SETS:
+                Log.d("Provider - SETS", uri.toString());
                 cursor = mDbHelper.getReadableDatabase().query( // SQLiteDatabase.query
                         FlashCardContract.SetEntry.TABLE_NAME,  // String table name;
                         projection,                             // String[] columns
@@ -162,6 +164,7 @@ public class FlashCardProvider extends ContentProvider {
                 );
                 break;
             case SETS_TYPE:
+                Log.d("Provider - SETS_TYPE", uri.toString());
                 cursor = getSetsOfTypeSetting(uri, projection, selectionArgs, sortOrder);
                 break;
             case TERMS_OF_SET:
