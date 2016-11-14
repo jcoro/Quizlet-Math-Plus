@@ -3,10 +3,15 @@ package net.coronite.quizlet_math_plus;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.CursorLoader;
+import android.support.v4.content.Loader;
 import android.support.v4.view.PagerAdapter;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
@@ -14,20 +19,14 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
 
-import net.coronite.quizlet_math_plus.data.QuizletTermsAPI;
+import net.coronite.quizlet_math_plus.data.FlashCardContract;
 import net.coronite.quizlet_math_plus.data.models.Term;
-import net.coronite.quizlet_math_plus.data.models.TermList;
 
+import java.util.ArrayList;
 import java.util.List;
 
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
-
-public class DetailActivity extends AppCompatActivity {
-    private static final String TAG = "DetailActivity";
+public class DetailActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
+    private static final int SET_LOADER = 0;
     private static final String EXTRA_SET_ID = "SET_ID";
     private static final String EXTRA_SET_TITLE = "SET_TITLE";
     private static final String ARG_SET_COUNT = "SET_COUNT";
@@ -36,56 +35,50 @@ public class DetailActivity extends AppCompatActivity {
     private static final String ARG_CARD_NUM = "CARD_NUM";
     private static final String ARG_SHOW_TERM = "ARG_SHOW_TERM";
     private CustomViewPager mPager;
-    private PagerAdapter mPagerAdapter;
     private List<Term> mTerms;
     private ProgressDialog pd = null;
     private Context mContext = this;
     private String mSetTitle;
     private int mSetCount;
     private Boolean mShowTerm;
+    private String mSetId;
+
+    private static final String[] TERM_COLUMNS = new String[]{
+            //FlashCardContract.TermEntry.ID,
+            FlashCardContract.TermEntry.COLUMN_SET_ID,
+            FlashCardContract.TermEntry.COLUMN_TERM,
+            FlashCardContract.TermEntry.COLUMN_DEFINITION,
+            FlashCardContract.TermEntry.COLUMN_IMAGE,
+            FlashCardContract.TermEntry.COLUMN_RANK
+    };
+
+    // these indices must match the projection
+    //public static final int INDEX_COLUMN_AUTO_ID = 0;
+    public static final int INDEX_COLUMN_SET_ID = 0;
+    public static final int INDEX_COLUMN_TERM = 1;
+    public static final int INDEX_COLUMN_DEFINITION = 2;
+    public static final int INDEX_COLUMN_IMAGE = 3;
+    public static final int INDEX_COLUMN_RANK = 4;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        String mSetId = getIntent().getStringExtra(EXTRA_SET_ID);
-        mSetTitle = getIntent().getStringExtra(EXTRA_SET_TITLE);
-        mShowTerm = Utility.getShowTermBoolean(mContext);
-        setContentView(R.layout.activity_detail);
-        setupActionBar();
-
+        mSetId = getIntent().getStringExtra(EXTRA_SET_ID);
         if(pd == null) {
             pd = new ProgressDialog(mContext);
             pd.setTitle("Please wait");
             pd.setMessage("Page is loading..");
             pd.show();
         }
+        mSetTitle = getIntent().getStringExtra(EXTRA_SET_TITLE);
+        mShowTerm = Utility.getShowTermBoolean(mContext);
+        setContentView(R.layout.activity_detail);
+        setupActionBar();
+        getSupportLoaderManager().initLoader(SET_LOADER, null, this);
 
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(QuizletTermsAPI.ENDPOINT)
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
+        // Instantiate a ViewPager and a PagerAdapter.
+        mPager = (CustomViewPager) findViewById(R.id.pager);
 
-        QuizletTermsAPI service = retrofit.create(QuizletTermsAPI.class);
-        Call<TermList> call = service.getFeed(mSetId);
-        call.enqueue(new Callback<TermList>(){
-            @Override
-            public void onResponse(Call<TermList> call, Response<TermList> response){
-                mTerms = response.body().terms;
-                mSetCount = mTerms.size();
-                // Instantiate a ViewPager and a PagerAdapter.
-                mPager = (CustomViewPager) findViewById(R.id.pager);
-                mPagerAdapter = new ScreenSlidePagerAdapter(getSupportFragmentManager());
-                mPager.setAdapter(mPagerAdapter);
-                if(pd.isShowing()) {
-                    pd.dismiss();
-                }
-            }
-
-            @Override
-            public void onFailure (Call<TermList> call, Throwable t){
-                Log.e(TAG, t.toString());
-            }
-        });
     }
 
     private void setupActionBar() {
@@ -93,7 +86,6 @@ public class DetailActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
-            Log.v("ACTIONBAR", "DETAIL_ACTIONBAR");
             // Show the Up button in the action bar.
             actionBar.setDisplayHomeAsUpEnabled(true);
             actionBar.setTitle(mSetTitle);
@@ -128,6 +120,63 @@ public class DetailActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    @Override
+    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+        Uri uri = FlashCardContract.TermEntry.CONTENT_URI;
+        Log.d("Detail Activity - Uri", uri.toString());
+        Log.d("mSetId", mSetId);
+        return new CursorLoader(
+                mContext,             // context
+                uri,                  // uri
+                TERM_COLUMNS,         // projection
+                "quizlet_set_id=?",   // selection
+                new String[]{mSetId}, // selectionArgs
+                "rank ASC"            // sort order
+        );
+    }
+
+    @Override
+    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+        Log.d("CURSOR_COUNT", Integer.toString(data.getCount()));
+        if(data.getCount() > 0) {
+            mTerms = buildTerms(data);
+            Log.d("M_Terms_COUNT", Integer.toString(mTerms.size()));
+            mSetCount = mTerms.size();
+            if(pd.isShowing()) {
+                pd.dismiss();
+            }
+        }
+        PagerAdapter mPagerAdapter = new ScreenSlidePagerAdapter(getSupportFragmentManager());
+        mPager.setAdapter(mPagerAdapter);
+    }
+
+    @Override
+    public void onLoaderReset(Loader<Cursor> loader) {
+
+    }
+
+    private List<Term> buildTerms(Cursor cursor) {
+        List<Term> mCursorTerms = new ArrayList<>();
+        // if Cursor contains results
+        if(cursor != null) {
+            try {
+                while (cursor.moveToNext()) {
+                    //String _id = cursor.getString(INDEX_COLUMN_AUTO_ID);
+                    String id = cursor.getString(INDEX_COLUMN_SET_ID);
+                    String url = cursor.getString(INDEX_COLUMN_TERM);
+                    String term = cursor.getString(INDEX_COLUMN_DEFINITION);
+                    String definition = cursor.getString(INDEX_COLUMN_IMAGE);
+                    String rank = cursor.getString(INDEX_COLUMN_RANK);
+                    Term singleTerm = new Term( id, url, term, definition, rank );
+                    mCursorTerms.add(singleTerm);
+                }
+            } finally {
+                cursor.close();
+            }
+        }
+        return mCursorTerms;
+    }
+
     private class ScreenSlidePagerAdapter extends FragmentStatePagerAdapter {
         public ScreenSlidePagerAdapter(FragmentManager fm) {
             super(fm);
@@ -135,23 +184,30 @@ public class DetailActivity extends AppCompatActivity {
 
         @Override
         public Fragment getItem(int position) {
-            Term term = mTerms.get(position);
-
             Bundle args = new Bundle();
-            args.putParcelable(ARG_SET_ID, term);
-            args.putInt(ARG_SET_COUNT, mSetCount);
-            args.putInt(ARG_CARD_NUM, position);
-            args.putString(ARG_SET_TITLE, mSetTitle);
-            args.putBoolean(ARG_SHOW_TERM, mShowTerm);
+            if (mTerms !=null) {
+                Term term = mTerms.get(position);
+                args.putParcelable(ARG_SET_ID, term);
+                args.putInt(ARG_SET_COUNT, mSetCount);
+                args.putInt(ARG_CARD_NUM, position);
+                args.putString(ARG_SET_TITLE, mSetTitle);
+                args.putBoolean(ARG_SHOW_TERM, mShowTerm);
+            }
             Fragment fragment = new DetailActivityFragment();
-            fragment.setArguments(args);
+            if (args.size()>0){
+                fragment.setArguments(args);
+            }
+
             return fragment;
         }
 
         @Override
         public int getCount() {
-
-            return mTerms.size();
+            if (mTerms !=null) {
+                return mTerms.size();
+            } else {
+                return 0;
+            }
         }
     }
 

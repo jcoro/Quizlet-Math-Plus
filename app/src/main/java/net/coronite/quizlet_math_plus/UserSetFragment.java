@@ -13,6 +13,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import net.coronite.quizlet_math_plus.adapters.MyListCursorAdapter;
 import net.coronite.quizlet_math_plus.data.FlashCardContract;
@@ -39,6 +40,8 @@ public class UserSetFragment extends Fragment implements LoaderManager.LoaderCal
     public static final int INDEX_COLUMN_SET_TITLE = 4;
 
     MyListCursorAdapter mAdapter;
+    TextView mEmptyView;
+    RecyclerView mSetRecyclerView;
 
     public UserSetFragment() {
     }
@@ -53,16 +56,11 @@ public class UserSetFragment extends Fragment implements LoaderManager.LoaderCal
                              Bundle savedInstanceState) {
         View view =  inflater.inflate(R.layout.fragment_user_set, container, false);
 
-        RecyclerView mSetRecyclerView = (RecyclerView) view.findViewById(R.id.user_set_recycler_view);
-            mSetRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-            mAdapter = new MyListCursorAdapter(getActivity(), null);
-            mSetRecyclerView.setAdapter(mAdapter);
-
-            //mSetRecyclerView.setVisibility(View.GONE);
-            //TextView mEmptyView = (TextView) view.findViewById(R.id.empty_view);
-            //mEmptyView.setVisibility(View.VISIBLE);
-
-
+        mSetRecyclerView = (RecyclerView) view.findViewById(R.id.user_set_recycler_view);
+        mSetRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        mAdapter = new MyListCursorAdapter(getActivity(), null);
+        mSetRecyclerView.setAdapter(mAdapter);
+        mEmptyView = (TextView) view.findViewById(R.id.empty_view);
         return view;
     }
 
@@ -74,15 +72,14 @@ public class UserSetFragment extends Fragment implements LoaderManager.LoaderCal
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        Uri uri = FlashCardContract.SetEntry.buildGetUserSetUri("0");
-        Log.d("FRAG - User", uri.toString());
+        Uri uri = FlashCardContract.SetEntry.CONTENT_URI;
 
         return new CursorLoader(
                 getActivity(),     // context
                 uri,               // uri
                 SET_COLUMNS,       // projection
-                null,              // selection
-                null,              // selectionArgs
+                "set_studied=?",   // selection
+                new String[]{"0"}, // selectionArgs
                 null               // sort order
         );
     }
@@ -91,7 +88,11 @@ public class UserSetFragment extends Fragment implements LoaderManager.LoaderCal
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         if(data.moveToFirst()) {
             mAdapter.swapCursor(data);
+        } else {
+            mSetRecyclerView.setVisibility(View.GONE);
+            mEmptyView.setVisibility(View.VISIBLE);
         }
+
     }
 
     @Override
