@@ -17,9 +17,12 @@ import net.coronite.quizlet_math_plus.R;
 import net.coronite.quizlet_math_plus.Utility;
 import net.coronite.quizlet_math_plus.data.FlashCardContract;
 import net.coronite.quizlet_math_plus.data.QuizletSetsAPI;
+import net.coronite.quizlet_math_plus.data.QuizletTermsAPI;
 import net.coronite.quizlet_math_plus.data.models.Set;
 import net.coronite.quizlet_math_plus.data.models.SetList;
 import net.coronite.quizlet_math_plus.data.models.StudiedSet;
+import net.coronite.quizlet_math_plus.data.models.Term;
+import net.coronite.quizlet_math_plus.data.models.TermList;
 
 import java.util.List;
 import java.util.Vector;
@@ -30,29 +33,15 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class FlashCardSyncAdapter extends AbstractThreadedSyncAdapter {
 
-    // Interval at which to sync with the weather, in seconds.
+    // Interval at which to sync with quizlet, in seconds.
     // 60 seconds (1 minute) * 180 = 3 hours
-    public static final int SYNC_INTERVAL = 30; //60 * 180;
+    public static final int SYNC_INTERVAL = 60 * 60 * 24;
     public static final int SYNC_FLEXTIME = SYNC_INTERVAL / 3;
-    private static final long DAY_IN_MILLIS = 1000 * 60 * 60 * 24;
-    private static final int FLASHCARD_NOTIFICATION_ID = 3004;
-
-
-    private static final String[] SET_PROJECTION = new String[]{
-            FlashCardContract.SetEntry.COLUMN_SET_ID,
-            FlashCardContract.SetEntry.COLUMN_SET_STUDIED,
-            FlashCardContract.SetEntry.COLUMN_SET_URL,
-            FlashCardContract.SetEntry.COLUMN_SET_TITLE
-    };
-
-    // these indices must match the projection
-    private static final int INDEX_COLUMN_SET_ID = 0;
-    private static final int INDEX_SET_STUDIED = 1;
-    private static final int INDEX_SET_URL = 2;
-    private static final int INDEX_SET_TITLE = 3;
 
     List<Set> mUserSets;
     List<StudiedSet> mStudiedSets;
+    List<Term> mTermList;
+    List<Term> mStudiedTermList;
 
     public FlashCardSyncAdapter(Context context, boolean autoInitialize) {
         super(context, autoInitialize);
@@ -74,19 +63,18 @@ public class FlashCardSyncAdapter extends AbstractThreadedSyncAdapter {
 
         Call<SetList> call = quizletSetsAPI.loadSets(username);
         try {
-            SetList setList = (SetList) call.execute().body();
+            SetList setList = call.execute().body();
             mUserSets = setList.getSets();
             mStudiedSets = setList.getStudiedSets();
-            Log.v( "M_USER_SETS", mUserSets.get(0).getQuizletSetId() );
-            Log.v( "M_STUDIED_SETS", mStudiedSets.get(0).getSet().getQuizletSetId() );
         } catch(Exception e) {
             Log.e("IOException", e.toString());
         }
 
-        // delete old data so we don't build up an endless history
+        // delete old set and term data so we don't build up an endless history
         getContext().getContentResolver().delete( FlashCardContract.SetEntry.CONTENT_URI, null, null );
+        getContext().getContentResolver().delete( FlashCardContract.TermEntry.CONTENT_URI, null, null );
 
-        Vector<ContentValues> cVVector = new Vector<ContentValues>(mUserSets.size());
+        Vector<ContentValues> cVVector = new Vector<>(mUserSets.size());
 
         for (Set set : mUserSets) {
             ContentValues setValues = new ContentValues();
@@ -94,8 +82,39 @@ public class FlashCardSyncAdapter extends AbstractThreadedSyncAdapter {
             setValues.put(FlashCardContract.SetEntry.COLUMN_SET_STUDIED, 0);
             setValues.put(FlashCardContract.SetEntry.COLUMN_SET_URL, set.getUrl());
             setValues.put(FlashCardContract.SetEntry.COLUMN_SET_TITLE, set.getTitle());
-
             cVVector.add(setValues);
+
+            retrofit = new Retrofit.Builder()
+                    .baseUrl(QuizletTermsAPI.ENDPOINT)
+                    .addConverterFactory(GsonConverterFactory.create())
+                    .build();
+
+            QuizletTermsAPI service = retrofit.create(QuizletTermsAPI.class);
+            Call<TermList> call2 = service.getFeed(set.getQuizletSetId());
+            try {
+                mTermList = call2.execute().body().terms;
+            } catch (Exception e){
+                Log.e("IOException", e.toString());
+            }
+
+            Vector<ContentValues> termsVector = new Vector<>(mTermList.size());
+            for (Term term : mTermList) {
+                ContentValues termValues = new ContentValues();
+                termValues.put(FlashCardContract.TermEntry.COLUMN_SET_ID, set.getQuizletSetId());
+                termValues.put(FlashCardContract.TermEntry.COLUMN_TERM, term.getTerm());
+                termValues.put(FlashCardContract.TermEntry.COLUMN_DEFINITION, term.getDefinition());
+                termValues.put(FlashCardContract.TermEntry.COLUMN_IMAGE, term.getImage());
+                termValues.put(FlashCardContract.TermEntry.COLUMN_RANK, term.getRank());
+                termsVector.add(termValues);
+            }
+                // add to database
+                if (termsVector.size() > 0) {
+                    ContentValues[] termsCvArray = new ContentValues[termsVector.size()];
+                    termsVector.toArray(termsCvArray);
+                    getContext().getContentResolver().bulkInsert(FlashCardContract.TermEntry.CONTENT_URI, termsCvArray);
+                }
+
+            Log.d("SYNC ADAPTER",  termsVector.size() + " USER TERMS Inserted");
         }
 
         for (StudiedSet studiedSet : mStudiedSets) {
@@ -104,11 +123,41 @@ public class FlashCardSyncAdapter extends AbstractThreadedSyncAdapter {
             studiedSetValues.put(FlashCardContract.SetEntry.COLUMN_SET_STUDIED, 1);
             studiedSetValues.put(FlashCardContract.SetEntry.COLUMN_SET_URL, studiedSet.getSet().getUrl());
             studiedSetValues.put(FlashCardContract.SetEntry.COLUMN_SET_TITLE, studiedSet.getSet().getTitle());
-
             cVVector.add(studiedSetValues);
+
+            retrofit = new Retrofit.Builder()
+                    .baseUrl(QuizletTermsAPI.ENDPOINT)
+                    .addConverterFactory(GsonConverterFactory.create())
+                    .build();
+
+            QuizletTermsAPI studiedsService = retrofit.create(QuizletTermsAPI.class);
+            Call<TermList> call3 = studiedsService.getFeed(studiedSet.getSet().getQuizletSetId());
+            try {
+                mStudiedTermList = call3.execute().body().terms;
+            } catch (Exception e){
+                Log.e("IOException", e.toString());
+            }
+
+            Vector<ContentValues> studiedTermsVector = new Vector<>(mStudiedTermList.size());
+            for (Term studiedTerm : mStudiedTermList) {
+                ContentValues termValues = new ContentValues();
+                termValues.put(FlashCardContract.TermEntry.COLUMN_SET_ID, studiedSet.getSet().getQuizletSetId());
+                termValues.put(FlashCardContract.TermEntry.COLUMN_TERM, studiedTerm.getTerm());
+                termValues.put(FlashCardContract.TermEntry.COLUMN_DEFINITION, studiedTerm.getDefinition());
+                termValues.put(FlashCardContract.TermEntry.COLUMN_IMAGE, studiedTerm.getImage());
+                termValues.put(FlashCardContract.TermEntry.COLUMN_RANK, studiedTerm.getRank());
+                studiedTermsVector.add(termValues);
+            }
+                // add to database
+                if (studiedTermsVector.size() > 0) {
+                    ContentValues[] studiedTermsCvArray = new ContentValues[studiedTermsVector.size()];
+                    studiedTermsVector.toArray(studiedTermsCvArray);
+                    getContext().getContentResolver().bulkInsert(FlashCardContract.TermEntry.CONTENT_URI, studiedTermsCvArray);
+                }
+
+            Log.d("SYNC ADAPTER",  studiedTermsVector.size() + " STUDIED TERMS Inserted");
         }
 
-        int inserted = 0;
         // add to database
         if (cVVector.size() > 0) {
             ContentValues[] cvArray = new ContentValues[cVVector.size()];
@@ -116,7 +165,7 @@ public class FlashCardSyncAdapter extends AbstractThreadedSyncAdapter {
             getContext().getContentResolver().bulkInsert(FlashCardContract.SetEntry.CONTENT_URI, cvArray);
 
         }
-        Log.d("SYNC ADAPTER", "Sync Complete. " + cVVector.size() + " Inserted");
+        Log.d("SYNC ADAPTER", "Sync Complete. " + cVVector.size() + " SETS Inserted");
     }
 
     /**
@@ -143,13 +192,11 @@ public class FlashCardSyncAdapter extends AbstractThreadedSyncAdapter {
      * @param context The context used to access the account service
      */
     public static void syncImmediately(Context context) {
-        Log.d("syncImmediately", "syncImmediately");
         Bundle bundle = new Bundle();
         bundle.putBoolean(ContentResolver.SYNC_EXTRAS_EXPEDITED, true);
         bundle.putBoolean(ContentResolver.SYNC_EXTRAS_MANUAL, true);
         ContentResolver.requestSync(getSyncAccount(context),
                 context.getString(R.string.content_authority), bundle);
-        Log.d(".requestSync", ".requestSync");
     }
 
     /**

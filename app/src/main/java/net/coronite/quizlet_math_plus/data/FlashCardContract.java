@@ -5,7 +5,6 @@ import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.net.Uri;
 import android.provider.BaseColumns;
-import android.util.Log;
 
 /**
  * Defines table, column and URI names for the database.
@@ -37,20 +36,6 @@ public class FlashCardContract {
             return ContentUris.withAppendedId(CONTENT_URI, id);
             // content://net.coronite.quizlet_math_plus/set/#
         }
-
-        public static Uri buildGetUserSetUri(String num) {
-            Uri uri = CONTENT_URI.buildUpon().appendQueryParameter(COLUMN_SET_STUDIED, num).build();
-            Log.d("Contract UserSetUri", uri.toString());
-            return CONTENT_URI.buildUpon().appendQueryParameter(COLUMN_SET_STUDIED, num).build();
-            // content://net.coronite.quizlet_math_plus/set/?set_studied=0
-
-        }
-        public static Uri buildGetStudiedSetUri(String num) {
-            Uri uri = CONTENT_URI.buildUpon().appendQueryParameter(COLUMN_SET_STUDIED, num).build();
-            Log.d("Contract StudiedSetUri", uri.toString());
-            return CONTENT_URI.buildUpon().appendQueryParameter(COLUMN_SET_STUDIED, num).build();
-            // content://net.coronite.quizlet_math_plus/set/?set_studied=1
-        }
     }
 
     public static final class TermEntry implements BaseColumns {
@@ -62,6 +47,7 @@ public class FlashCardContract {
                 ContentResolver.CURSOR_ITEM_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_TERM;
 
         public static final String TABLE_NAME = "TERM";
+        public static final String ID = "_id";
         public static final String COLUMN_SET_ID = "quizlet_set_id";
         public static final String COLUMN_TERM = "term";
         public static final String COLUMN_DEFINITION = "definition";
@@ -73,9 +59,5 @@ public class FlashCardContract {
             // content://net.coronite.quizlet_math_plus/term/#
         }
 
-        public static Uri buildTermsOfSetUri(String setId) {
-            return CONTENT_URI.buildUpon().appendQueryParameter(COLUMN_SET_ID, setId).build();
-            // content://net.coronite.quizlet_math_plus/term/?set_id=#
-        }
     }
 }

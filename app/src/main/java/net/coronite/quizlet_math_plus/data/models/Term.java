@@ -13,6 +13,14 @@ public class Term implements Parcelable {
     private String image;
     private String rank;
 
+    public Term(String quizlet_id, String trm, String def, String img, String rnk){
+        this.id = quizlet_id;
+        this.term = trm;
+        this.definition = def;
+        this.image = img;
+        this.rank = rnk;
+    }
+
     @Override
     public int describeContents() {
         return 0;

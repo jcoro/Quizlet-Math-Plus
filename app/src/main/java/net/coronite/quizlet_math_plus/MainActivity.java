@@ -28,7 +28,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        FlashCardSyncAdapter.initializeSyncAdapter(this);
         setContentView(R.layout.activity_main);
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -47,7 +47,7 @@ public class MainActivity extends AppCompatActivity {
         });
         setupViewPager(viewPager);
 
-        FlashCardSyncAdapter.initializeSyncAdapter(this);
+
     }
 
 

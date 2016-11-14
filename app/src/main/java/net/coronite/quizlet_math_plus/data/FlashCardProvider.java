@@ -19,8 +19,6 @@ public class FlashCardProvider extends ContentProvider {
 
     static final int SETS = 100;
     static final int TERMS = 102;
-    static final int SETS_TYPE = 103;
-    static final int TERMS_OF_SET = 104;
 
     private static final SQLiteQueryBuilder sSetQueryBuilder;
     private static final SQLiteQueryBuilder sTermQueryBuilder;
@@ -32,69 +30,6 @@ public class FlashCardProvider extends ContentProvider {
         sTermQueryBuilder.setTables(FlashCardContract.TermEntry.TABLE_NAME);
     }
 
-    private static final String getSetsOfTypeSelection = FlashCardContract.SetEntry.TABLE_NAME+
-            "." + FlashCardContract.SetEntry.COLUMN_SET_STUDIED + " = ? ";
-
-    private static final String getAllSetsSelection = FlashCardContract.SetEntry.TABLE_NAME+
-            "." + FlashCardContract.SetEntry.COLUMN_SET_STUDIED + " = ? ";
-
-    private static final String getAllTermsSelection = FlashCardContract.TermEntry.TABLE_NAME+
-            "." + FlashCardContract.TermEntry.COLUMN_SET_ID + " = ? ";
-
-    private static final String getTermsofSetSelection = FlashCardContract.TermEntry.TABLE_NAME+
-            "." + FlashCardContract.TermEntry.COLUMN_SET_ID + " = ? ";
-
-    private Cursor getAllSetsSetting(String[] projection, String[] selectionArgs, String sortOrder) {
-        String selection = getAllSetsSelection;
-        return sSetQueryBuilder.query(mDbHelper.getReadableDatabase(),
-                projection, //columns: quizlet_set_id, title (null = all)
-                selection,  // set.set_studied = ? (null = all)
-                selectionArgs, // fill in ?s set_studied = 0 or 1;
-                null,
-                null,
-                sortOrder);
-
-    }
-
-    private Cursor getAllTermsSetting(String[] projection, String[] selectionArgs, String sortOrder) {
-        String selection = getAllTermsSelection;
-        return sTermQueryBuilder.query(
-                mDbHelper.getReadableDatabase(),                // Database
-                projection,                                     // columns: term, definition, image, rank (null = all)
-                selection,                                      // (null = all)
-                selectionArgs,                                  // will be null
-                null,
-                null,
-                sortOrder);
-
-    }
-
-    private Cursor getSetsOfTypeSetting(Uri uri, String[] projection, String[] selectionArgs, String sortOrder ) {
-        String selection = getSetsOfTypeSelection;
-        // FlashCardContract.SetEntry.TABLE_NAME+ "." + FlashCardContract.SetEntry.COLUMN_SET_STUDIED + " = ? ";
-        return sSetQueryBuilder.query(
-                mDbHelper.getReadableDatabase(),                // SQLiteDatabase Database
-                projection,                                     // String[] columns (null = all)
-                selection,                                      // String "set.set_studied = ?"
-                selectionArgs,                                  // String[] fill in ?s studied_sets = 0 or 1;
-                null,
-                null,
-                sortOrder);
-    }
-
-    private Cursor getTermsOfSetSetting(Uri uri, String[] projection, String[] selectionArgs, String sortOrder ) {
-        String selection = getTermsofSetSelection;
-        // FlashCardContract.TermEntry.TABLE_NAME+ "." + FlashCardContract.TermEntry.COLUMN_SET_ID + " = ? ";
-        return sTermQueryBuilder.query(                         // SQLiteQueryBuilder.query
-                mDbHelper.getReadableDatabase(),                // SQLiteDatabase Database
-                projection,                                     // String[] columns (null = all)
-                selection,                                      // String filter "term.set_id = ?"
-                selectionArgs,                                  // String[] fill in ?s set_id = ?;
-                null,
-                null,
-                sortOrder);
-    }
-
     static UriMatcher buildUriMatcher() {
 
         final UriMatcher matcher = new UriMatcher(UriMatcher.NO_MATCH);
@@ -103,8 +38,6 @@ public class FlashCardProvider extends ContentProvider {
         // For each type of URI you want to add, create a corresponding code.
         matcher.addURI(authority, "set", SETS);
         matcher.addURI(authority, "term", TERMS);
-        matcher.addURI(authority, "set/*", SETS_TYPE);
-        matcher.addURI(authority, "term/*", TERMS_OF_SET);
 
         return matcher;
     }
@@ -114,14 +47,13 @@ public class FlashCardProvider extends ContentProvider {
     public String getType(@NonNull Uri uri) {
         final int match = sUriMatcher.match(uri);
 
+        Log.d("CONTENT_TYPE", FlashCardContract.SetEntry.CONTENT_TYPE);
+        Log.d("CONTENT_ITEM_TYPE", FlashCardContract.SetEntry.CONTENT_ITEM_TYPE);
+
         switch (match){
             case SETS:
                 return FlashCardContract.SetEntry.CONTENT_TYPE;
             case TERMS:
-                return FlashCardContract.TermEntry.CONTENT_TYPE;
-            case SETS_TYPE:
-                return FlashCardContract.TermEntry.CONTENT_TYPE;
-            case TERMS_OF_SET:
                 return FlashCardContract.TermEntry.CONTENT_TYPE;
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
@@ -141,7 +73,6 @@ public class FlashCardProvider extends ContentProvider {
         Cursor cursor;
         switch(sUriMatcher.match(uri)){
             case SETS:
-                Log.d("Provider - SETS", uri.toString());
                 cursor = mDbHelper.getReadableDatabase().query( // SQLiteDatabase.query
                         FlashCardContract.SetEntry.TABLE_NAME,  // String table name;
                         projection,                             // String[] columns
@@ -153,6 +84,10 @@ public class FlashCardProvider extends ContentProvider {
                 );
                 break;
             case TERMS:
+                Log.d("TERMS", uri.toString());
+                Log.d("SELECTION", selection);
+                Log.d("SELECTION ARGS", selectionArgs[0]);
+                //Log.d("SORT ORDER", sortOrder);
                 cursor = mDbHelper.getReadableDatabase().query(
                         FlashCardContract.TermEntry.TABLE_NAME,
                         projection,
@@ -162,13 +97,6 @@ public class FlashCardProvider extends ContentProvider {
                         null,
                         sortOrder
                 );
-                break;
-            case SETS_TYPE:
-                Log.d("Provider - SETS_TYPE", uri.toString());
-                cursor = getSetsOfTypeSetting(uri, projection, selectionArgs, sortOrder);
-                break;
-            case TERMS_OF_SET:
-                cursor = getTermsOfSetSetting(uri, projection, selectionArgs, sortOrder);
                 break;
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
