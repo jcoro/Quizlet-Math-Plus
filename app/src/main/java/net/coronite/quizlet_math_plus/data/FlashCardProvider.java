@@ -84,10 +84,6 @@ public class FlashCardProvider extends ContentProvider {
                 );
                 break;
             case TERMS:
-                Log.d("TERMS", uri.toString());
-                Log.d("SELECTION", selection);
-                Log.d("SELECTION ARGS", selectionArgs[0]);
-                //Log.d("SORT ORDER", sortOrder);
                 cursor = mDbHelper.getReadableDatabase().query(
                         FlashCardContract.TermEntry.TABLE_NAME,
                         projection,
@@ -150,10 +146,12 @@ public class FlashCardProvider extends ContentProvider {
         switch (match){
             case TERMS: {
                 rowsDeleted = db.delete(FlashCardContract.TermEntry.TABLE_NAME, selection, selectionArgs);
+                Log.d("TERM ROWS DELETED:", Integer.toString(rowsDeleted));
                 break;
             }
             case SETS: {
                 rowsDeleted = db.delete(FlashCardContract.SetEntry.TABLE_NAME, selection, selectionArgs);
+                Log.d("SET ROWS DELETED:", Integer.toString(rowsDeleted));
                 break;
             }
             default:

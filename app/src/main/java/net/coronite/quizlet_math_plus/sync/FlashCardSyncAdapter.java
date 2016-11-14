@@ -74,104 +74,120 @@ public class FlashCardSyncAdapter extends AbstractThreadedSyncAdapter {
         getContext().getContentResolver().delete( FlashCardContract.SetEntry.CONTENT_URI, null, null );
         getContext().getContentResolver().delete( FlashCardContract.TermEntry.CONTENT_URI, null, null );
 
-        Vector<ContentValues> cVVector = new Vector<>(mUserSets.size());
+        Vector<ContentValues> totalSetsVector;
+        int totalNumOfSets = 0;
+        if (mUserSets != null){
+            totalNumOfSets = mUserSets.size();
+        }
+        if (mStudiedSets != null){
+            totalNumOfSets = totalNumOfSets + mStudiedSets.size();
+        }
+        if (mStudiedSets != null || mUserSets != null) {
+            totalSetsVector = new Vector<>(totalNumOfSets);
 
-        for (Set set : mUserSets) {
-            ContentValues setValues = new ContentValues();
-            setValues.put(FlashCardContract.SetEntry.COLUMN_SET_ID, set.getQuizletSetId());
-            setValues.put(FlashCardContract.SetEntry.COLUMN_SET_STUDIED, 0);
-            setValues.put(FlashCardContract.SetEntry.COLUMN_SET_URL, set.getUrl());
-            setValues.put(FlashCardContract.SetEntry.COLUMN_SET_TITLE, set.getTitle());
-            cVVector.add(setValues);
+            if (mUserSets != null) {
 
-            retrofit = new Retrofit.Builder()
-                    .baseUrl(QuizletTermsAPI.ENDPOINT)
-                    .addConverterFactory(GsonConverterFactory.create())
-                    .build();
+                for (Set set : mUserSets) {
+                    ContentValues setValues = new ContentValues();
+                    setValues.put(FlashCardContract.SetEntry.COLUMN_SET_ID, set.getQuizletSetId());
+                    setValues.put(FlashCardContract.SetEntry.COLUMN_SET_STUDIED, 0);
+                    setValues.put(FlashCardContract.SetEntry.COLUMN_SET_URL, set.getUrl());
+                    setValues.put(FlashCardContract.SetEntry.COLUMN_SET_TITLE, set.getTitle());
+                    totalSetsVector.add(setValues);
 
-            QuizletTermsAPI service = retrofit.create(QuizletTermsAPI.class);
-            Call<TermList> call2 = service.getFeed(set.getQuizletSetId());
-            try {
-                mTermList = call2.execute().body().terms;
-            } catch (Exception e){
-                Log.e("IOException", e.toString());
+                    retrofit = new Retrofit.Builder()
+                            .baseUrl(QuizletTermsAPI.ENDPOINT)
+                            .addConverterFactory(GsonConverterFactory.create())
+                            .build();
+
+                    QuizletTermsAPI service = retrofit.create(QuizletTermsAPI.class);
+                    Call<TermList> call2 = service.getFeed(set.getQuizletSetId());
+                    try {
+                        mTermList = call2.execute().body().terms;
+                    } catch (Exception e) {
+                        Log.e("IOException", e.toString());
+                    }
+
+                    Vector<ContentValues> termsVector = new Vector<>(mTermList.size());
+                    for (Term term : mTermList) {
+                        ContentValues termValues = new ContentValues();
+                        termValues.put(FlashCardContract.TermEntry.COLUMN_SET_ID, set.getQuizletSetId());
+                        termValues.put(FlashCardContract.TermEntry.COLUMN_TERM, term.getTerm());
+                        termValues.put(FlashCardContract.TermEntry.COLUMN_DEFINITION, term.getDefinition());
+                        termValues.put(FlashCardContract.TermEntry.COLUMN_IMAGE, term.getImage());
+                        termValues.put(FlashCardContract.TermEntry.COLUMN_RANK, term.getRank());
+                        termsVector.add(termValues);
+                    }
+                    // add to database
+                    if (termsVector.size() > 0) {
+                        ContentValues[] termsCvArray = new ContentValues[termsVector.size()];
+                        termsVector.toArray(termsCvArray);
+                        getContext().getContentResolver().bulkInsert(FlashCardContract.TermEntry.CONTENT_URI, termsCvArray);
+                    }
+                    Log.d("SYNC ADAPTER", termsVector.size() + " USER TERMS Inserted");
+                }
             }
 
-            Vector<ContentValues> termsVector = new Vector<>(mTermList.size());
-            for (Term term : mTermList) {
-                ContentValues termValues = new ContentValues();
-                termValues.put(FlashCardContract.TermEntry.COLUMN_SET_ID, set.getQuizletSetId());
-                termValues.put(FlashCardContract.TermEntry.COLUMN_TERM, term.getTerm());
-                termValues.put(FlashCardContract.TermEntry.COLUMN_DEFINITION, term.getDefinition());
-                termValues.put(FlashCardContract.TermEntry.COLUMN_IMAGE, term.getImage());
-                termValues.put(FlashCardContract.TermEntry.COLUMN_RANK, term.getRank());
-                termsVector.add(termValues);
-            }
-                // add to database
-                if (termsVector.size() > 0) {
-                    ContentValues[] termsCvArray = new ContentValues[termsVector.size()];
-                    termsVector.toArray(termsCvArray);
-                    getContext().getContentResolver().bulkInsert(FlashCardContract.TermEntry.CONTENT_URI, termsCvArray);
+            if (mStudiedSets != null) {
+                for (StudiedSet studiedSet : mStudiedSets) {
+                    ContentValues studiedSetValues = new ContentValues();
+                    studiedSetValues.put(FlashCardContract.SetEntry.COLUMN_SET_ID, studiedSet.getSet().getQuizletSetId());
+                    studiedSetValues.put(FlashCardContract.SetEntry.COLUMN_SET_STUDIED, 1);
+                    studiedSetValues.put(FlashCardContract.SetEntry.COLUMN_SET_URL, studiedSet.getSet().getUrl());
+                    studiedSetValues.put(FlashCardContract.SetEntry.COLUMN_SET_TITLE, studiedSet.getSet().getTitle());
+                    totalSetsVector.add(studiedSetValues);
+
+                    retrofit = new Retrofit.Builder()
+                            .baseUrl(QuizletTermsAPI.ENDPOINT)
+                            .addConverterFactory(GsonConverterFactory.create())
+                            .build();
+
+                    QuizletTermsAPI studiedsService = retrofit.create(QuizletTermsAPI.class);
+                    Call<TermList> call3 = studiedsService.getFeed(studiedSet.getSet().getQuizletSetId());
+                    try {
+                        mStudiedTermList = call3.execute().body().terms;
+                    } catch (Exception e) {
+                        Log.e("IOException", e.toString());
+                    }
+
+                    Vector<ContentValues> studiedTermsVector = new Vector<>(mStudiedTermList.size());
+                    for (Term studiedTerm : mStudiedTermList) {
+                        ContentValues termValues = new ContentValues();
+                        termValues.put(FlashCardContract.TermEntry.COLUMN_SET_ID, studiedSet.getSet().getQuizletSetId());
+                        termValues.put(FlashCardContract.TermEntry.COLUMN_TERM, studiedTerm.getTerm());
+                        termValues.put(FlashCardContract.TermEntry.COLUMN_DEFINITION, studiedTerm.getDefinition());
+                        termValues.put(FlashCardContract.TermEntry.COLUMN_IMAGE, studiedTerm.getImage());
+                        termValues.put(FlashCardContract.TermEntry.COLUMN_RANK, studiedTerm.getRank());
+                        studiedTermsVector.add(termValues);
+                    }
+                    // add to database
+                    if (studiedTermsVector.size() > 0) {
+                        ContentValues[] studiedTermsCvArray = new ContentValues[studiedTermsVector.size()];
+                        studiedTermsVector.toArray(studiedTermsCvArray);
+                        getContext().getContentResolver().bulkInsert(FlashCardContract.TermEntry.CONTENT_URI, studiedTermsCvArray);
+                    }
+
+                    Log.d("SYNC ADAPTER", studiedTermsVector.size() + " STUDIED TERMS Inserted");
                 }
 
-            Log.d("SYNC ADAPTER",  termsVector.size() + " USER TERMS Inserted");
-        }
-
-        for (StudiedSet studiedSet : mStudiedSets) {
-            ContentValues studiedSetValues = new ContentValues();
-            studiedSetValues.put(FlashCardContract.SetEntry.COLUMN_SET_ID, studiedSet.getSet().getQuizletSetId());
-            studiedSetValues.put(FlashCardContract.SetEntry.COLUMN_SET_STUDIED, 1);
-            studiedSetValues.put(FlashCardContract.SetEntry.COLUMN_SET_URL, studiedSet.getSet().getUrl());
-            studiedSetValues.put(FlashCardContract.SetEntry.COLUMN_SET_TITLE, studiedSet.getSet().getTitle());
-            cVVector.add(studiedSetValues);
-
-            retrofit = new Retrofit.Builder()
-                    .baseUrl(QuizletTermsAPI.ENDPOINT)
-                    .addConverterFactory(GsonConverterFactory.create())
-                    .build();
-
-            QuizletTermsAPI studiedsService = retrofit.create(QuizletTermsAPI.class);
-            Call<TermList> call3 = studiedsService.getFeed(studiedSet.getSet().getQuizletSetId());
-            try {
-                mStudiedTermList = call3.execute().body().terms;
-            } catch (Exception e){
-                Log.e("IOException", e.toString());
-            }
-
-            Vector<ContentValues> studiedTermsVector = new Vector<>(mStudiedTermList.size());
-            for (Term studiedTerm : mStudiedTermList) {
-                ContentValues termValues = new ContentValues();
-                termValues.put(FlashCardContract.TermEntry.COLUMN_SET_ID, studiedSet.getSet().getQuizletSetId());
-                termValues.put(FlashCardContract.TermEntry.COLUMN_TERM, studiedTerm.getTerm());
-                termValues.put(FlashCardContract.TermEntry.COLUMN_DEFINITION, studiedTerm.getDefinition());
-                termValues.put(FlashCardContract.TermEntry.COLUMN_IMAGE, studiedTerm.getImage());
-                termValues.put(FlashCardContract.TermEntry.COLUMN_RANK, studiedTerm.getRank());
-                studiedTermsVector.add(termValues);
-            }
                 // add to database
-                if (studiedTermsVector.size() > 0) {
-                    ContentValues[] studiedTermsCvArray = new ContentValues[studiedTermsVector.size()];
-                    studiedTermsVector.toArray(studiedTermsCvArray);
-                    getContext().getContentResolver().bulkInsert(FlashCardContract.TermEntry.CONTENT_URI, studiedTermsCvArray);
+                if (totalSetsVector.size() > 0) {
+                    ContentValues[] cvArray = new ContentValues[totalSetsVector.size()];
+                    totalSetsVector.toArray(cvArray);
+                    getContext().getContentResolver().bulkInsert(FlashCardContract.SetEntry.CONTENT_URI, cvArray);
+
                 }
-
-            Log.d("SYNC ADAPTER",  studiedTermsVector.size() + " STUDIED TERMS Inserted");
+            }
+            Log.d("SYNC ADAPTER", "Sync Complete. " + totalSetsVector.size() + " SETS Inserted");
         }
 
-        // add to database
-        if (cVVector.size() > 0) {
-            ContentValues[] cvArray = new ContentValues[cVVector.size()];
-            cVVector.toArray(cvArray);
-            getContext().getContentResolver().bulkInsert(FlashCardContract.SetEntry.CONTENT_URI, cvArray);
-
-        }
-        Log.d("SYNC ADAPTER", "Sync Complete. " + cVVector.size() + " SETS Inserted");
     }
 
     /**
      * Helper method to schedule the sync adapter periodic execution
      */
     public static void configurePeriodicSync(Context context, int syncInterval, int flexTime) {
+        Log.d("SYNC ADAPTER", "CONFIG PERIODIC SYNC");
         Account account = getSyncAccount(context);
         String authority = context.getString(R.string.content_authority);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
@@ -229,10 +245,9 @@ public class FlashCardSyncAdapter extends AbstractThreadedSyncAdapter {
             /*
              * If you don't set android:syncable="true" in
              * in your <provider> element in the manifest,
-             * then call ContentResolver.setIsSyncable(newAccount, context.getString(R.string.content_authority), 1);
+             * then call ContentResolver.setIsSyncable(account, AUTHORITY, 1)
              * here.
              */
-            ContentResolver.setIsSyncable(newAccount, context.getString(R.string.content_authority), 1);
             onAccountCreated(newAccount, context);
         }
         return newAccount;
