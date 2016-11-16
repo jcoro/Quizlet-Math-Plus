@@ -1,5 +1,8 @@
 package net.coronite.quizlet_math_plus;
 
+import android.app.ProgressDialog;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -10,6 +13,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -23,14 +27,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements SharedPreferences.OnSharedPreferenceChangeListener {
+    private static ProgressDialog pd = null;
     private String mUsername;
-    ViewPagerAdapter mAdapter;
-    ViewPager mViewPager;
+    private ViewPagerAdapter mAdapter;
+    private Context mContext = this;
+    //private AdView mAdView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        FlashCardSyncAdapter.initializeSyncAdapter(this);
+        checkFirstRun();
+        //FlashCardSyncAdapter.initializeSyncAdapter(this);
         mUsername = Utility.getUsername(this);
 
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
@@ -40,7 +47,7 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        mViewPager = (ViewPager) findViewById(R.id.tab_viewpager);
+        ViewPager mViewPager = (ViewPager) findViewById(R.id.tab_viewpager);
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(mViewPager);
 
@@ -53,6 +60,65 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
             }
         });
         setupViewPager(mViewPager);
+
+        //mAdView = (AdView) findViewById(R.id.adView);
+    }
+
+    /**
+    //@Override
+    protected void onStart(){
+        super.onStart();
+        AdRequest adRequest = new AdRequest.Builder()
+                .addTestDevice(BuildConfig.TEST_DEVICE_ID)
+                .build();
+        mAdView.loadAd(adRequest);
+    }
+    **/
+
+
+    static void dismissDialog(){
+        try {
+            if( pd != null && pd.isShowing()) {
+                pd.dismiss();
+            }
+        } catch (final IllegalArgumentException e) {
+            Log.e("MAIN_ACTIVITY", e.getMessage());
+        } catch (final Exception e) {
+            Log.e("MAIN_ACTIVITY_EXC", e.getMessage());
+        } finally {
+            pd = null;
+        }
+    }
+
+    public void checkFirstRun() {
+        boolean isFirstRun = getSharedPreferences("PREFERENCE", MODE_PRIVATE).getBoolean("isFirstRun", true);
+        if (isFirstRun){
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setMessage("Remember To Set Your Quizlet Username In The Settings")
+                    .setCancelable(false)
+                    .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            getSharedPreferences("PREFERENCE", MODE_PRIVATE)
+                                    .edit()
+                                    .putBoolean("isFirstRun", false)
+                                    .apply();
+                            Intent intent = new Intent(mContext, SettingsActivity.class);
+                            mContext.startActivity(intent);
+                        }
+                    });
+            AlertDialog alert = builder.create();
+            alert.show();
+
+        } else {
+
+            if (pd == null) {
+                pd = new ProgressDialog(mContext);
+                pd.setTitle("Please wait");
+                pd.setMessage("Your Data is loading..");
+                pd.show();
+            }
+
+        }
     }
 
     @Override
@@ -103,6 +169,7 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
 
         viewPager.setAdapter(mAdapter);
     }
+
 
     class ViewPagerAdapter extends FragmentPagerAdapter {
         private final List<Fragment> mFragmentList = new ArrayList<>();

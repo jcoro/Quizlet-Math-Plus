@@ -16,7 +16,7 @@
     <!-- Example General settings -->
     <string name="pref_header_general">General</string>
     <string name="username_key" translatable="false">username</string>
-    <string name="default_username" translatable="false">CoroniteCreative</string>
+    <string name="default_username" translatable="false">DefaultUsernameCoronite</string>
     <string name="show_term_key" translatable="false">show_term_hide_definition</string>
     <string name="show_term_tile">Show Term and Hide Definition</string>
 
@@ -30,5 +30,6 @@
     <!-- This is an ad unit ID for a test ad. Replace with your own banner ad unit id. -->
     <string name="banner_ad_unit_id">ca-app-pub-3940256099942544/6300978111</string>
     <string name="native_test_ad_unit_id">ca-app-pub-3940256099942544/1072772517</string>
+    <string name="interstitial_ad_unit_id">ca-app-pub-3940256099942544/1033173712</string>
 
 </resources>

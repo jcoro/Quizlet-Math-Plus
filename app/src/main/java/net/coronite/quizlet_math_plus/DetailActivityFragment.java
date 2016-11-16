@@ -61,14 +61,7 @@ public class DetailActivityFragment extends Fragment {
             if (mTerm != null) {
                 mv.setData(mTerm.getTerm(), mTerm.getDefinition(), mShowTerm);
             }
-        NativeExpressAdView adView = (NativeExpressAdView)view.findViewById(R.id.adView);
-        // Create an ad request. Check logcat output for the hashed device ID to
-        // get test ads on a physical device. e.g.
-        // "Use AdRequest.Builder.addTestDevice("ABCDEF012345") to get test ads on this device."
-        AdRequest request = new AdRequest.Builder()
-                .addTestDevice(BuildConfig.TEST_DEVICE_ID)
-                .build();
-        adView.loadAd(request);
+
 
 
         return view;

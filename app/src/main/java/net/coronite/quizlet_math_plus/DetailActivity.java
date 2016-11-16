@@ -78,7 +78,6 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
 
         // Instantiate a ViewPager and a PagerAdapter.
         mPager = (CustomViewPager) findViewById(R.id.pager);
-
     }
 
     private void setupActionBar() {
