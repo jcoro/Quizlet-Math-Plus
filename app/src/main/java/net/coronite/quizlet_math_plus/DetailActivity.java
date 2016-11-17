@@ -36,12 +36,16 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
     private static final String ARG_SHOW_TERM = "ARG_SHOW_TERM";
     private CustomViewPager mPager;
     private List<Term> mTerms;
+    private ArrayList<Term> mTermsArray;
     private ProgressDialog pd = null;
     private Context mContext = this;
     private String mSetTitle;
     private int mSetCount;
     private Boolean mShowTerm;
     private String mSetId;
+    private PagerAdapter mPagerAdapter;
+    private FragmentManager mFragmentManager;
+
 
     private static final String[] TERM_COLUMNS = new String[]{
             //FlashCardContract.TermEntry.ID,
@@ -76,8 +80,10 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
         setupActionBar();
         getSupportLoaderManager().initLoader(SET_LOADER, null, this);
 
-        // Instantiate a ViewPager and a PagerAdapter.
+        // Instantiate a ViewPager.
         mPager = (CustomViewPager) findViewById(R.id.pager);
+        mFragmentManager = getSupportFragmentManager();
+        mPagerAdapter = new ScreenSlidePagerAdapter(mFragmentManager);
     }
 
     private void setupActionBar() {
@@ -101,6 +107,24 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
             // Otherwise, select the previous step.
             mPager.setCurrentItem(mPager.getCurrentItem() - 1);
         }
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        if (mTerms != null && mTerms.size() > 0){
+            mTermsArray = (ArrayList) mTerms;
+            outState.putParcelableArrayList("terms", mTermsArray);
+        }
+        super.onSaveInstanceState(outState);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        mTerms = (List) savedInstanceState.getParcelableArrayList("terms");
+        Log.d("ORIS", Integer.toString(mTerms.size()));
     }
 
     @Override
@@ -135,15 +159,23 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         Log.d("CURSOR_COUNT", Integer.toString(data.getCount()));
         if(data.getCount() > 0) {
-            mTerms = buildTerms(data);
+            if(mTerms == null) {
+                mTerms = buildTerms(data);
+                Log.d ("*** mTerms ***", "*** mTerms is NULL ***");
+            } else {
+                Log.d ("*** mTerms ***", "*** mTerms is NOT NULL ***");
+            }
             Log.d("M_Terms_COUNT", Integer.toString(mTerms.size()));
             mSetCount = mTerms.size();
             if(pd.isShowing()) {
                 pd.dismiss();
             }
         }
-        PagerAdapter mPagerAdapter = new ScreenSlidePagerAdapter(getSupportFragmentManager());
+        if (mPagerAdapter == null) {
+            mPagerAdapter = new ScreenSlidePagerAdapter(mFragmentManager);
+        }
         mPager.setAdapter(mPagerAdapter);
+
     }
 
     @Override
@@ -152,24 +184,22 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
     }
 
     private List<Term> buildTerms(Cursor cursor) {
+        Log.d("BUILD_TERMS_CALLED", Integer.toString(cursor.getCount()));
         List<Term> mCursorTerms = new ArrayList<>();
         // if Cursor contains results
-        if(cursor != null) {
-            try {
-                while (cursor.moveToNext()) {
-                    //String _id = cursor.getString(INDEX_COLUMN_AUTO_ID);
-                    String id = cursor.getString(INDEX_COLUMN_SET_ID);
-                    String url = cursor.getString(INDEX_COLUMN_TERM);
-                    String term = cursor.getString(INDEX_COLUMN_DEFINITION);
-                    String definition = cursor.getString(INDEX_COLUMN_IMAGE);
-                    String rank = cursor.getString(INDEX_COLUMN_RANK);
-                    Term singleTerm = new Term( id, url, term, definition, rank );
-                    mCursorTerms.add(singleTerm);
-                }
-            } finally {
-                cursor.close();
-            }
+        if (cursor.moveToFirst()) {
+            do {
+                //String _id = cursor.getString(INDEX_COLUMN_AUTO_ID);
+                String id = cursor.getString(INDEX_COLUMN_SET_ID);
+                String url = cursor.getString(INDEX_COLUMN_TERM);
+                String term = cursor.getString(INDEX_COLUMN_DEFINITION);
+                String definition = cursor.getString(INDEX_COLUMN_IMAGE);
+                String rank = cursor.getString(INDEX_COLUMN_RANK);
+                Term singleTerm = new Term(id, url, term, definition, rank);
+                mCursorTerms.add(singleTerm);
+            } while (cursor.moveToNext());
         }
+
         return mCursorTerms;
     }
 

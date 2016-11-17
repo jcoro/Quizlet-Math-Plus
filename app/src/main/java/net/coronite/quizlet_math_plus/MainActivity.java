@@ -21,6 +21,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
+import com.google.firebase.analytics.FirebaseAnalytics;
+
 import net.coronite.quizlet_math_plus.sync.FlashCardSyncAdapter;
 
 import java.util.ArrayList;
@@ -31,6 +33,7 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
     private String mUsername;
     private ViewPagerAdapter mAdapter;
     private Context mContext = this;
+    private FirebaseAnalytics mFirebaseAnalytics;
     //private AdView mAdView;
 
     @Override
@@ -62,6 +65,7 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
         setupViewPager(mViewPager);
 
         //mAdView = (AdView) findViewById(R.id.adView);
+        mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
     }
 
     /**
