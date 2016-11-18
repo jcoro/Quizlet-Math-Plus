@@ -36,7 +36,6 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
     private static final String ARG_SHOW_TERM = "ARG_SHOW_TERM";
     private CustomViewPager mPager;
     private List<Term> mTerms;
-    private ArrayList<Term> mTermsArray;
     private ProgressDialog pd = null;
     private Context mContext = this;
     private String mSetTitle;
@@ -45,6 +44,7 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
     private String mSetId;
     private PagerAdapter mPagerAdapter;
     private FragmentManager mFragmentManager;
+
 
 
     private static final String[] TERM_COLUMNS = new String[]{
@@ -109,24 +109,6 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
         }
     }
 
-    @SuppressWarnings("unchecked")
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-        if (mTerms != null && mTerms.size() > 0){
-            mTermsArray = (ArrayList) mTerms;
-            outState.putParcelableArrayList("terms", mTermsArray);
-        }
-        super.onSaveInstanceState(outState);
-    }
-
-    @SuppressWarnings("unchecked")
-    @Override
-    protected void onRestoreInstanceState(Bundle savedInstanceState) {
-        super.onRestoreInstanceState(savedInstanceState);
-        mTerms = (List) savedInstanceState.getParcelableArrayList("terms");
-        Log.d("ORIS", Integer.toString(mTerms.size()));
-    }
-
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
@@ -157,15 +139,10 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        Log.d("CURSOR_COUNT", Integer.toString(data.getCount()));
         if(data.getCount() > 0) {
             if(mTerms == null) {
                 mTerms = buildTerms(data);
-                Log.d ("*** mTerms ***", "*** mTerms is NULL ***");
-            } else {
-                Log.d ("*** mTerms ***", "*** mTerms is NOT NULL ***");
             }
-            Log.d("M_Terms_COUNT", Integer.toString(mTerms.size()));
             mSetCount = mTerms.size();
             if(pd.isShowing()) {
                 pd.dismiss();
@@ -184,7 +161,6 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
     }
 
     private List<Term> buildTerms(Cursor cursor) {
-        Log.d("BUILD_TERMS_CALLED", Integer.toString(cursor.getCount()));
         List<Term> mCursorTerms = new ArrayList<>();
         // if Cursor contains results
         if (cursor.moveToFirst()) {

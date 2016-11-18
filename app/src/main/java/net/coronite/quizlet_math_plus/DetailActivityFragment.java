@@ -1,10 +1,16 @@
 package net.coronite.quizlet_math_plus;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.ShareActionProvider;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -27,8 +33,10 @@ public class DetailActivityFragment extends Fragment {
     private int mCardNumber;
     private String mSetTitle;
     private Boolean mShowTerm;
+    private ShareActionProvider mShareActionProvider;
 
     public DetailActivityFragment() {
+        setHasOptionsMenu(true);
     }
 
     @Override
@@ -62,5 +70,30 @@ public class DetailActivityFragment extends Fragment {
 
 
         return view;
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        inflater.inflate(R.menu.menu_detail, menu);
+
+        // Retrieve the share menu item
+        MenuItem menuItem = menu.findItem(R.id.action_share);
+
+        // Get the provider and hold onto it to set/change the share intent.
+        mShareActionProvider = (ShareActionProvider) MenuItemCompat.getActionProvider(menuItem);
+
+        // If onLoadFinished happens before this, we can go ahead and set the share intent now.
+        if (mTerm != null) {
+            mShareActionProvider.setShareIntent(createShareTermIntent());
+        }
+    }
+
+    private Intent createShareTermIntent() {
+        String shareTerm = String.format(Locale.US, "Term: \n%1$s\n Definition: \n%2$s", mTerm.getTerm(), mTerm.getDefinition());
+        Intent shareIntent = new Intent(Intent.ACTION_SEND);
+        shareIntent.setType("text/plain");
+        shareIntent.putExtra(Intent.EXTRA_TEXT, shareTerm);
+        return shareIntent;
     }
 }

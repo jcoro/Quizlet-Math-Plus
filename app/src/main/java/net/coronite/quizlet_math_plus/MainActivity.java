@@ -21,6 +21,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
 import com.google.firebase.analytics.FirebaseAnalytics;
 
 import net.coronite.quizlet_math_plus.sync.FlashCardSyncAdapter;
@@ -34,7 +36,7 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
     private ViewPagerAdapter mAdapter;
     private Context mContext = this;
     private FirebaseAnalytics mFirebaseAnalytics;
-    //private AdView mAdView;
+    private AdView mAdView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,16 +62,20 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
             public void onClick(View view) {
                 Intent modifySettings=new Intent(MainActivity.this,SettingsActivity.class);
                 startActivity(modifySettings);
+                //Let's track whether users prefer the menu button or the FAB to change settings.
+                Bundle bundle = new Bundle();
+                bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, "fab_click");
+                mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
             }
         });
         setupViewPager(mViewPager);
 
-        //mAdView = (AdView) findViewById(R.id.adView);
+        mAdView = (AdView) findViewById(R.id.adView);
         mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
     }
 
-    /**
-    //@Override
+
+    @Override
     protected void onStart(){
         super.onStart();
         AdRequest adRequest = new AdRequest.Builder()
@@ -77,7 +83,7 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
                 .build();
         mAdView.loadAd(adRequest);
     }
-    **/
+
 
 
     static void dismissDialog(){
@@ -138,6 +144,10 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             startActivity(new Intent(this, SettingsActivity.class));
+            //Let's track whether users prefer the menu button or the FAB to change settings.
+            Bundle bundle = new Bundle();
+            bundle.putString(FirebaseAnalytics.Param.CONTENT_TYPE, "menu_click");
+            mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
             return true;
         }
 

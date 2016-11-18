@@ -1,13 +1,11 @@
 <resources>
 
-    <style name="AppTheme" parent="Theme.AppCompat">
+    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
         <!-- enable window content transitions -->
         <item name="android:windowActivityTransitions">true</item>
-        <item name="android:colorBackground">@color/material_grey_100</item>
-        <item name="android:textColorPrimary">@android:color/black</item>
     </style>
 
     <style name="AppTheme.NoActionBar">
@@ -17,25 +15,5 @@
 
     <style name="AppTheme.Details">
     </style>
-
-
-
-
-
-    <!--<style name="MyMaterialTheme" parent="MyMaterialTheme.Base">
-
-    </style>
-
-    <style name="MyMaterialTheme.Base" parent="Theme.AppCompat">
-        <item name="colorPrimary">@color/colorPrimary</item>
-        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
-        <item name="colorAccent">@color/colorAccent</item>
-    </style>
-
-    <style name="MyMaterialTheme.NoActionBar">
-        <item name="windowNoTitle">true</item>
-        <item name="windowActionBar">false</item>
-    </style>-->
-
 
 </resources>
