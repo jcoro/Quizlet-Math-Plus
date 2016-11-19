@@ -7,12 +7,14 @@ import android.content.ContentProviderClient;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SyncRequest;
 import android.content.SyncResult;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 
+import net.coronite.quizlet_math_plus.MainActivity;
 import net.coronite.quizlet_math_plus.R;
 import net.coronite.quizlet_math_plus.Utility;
 import net.coronite.quizlet_math_plus.data.FlashCardContract;
@@ -37,6 +39,7 @@ public class FlashCardSyncAdapter extends AbstractThreadedSyncAdapter {
     // 60 seconds (1 minute) * 180 = 3 hours
     public static final int SYNC_INTERVAL = 60 * 60 * 24;
     public static final int SYNC_FLEXTIME = SYNC_INTERVAL / 3;
+
 
     List<Set> mUserSets;
     List<StudiedSet> mStudiedSets;
@@ -93,7 +96,9 @@ public class FlashCardSyncAdapter extends AbstractThreadedSyncAdapter {
                     setValues.put(FlashCardContract.SetEntry.COLUMN_SET_STUDIED, 0);
                     setValues.put(FlashCardContract.SetEntry.COLUMN_SET_URL, set.getUrl());
                     setValues.put(FlashCardContract.SetEntry.COLUMN_SET_TITLE, set.getTitle());
+                    setValues.put(FlashCardContract.SetEntry.COLUMN_SET_CREATED_BY, set.getCreatedBy());
                     totalSetsVector.add(setValues);
+                    Log.d("US CREATED_BY: ", set.getCreatedBy());
 
                     retrofit = new Retrofit.Builder()
                             .baseUrl(QuizletTermsAPI.ENDPOINT)
@@ -135,7 +140,9 @@ public class FlashCardSyncAdapter extends AbstractThreadedSyncAdapter {
                     studiedSetValues.put(FlashCardContract.SetEntry.COLUMN_SET_STUDIED, 1);
                     studiedSetValues.put(FlashCardContract.SetEntry.COLUMN_SET_URL, studiedSet.getSet().getUrl());
                     studiedSetValues.put(FlashCardContract.SetEntry.COLUMN_SET_TITLE, studiedSet.getSet().getTitle());
+                    studiedSetValues.put(FlashCardContract.SetEntry.COLUMN_SET_CREATED_BY, studiedSet.getSet().getCreatedBy());
                     totalSetsVector.add(studiedSetValues);
+                    Log.d("USS CREATED_BY: ", studiedSet.getSet().getCreatedBy());
 
                     retrofit = new Retrofit.Builder()
                             .baseUrl(QuizletTermsAPI.ENDPOINT)
@@ -178,6 +185,7 @@ public class FlashCardSyncAdapter extends AbstractThreadedSyncAdapter {
 
                 }
             }
+            getContext().sendBroadcast(new Intent(MainActivity.ACTION_FINISHED_SYNC));
             Log.d("SYNC ADAPTER", "Sync Complete. " + totalSetsVector.size() + " SETS Inserted");
         }
 

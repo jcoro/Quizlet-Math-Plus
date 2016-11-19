@@ -16,10 +16,13 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.InputType;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.EditText;
 
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
@@ -31,18 +34,21 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements SharedPreferences.OnSharedPreferenceChangeListener {
+    public static final String ACTION_FINISHED_SYNC = "net.coronite.quizlet_math_plus.ACTION_FINISHED_SYNC";
     private static ProgressDialog pd = null;
     private String mUsername;
-    private ViewPagerAdapter mAdapter;
+    static ViewPagerAdapter mViewPagerAdapter;
     private Context mContext = this;
     private FirebaseAnalytics mFirebaseAnalytics;
     private AdView mAdView;
+    private UserSetFragment m1stFragment;
+    private UserStudiedFragment m2ndFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         checkFirstRun();
-        //FlashCardSyncAdapter.initializeSyncAdapter(this);
+        FlashCardSyncAdapter.initializeSyncAdapter(this);
         mUsername = Utility.getUsername(this);
 
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
@@ -51,10 +57,10 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
         ViewPager mViewPager = (ViewPager) findViewById(R.id.tab_viewpager);
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(mViewPager);
+        setupViewPager(mViewPager);
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -68,7 +74,7 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
                 mFirebaseAnalytics.logEvent(FirebaseAnalytics.Event.SELECT_CONTENT, bundle);
             }
         });
-        setupViewPager(mViewPager);
+
 
         mAdView = (AdView) findViewById(R.id.adView);
         mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
@@ -84,7 +90,28 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
         mAdView.loadAd(adRequest);
     }
 
+    @Override
+    protected void onResume() {
+        Log.d("ON RESUME", "ON RESUME");
+        super.onResume();
+    }
 
+    public void fetchData(){
+        String username = Utility.getUsername(mContext);
+        Log.d("FETCH DATA", username);
+        if (username != null && !username.equals(mUsername)) {
+            if (m1stFragment != null) {
+                m1stFragment.onUsernameChanged();
+                Log.d("ON RESUME", "FRAG 1");
+            }
+
+            if (m2ndFragment != null) {
+                m2ndFragment.onUsernameChanged();
+                Log.d("ON RESUME", "FRAG 2");
+            }
+            mUsername = username;
+        }
+    }
 
     static void dismissDialog(){
         try {
@@ -100,20 +127,25 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
         }
     }
 
+
+
     public void checkFirstRun() {
-        boolean isFirstRun = getSharedPreferences("PREFERENCE", MODE_PRIVATE).getBoolean("isFirstRun", true);
-        if (isFirstRun){
+        boolean mFirstRun = Utility.getIsFirstRun(mContext);
+        Log.d("IS FIRST RUN?", Boolean.toString(mFirstRun));
+        if (mFirstRun){
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            builder.setMessage("Remember To Set Your Quizlet Username In The Settings")
+            // Set up the input
+            final EditText input = new EditText(this);
+            input.setInputType(InputType.TYPE_CLASS_TEXT);
+            builder.setView(input);
+            builder.setMessage(getString(R.string.username_message))
                     .setCancelable(false)
                     .setPositiveButton("OK", new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
-                            getSharedPreferences("PREFERENCE", MODE_PRIVATE)
-                                    .edit()
-                                    .putBoolean("isFirstRun", false)
-                                    .apply();
-                            Intent intent = new Intent(mContext, SettingsActivity.class);
-                            mContext.startActivity(intent);
+                            final String mText = input.getText().toString();
+                            Utility.setUsername(mContext, mText);
+                            Utility.setIsFirstRun(mContext, false);
+                            fetchData();
                         }
                     });
             AlertDialog alert = builder.create();
@@ -155,34 +187,23 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
     }
 
     @Override
-    protected void onResume() {
-        super.onResume();
-    }
-
-    @Override
     public void onSharedPreferenceChanged(SharedPreferences prefs, String key) {
-        String username = Utility.getUsername(this);
-        Log.d(username, mUsername);
-        if (username != null && !username.equals(mUsername)) {
-            FlashCardSyncAdapter.syncImmediately(this);
-            mAdapter.notifyDataSetChanged();
-            Log.d(username, mUsername);
-            mUsername = username;
-        }
-    }
 
+    }
 
     private void setupViewPager(ViewPager viewPager) {
-        mAdapter = new ViewPagerAdapter(getSupportFragmentManager());
+        mViewPagerAdapter = new ViewPagerAdapter(getSupportFragmentManager());
 
         Fragment fragOne = new UserSetFragment();
-        mAdapter.addFragment(fragOne, getString(R.string.your_sets));
+        mViewPagerAdapter.addFragment(fragOne, getString(R.string.your_sets));
 
         Fragment fragTwo = new UserStudiedFragment();
-        mAdapter.addFragment(fragTwo, getString(R.string.studied_sets));
+        mViewPagerAdapter.addFragment(fragTwo, getString(R.string.studied_sets));
 
-        viewPager.setAdapter(mAdapter);
+        viewPager.setAdapter(mViewPagerAdapter);
     }
+
+
 
 
     class ViewPagerAdapter extends FragmentPagerAdapter {
@@ -196,6 +217,26 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
         @Override
         public Fragment getItem(int position) {
             return mFragmentList.get(position);
+        }
+
+        // Here we can finally safely save a reference to the created
+        // Fragment, no matter where it came from (either getItem() or
+        // FragmentManger). Simply save the returned Fragment from
+        // super.instantiateItem() into an appropriate reference depending
+        // on the ViewPager position.
+        @Override
+        public Object instantiateItem(ViewGroup container, int position) {
+            Fragment createdFragment = (Fragment) super.instantiateItem(container, position);
+            // save the appropriate reference depending on position
+            switch (position) {
+                case 0:
+                    m1stFragment = (UserSetFragment) createdFragment;
+                    break;
+                case 1:
+                    m2ndFragment = (UserStudiedFragment) createdFragment;
+                    break;
+            }
+            return createdFragment;
         }
 
         @Override

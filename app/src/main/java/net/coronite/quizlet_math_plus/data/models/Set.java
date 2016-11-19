@@ -13,11 +13,13 @@ public class Set implements Parcelable {
     String id;
     String url;
     String title;
+    String created_by;
 
-    public Set (String id, String url, String title){
+    public Set (String id, String url, String title, String created_by){
         this.id = id;
         this.url = url;
         this.title = title;
+        this.created_by = created_by;
     }
 
     @Override
@@ -35,6 +37,8 @@ public class Set implements Parcelable {
 
     public String getUrl() { return(url); }
 
+    public String getCreatedBy() {return (created_by);}
+
     public static Set fromCursor(Cursor cursor){
         Set set= null;
         // if Cursor contains results
@@ -43,7 +47,8 @@ public class Set implements Parcelable {
             String id = cursor.getString(UserSetFragment.INDEX_COLUMN_SET_ID);
             String url = cursor.getString(UserSetFragment.INDEX_COLUMN_SET_URL);
             String title = cursor.getString(UserSetFragment.INDEX_COLUMN_SET_TITLE);
-            set = new Set(id, url, title);
+            String created_by = cursor.getString(UserSetFragment.INDEX_COLUMN_SET_CREATED_BY);
+            set = new Set(id, url, title, created_by);
         }
         return set;
     }
@@ -52,6 +57,7 @@ public class Set implements Parcelable {
         id = in.readString();
         url = in.readString();
         title = in.readString();
+        created_by = in.readString();
     }
 
     /**
@@ -64,6 +70,7 @@ public class Set implements Parcelable {
         parcel.writeString(id);
         parcel.writeString(url);
         parcel.writeString(title);
+        parcel.writeString(created_by);
     }
 
     /**

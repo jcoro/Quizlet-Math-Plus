@@ -11,13 +11,14 @@
     <string name="no_sets_found">No Sets Found</string>
     <string name="title_activity_settings">Settings</string>
     <string name="action_share">Share</string>
+    <string name="username_message">Please Set Your Quizlet Username</string>
 
     <!-- Strings related to Settings -->
 
     <!-- Example General settings -->
     <string name="pref_header_general">General</string>
     <string name="username_key" translatable="false">username</string>
-    <string name="default_username" translatable="false">DefaultUsernameCoronite</string>
+    <string name="default_username" translatable="false"></string>
     <string name="show_term_key" translatable="false">show_term_hide_definition</string>
     <string name="show_term_tile">Show Term and Hide Definition</string>
 

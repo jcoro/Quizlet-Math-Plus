@@ -18,6 +18,7 @@ public class MyListCursorAdapter extends CursorRecyclerViewAdapter<MyListCursorA
 
     private static final String EXTRA_SET_ID = "SET_ID";
     private static final String EXTRA_SET_TITLE = "SET_TITLE";
+    private static final String EXTRA_SET_CREATED_BY = "SET_CREATED_BY";
 
     public MyListCursorAdapter(Context context,Cursor cursor){
         super(context,cursor);
@@ -25,21 +26,26 @@ public class MyListCursorAdapter extends CursorRecyclerViewAdapter<MyListCursorA
 
     public static class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         private TextView mTitleTextView;
+        private TextView mSetCreatedByTextView;
         private Set mSet;
         private String mSetId;
         private String mSetTitle;
+        private String mSetCreatedBy;
 
         public ViewHolder(View itemView) {
             super(itemView);
             itemView.setOnClickListener(this);
             mTitleTextView = (TextView) itemView.findViewById(R.id.list_item_set_title_text_view);
+            mSetCreatedByTextView = (TextView) itemView.findViewById(R.id.created_by);
         }
 
         public void bindSet(Set set) {
             mSet = set;
             mSetId = mSet.getQuizletSetId();
             mSetTitle = mSet.getTitle();
+            mSetCreatedBy = mSet.getCreatedBy();
             mTitleTextView.setText(mSetTitle);
+            mSetCreatedByTextView.setText("Created By: " + mSetCreatedBy);
         }
 
         @Override
@@ -48,6 +54,7 @@ public class MyListCursorAdapter extends CursorRecyclerViewAdapter<MyListCursorA
             Intent intent = new Intent(context, DetailActivity.class);
             intent.putExtra(EXTRA_SET_ID, mSetId);
             intent.putExtra(EXTRA_SET_TITLE, mSetTitle);
+            intent.putExtra(EXTRA_SET_CREATED_BY, mSetCreatedBy);
             context.startActivity(intent);
         }
     }

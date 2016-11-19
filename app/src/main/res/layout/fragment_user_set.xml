@@ -21,7 +21,7 @@
         android:textSize="24sp"
         android:background="#FFFFFF"
         android:layout_margin="12dp"
-        xmlns:android="http://schemas.android.com/apk/res/android" />
+        android:elevation="4dp" />
 
 </LinearLayout>
 

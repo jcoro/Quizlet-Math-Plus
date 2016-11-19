@@ -31,6 +31,7 @@ public class FlashCardContract {
         public static final String COLUMN_SET_STUDIED = "set_studied";
         public static final String COLUMN_SET_URL = "set_url";
         public static final String COLUMN_SET_TITLE = "set_title";
+        public static final String COLUMN_SET_CREATED_BY = "set_created_by";
 
         public static Uri buildSetUri(long id) {
             return ContentUris.withAppendedId(CONTENT_URI, id);
