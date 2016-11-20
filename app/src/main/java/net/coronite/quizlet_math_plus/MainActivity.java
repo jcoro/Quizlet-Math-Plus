@@ -1,6 +1,5 @@
 package net.coronite.quizlet_math_plus;
 
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -23,6 +22,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
@@ -35,7 +35,7 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements SharedPreferences.OnSharedPreferenceChangeListener {
     public static final String ACTION_FINISHED_SYNC = "net.coronite.quizlet_math_plus.ACTION_FINISHED_SYNC";
-    private static ProgressDialog pd = null;
+    static FrameLayout mProgressOverlay;
     private String mUsername;
     static ViewPagerAdapter mViewPagerAdapter;
     private Context mContext = this;
@@ -50,11 +50,11 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
         checkFirstRun();
         FlashCardSyncAdapter.initializeSyncAdapter(this);
         mUsername = Utility.getUsername(this);
-
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         prefs.registerOnSharedPreferenceChangeListener(this);
-
         setContentView(R.layout.activity_main);
+        mProgressOverlay = (FrameLayout)findViewById(R.id.progress_overlay);
+        mProgressOverlay.setVisibility(View.GONE);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         ViewPager mViewPager = (ViewPager) findViewById(R.id.tab_viewpager);
@@ -92,46 +92,39 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
 
     @Override
     protected void onResume() {
-        Log.d("ON RESUME", "ON RESUME");
         super.onResume();
     }
 
     public void fetchData(){
         String username = Utility.getUsername(mContext);
-        Log.d("FETCH DATA", username);
         if (username != null && !username.equals(mUsername)) {
             if (m1stFragment != null) {
                 m1stFragment.onUsernameChanged();
-                Log.d("ON RESUME", "FRAG 1");
             }
 
             if (m2ndFragment != null) {
                 m2ndFragment.onUsernameChanged();
-                Log.d("ON RESUME", "FRAG 2");
             }
             mUsername = username;
         }
     }
 
-    static void dismissDialog(){
-        try {
-            if( pd != null && pd.isShowing()) {
-                pd.dismiss();
-            }
-        } catch (final IllegalArgumentException e) {
-            Log.e("MAIN_ACTIVITY", e.getMessage());
-        } catch (final Exception e) {
-            Log.e("MAIN_ACTIVITY_EXC", e.getMessage());
-        } finally {
-            pd = null;
+    public void showOverlay(){
+        if (mProgressOverlay != null) {
+            Log.d("SHOW OVERLAY", "SHOW OVERLAY");
+            Utility.animateView(mProgressOverlay, View.VISIBLE, 0.4f, 200);
         }
     }
 
-
+    static void dismissOverlay(){
+        if (mProgressOverlay != null) {
+            Log.d("DISMISS OVERLAY", "DISMISS OVERLAY");
+            Utility.animateView(mProgressOverlay, View.GONE, 0, 200);
+        }
+    }
 
     public void checkFirstRun() {
         boolean mFirstRun = Utility.getIsFirstRun(mContext);
-        Log.d("IS FIRST RUN?", Boolean.toString(mFirstRun));
         if (mFirstRun){
             AlertDialog.Builder builder = new AlertDialog.Builder(this);
             // Set up the input
@@ -145,21 +138,14 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
                             final String mText = input.getText().toString();
                             Utility.setUsername(mContext, mText);
                             Utility.setIsFirstRun(mContext, false);
-                            fetchData();
+
                         }
                     });
             AlertDialog alert = builder.create();
             alert.show();
 
         } else {
-
-            if (pd == null) {
-                pd = new ProgressDialog(mContext);
-                pd.setTitle("Please wait");
-                pd.setMessage("Your Data is loading..");
-                pd.show();
-            }
-
+            showOverlay();
         }
     }
 
@@ -188,7 +174,8 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
 
     @Override
     public void onSharedPreferenceChanged(SharedPreferences prefs, String key) {
-
+        showOverlay();
+        fetchData();
     }
 
     private void setupViewPager(ViewPager viewPager) {

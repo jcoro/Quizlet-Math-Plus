@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "555137629793",
+    "firebase_url": "https://quizlet-math-plus.firebaseio.com",
+    "project_id": "quizlet-math-plus",
+    "storage_bucket": "quizlet-math-plus.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:555137629793:android:9d5c1bd0a4ef5568",
+        "android_client_info": {
+          "package_name": "net.coronite.quizlet_math_plus"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "555137629793-979bt3amg6v96d2qr25jj9tf29ok6qnp.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBaLTfFoTl_CnP-ZLtflMQ7m3UMcGSi0WE"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

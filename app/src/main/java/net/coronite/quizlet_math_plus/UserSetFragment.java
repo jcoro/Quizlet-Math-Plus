@@ -138,7 +138,7 @@ public class UserSetFragment extends Fragment implements LoaderManager.LoaderCal
             mSetRecyclerView.setVisibility(View.GONE);
             mEmptyView.setVisibility(View.VISIBLE);
         }
-        MainActivity.dismissDialog();
+        MainActivity.dismissOverlay();
 
     }
 
