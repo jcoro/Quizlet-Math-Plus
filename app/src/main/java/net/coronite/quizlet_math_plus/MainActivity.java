@@ -98,6 +98,7 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
     public void fetchData(){
         String username = Utility.getUsername(mContext);
         if (username != null && !username.equals(mUsername)) {
+            FlashCardSyncAdapter.syncImmediately(this);
             if (m1stFragment != null) {
                 m1stFragment.onUsernameChanged();
             }

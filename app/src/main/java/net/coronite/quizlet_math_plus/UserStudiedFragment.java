@@ -51,7 +51,6 @@ public class UserStudiedFragment extends Fragment implements LoaderManager.Loade
     private TextView mEmptyView;
     private RecyclerView mSetRecyclerView;
 
-
     public UserStudiedFragment() {
     }
 

@@ -21,7 +21,6 @@ import android.widget.TextView;
 
 import net.coronite.quizlet_math_plus.adapters.MyListCursorAdapter;
 import net.coronite.quizlet_math_plus.data.FlashCardContract;
-import net.coronite.quizlet_math_plus.sync.FlashCardSyncAdapter;
 
 /**
  * A placeholder fragment containing a simple view.
@@ -79,6 +78,7 @@ public class UserSetFragment extends Fragment implements LoaderManager.LoaderCal
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
+
         getLoaderManager().initLoader(SET_LOADER, null, this);
         super.onActivityCreated(savedInstanceState);
     }
@@ -98,12 +98,12 @@ public class UserSetFragment extends Fragment implements LoaderManager.LoaderCal
     };
 
     void onUsernameChanged( ) {
-        updateSets();
+        //updateSets();
         getLoaderManager().restartLoader(SET_LOADER, null, this);
     }
 
     private void updateSets() {
-        FlashCardSyncAdapter.syncImmediately(getActivity());
+        //FlashCardSyncAdapter.syncImmediately(getActivity());
     }
 
     private void restartLoader(){

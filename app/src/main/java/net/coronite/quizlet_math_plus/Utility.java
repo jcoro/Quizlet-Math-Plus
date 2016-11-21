@@ -12,7 +12,7 @@ public class Utility {
 
     public static String getUsername(Context context){
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
-        return prefs.getString(context.getString(R.string.username_key), context.getString(R.string.default_username));
+        return prefs.getString(context.getString(R.string.username_key), null);
     }
 
     public static void setUsername(Context context, String username){
