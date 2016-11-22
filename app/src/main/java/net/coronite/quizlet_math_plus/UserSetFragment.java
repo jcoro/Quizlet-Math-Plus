@@ -26,11 +26,11 @@ import net.coronite.quizlet_math_plus.data.FlashCardContract;
  * A placeholder fragment containing a simple view.
  */
 public class UserSetFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
+    private static final int SET_LOADER = 1;
     private static IntentFilter syncIntentFilter = new IntentFilter(MainActivity.ACTION_FINISHED_SYNC);
-    private static final int SET_LOADER = 0;
     private BroadcastReceiver syncBroadcastReceiver = new BroadcastReceiver() {
         @Override public void onReceive(Context context, Intent intent) {
-            restartLoader();
+            restartLoaderFromBroadcast();
         }
     };
 
@@ -78,35 +78,25 @@ public class UserSetFragment extends Fragment implements LoaderManager.LoaderCal
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
-
-        getLoaderManager().initLoader(SET_LOADER, null, this);
         super.onActivityCreated(savedInstanceState);
+        getLoaderManager().initLoader(SET_LOADER, null, this);
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        // register for sync
+        getLoaderManager().initLoader(SET_LOADER, null, this);
         getActivity().registerReceiver(syncBroadcastReceiver, syncIntentFilter);
-        // do your resuming magic
     }
 
     @Override
     public void onPause() {
         getActivity().unregisterReceiver(syncBroadcastReceiver);
         super.onPause();
-    };
-
-    void onUsernameChanged( ) {
-        //updateSets();
-        getLoaderManager().restartLoader(SET_LOADER, null, this);
     }
 
-    private void updateSets() {
-        //FlashCardSyncAdapter.syncImmediately(getActivity());
-    }
-
-    private void restartLoader(){
+    private void restartLoaderFromBroadcast(){
+        Log.d( "US BROADCAST RECEIVED", "US BROADCAST RECEIVED" );
         getLoaderManager().restartLoader(SET_LOADER, null, this);
     }
 
@@ -138,13 +128,11 @@ public class UserSetFragment extends Fragment implements LoaderManager.LoaderCal
             mSetRecyclerView.setVisibility(View.GONE);
             mEmptyView.setVisibility(View.VISIBLE);
         }
-        MainActivity.dismissOverlay();
-
     }
 
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
-
+        mAdapter.swapCursor(null);
     }
 
 }

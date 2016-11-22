@@ -54,9 +54,14 @@ public class FlashCardSyncAdapter extends AbstractThreadedSyncAdapter {
     public void onPerformSync(Account account, Bundle bundle, String s, ContentProviderClient contentProviderClient, SyncResult syncResult) {
 
         Log.d("SYNC_ADAPTER", "Starting sync");
+
+        // First, delete old set and term data so we don't build up an endless history
+        getContext().getContentResolver().delete(FlashCardContract.SetEntry.CONTENT_URI, null, null);
+        getContext().getContentResolver().delete(FlashCardContract.TermEntry.CONTENT_URI, null, null);
+
         String username = Utility.getUsername(getContext());
         if (username != null) {
-
+            Log.d("SYNC_ADAPTER_USERNAME", username);
             Retrofit retrofit = new Retrofit.Builder()
                     .baseUrl("https://api.quizlet.com/2.0/users/")
                     .addConverterFactory(GsonConverterFactory.create())
@@ -68,15 +73,16 @@ public class FlashCardSyncAdapter extends AbstractThreadedSyncAdapter {
             Call<SetList> call = quizletSetsAPI.loadSets(username);
             try {
                 SetList setList = call.execute().body();
-                mUserSets = setList.getSets();
-                mStudiedSets = setList.getStudiedSets();
+                if(setList != null) {
+                    mUserSets = setList.getSets();
+                    mStudiedSets = setList.getStudiedSets();
+                } else {
+                    mUserSets = null;
+                    mStudiedSets = null;
+                }
             } catch (Exception e) {
                 Log.e("IOException", e.toString());
             }
-
-            // delete old set and term data so we don't build up an endless history
-            getContext().getContentResolver().delete(FlashCardContract.SetEntry.CONTENT_URI, null, null);
-            getContext().getContentResolver().delete(FlashCardContract.TermEntry.CONTENT_URI, null, null);
 
             Vector<ContentValues> totalSetsVector;
             int totalNumOfSets = 0;
@@ -186,11 +192,11 @@ public class FlashCardSyncAdapter extends AbstractThreadedSyncAdapter {
 
                     }
                 }
-                getContext().sendBroadcast(new Intent(MainActivity.ACTION_FINISHED_SYNC));
+
                 Log.d("SYNC ADAPTER", "Sync Complete. " + totalSetsVector.size() + " SETS Inserted");
             }
-
         }
+        getContext().sendBroadcast(new Intent(MainActivity.ACTION_FINISHED_SYNC));
     }
 
     /**

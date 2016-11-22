@@ -22,7 +22,6 @@ import android.widget.TextView;
 
 import net.coronite.quizlet_math_plus.adapters.MyListCursorAdapter;
 import net.coronite.quizlet_math_plus.data.FlashCardContract;
-import net.coronite.quizlet_math_plus.sync.FlashCardSyncAdapter;
 
 
 /**
@@ -33,7 +32,7 @@ public class UserStudiedFragment extends Fragment implements LoaderManager.Loade
     private static IntentFilter syncIntentFilter = new IntentFilter(MainActivity.ACTION_FINISHED_SYNC);
     private BroadcastReceiver syncBroadcastReceiver = new BroadcastReceiver() {
         @Override public void onReceive(Context context, Intent intent) {
-            restartLoader();
+            restartLoaderFromBroadcast();
         }
     };
 
@@ -73,35 +72,28 @@ public class UserStudiedFragment extends Fragment implements LoaderManager.Loade
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
-        getLoaderManager().initLoader(SET_LOADER, null, this);
         super.onActivityCreated(savedInstanceState);
+        getLoaderManager().initLoader(SET_LOADER, null, this);
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        // register for sync
+        getLoaderManager().initLoader(SET_LOADER, null, this);
         getActivity().registerReceiver(syncBroadcastReceiver, syncIntentFilter);
-        // do your resuming magic
     }
 
     @Override
     public void onPause() {
         getActivity().unregisterReceiver(syncBroadcastReceiver);
         super.onPause();
-    };
-
-    void onUsernameChanged( ) {
-        updateSets();
     }
 
-    private void updateSets() {
-        FlashCardSyncAdapter.syncImmediately(getActivity());
-    }
-
-    private void restartLoader(){
+    private void restartLoaderFromBroadcast(){
+        Log.d( "USS BROADCAST RECEIVED", "USS BROADCAST RECEIVED" );
         getLoaderManager().restartLoader(SET_LOADER, null, this);
     }
+
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
@@ -125,18 +117,21 @@ public class UserStudiedFragment extends Fragment implements LoaderManager.Loade
             if (mSetRecyclerView.getVisibility() == View.GONE){
                 mSetRecyclerView.setVisibility(View.VISIBLE);
                 mEmptyView.setVisibility(View.GONE);
+
             }
         } else {
             Log.d( "USS CURSOR EMPTY", "CURSOR EMPTY" );
             mSetRecyclerView.setVisibility(View.GONE);
             mEmptyView.setVisibility(View.VISIBLE);
         }
+        MainActivity.dismissOverlay();
+
 
     }
 
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
-
+        mAdapter.swapCursor(null);
     }
 
 }

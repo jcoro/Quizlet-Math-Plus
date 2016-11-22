@@ -33,16 +33,18 @@ import net.coronite.quizlet_math_plus.sync.FlashCardSyncAdapter;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity implements SharedPreferences.OnSharedPreferenceChangeListener {
+public class MainActivity extends AppCompatActivity {
     public static final String ACTION_FINISHED_SYNC = "net.coronite.quizlet_math_plus.ACTION_FINISHED_SYNC";
     static FrameLayout mProgressOverlay;
     private String mUsername;
     static ViewPagerAdapter mViewPagerAdapter;
     private Context mContext = this;
     private FirebaseAnalytics mFirebaseAnalytics;
-    private AdView mAdView;
+    static private AdView mAdView;
     private UserSetFragment m1stFragment;
     private UserStudiedFragment m2ndFragment;
+    SharedPreferences mPrefs;
+    SharedPreferences.OnSharedPreferenceChangeListener mSharedPrefsListener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,8 +52,18 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
         checkFirstRun();
         FlashCardSyncAdapter.initializeSyncAdapter(this);
         mUsername = Utility.getUsername(this);
-        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        prefs.registerOnSharedPreferenceChangeListener(this);
+        mPrefs = PreferenceManager.getDefaultSharedPreferences(this);
+        mSharedPrefsListener = new SharedPreferences.OnSharedPreferenceChangeListener() {
+            public void onSharedPreferenceChanged(SharedPreferences prefs, String key) {
+                String username = Utility.getUsername(mContext);
+                if (username != null && !username.equals(mUsername)) {
+                    showOverlay();
+                    fetchData();
+                    Log.d("USERNAME CHANGE", "INITIAL");
+                    mUsername = username;
+                }
+            }
+        };
         setContentView(R.layout.activity_main);
         mProgressOverlay = (FrameLayout)findViewById(R.id.progress_overlay);
         mProgressOverlay.setVisibility(View.GONE);
@@ -93,32 +105,35 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
     @Override
     protected void onResume() {
         super.onResume();
-    }
-
-    public void fetchData(){
-        String username = Utility.getUsername(mContext);
-        if (username != null && !username.equals(mUsername)) {
-            FlashCardSyncAdapter.syncImmediately(this);
-            if (m1stFragment != null) {
-                m1stFragment.onUsernameChanged();
-            }
-
-            if (m2ndFragment != null) {
-                m2ndFragment.onUsernameChanged();
-            }
-            mUsername = username;
+        mPrefs.registerOnSharedPreferenceChangeListener(mSharedPrefsListener);
+        String username = Utility.getUsername(this);
+        if(username != null && !username.equals(mUsername)) {
+            Log.d("USERNAME", "Usernames are different");
+            fetchData();
         }
     }
 
-    public void showOverlay(){
-        if (mProgressOverlay != null) {
+    @Override
+    protected void onPause() {
+        super.onPause();
+        mPrefs.unregisterOnSharedPreferenceChangeListener(mSharedPrefsListener);
+
+    }
+
+    public void fetchData(){
+        showOverlay();
+        FlashCardSyncAdapter.syncImmediately(this);
+    }
+
+    static void showOverlay(){
+        if (mProgressOverlay != null && mProgressOverlay.getVisibility() == View.GONE) {
             Log.d("SHOW OVERLAY", "SHOW OVERLAY");
             Utility.animateView(mProgressOverlay, View.VISIBLE, 0.4f, 200);
         }
     }
 
-    static void dismissOverlay(){
-        if (mProgressOverlay != null) {
+    public static void dismissOverlay(){
+        if (mProgressOverlay != null && mProgressOverlay.getVisibility() == View.VISIBLE) {
             Log.d("DISMISS OVERLAY", "DISMISS OVERLAY");
             Utility.animateView(mProgressOverlay, View.GONE, 0, 200);
         }
@@ -146,7 +161,7 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
             alert.show();
 
         } else {
-            showOverlay();
+            Log.d("NOT FIRST RUN", "NOT FIRST RUN");
         }
     }
 
@@ -171,12 +186,6 @@ public class MainActivity extends AppCompatActivity implements SharedPreferences
         }
 
         return super.onOptionsItemSelected(item);
-    }
-
-    @Override
-    public void onSharedPreferenceChanged(SharedPreferences prefs, String key) {
-        showOverlay();
-        fetchData();
     }
 
     private void setupViewPager(ViewPager viewPager) {

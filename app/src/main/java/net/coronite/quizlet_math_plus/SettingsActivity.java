@@ -2,6 +2,8 @@ package net.coronite.quizlet_math_plus;
 
 
 import android.annotation.TargetApi;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.ListPreference;
@@ -17,6 +19,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
+import net.coronite.quizlet_math_plus.sync.FlashCardSyncAdapter;
+
 /**
  * A {@link PreferenceActivity} that presents a set of application settings. On
  * handset devices, settings are presented as a single list. On tablets,
@@ -29,6 +33,9 @@ import android.view.ViewGroup;
  * API Guide</a> for more information on developing a Settings UI.
  */
 public class SettingsActivity extends AppCompatPreferenceActivity {
+
+    SharedPreferences mPrefs;
+    Context mContext;
 
     /**
      * A preference value change listener that updates the preference's summary
@@ -60,6 +67,16 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
         }
     };
 
+    SharedPreferences.OnSharedPreferenceChangeListener mSharedPrefsListener = new SharedPreferences.OnSharedPreferenceChangeListener() {
+        public void onSharedPreferenceChanged(SharedPreferences prefs, String key) {
+            if(key.equals("username")) {
+                FlashCardSyncAdapter.syncImmediately(mContext);
+                Log.d("SAOSPC", "SAOSPC");
+            }
+        }
+
+    };
+
     /**
      * Binds a preference's summary to its value. More specifically, when the
      * preference's value is changed, its summary (line of text below the
@@ -84,6 +101,8 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mContext = this;
+        mPrefs = PreferenceManager.getDefaultSharedPreferences(this);
         setupActionBar();
         getFragmentManager().beginTransaction().replace(android.R.id.content, new GeneralPreferenceFragment()).commit();
     }
@@ -120,6 +139,20 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        // Set up a listener whenever a key changes
+        mPrefs.registerOnSharedPreferenceChangeListener(mSharedPrefsListener);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        // Unregister the listener whenever a key changes
+        mPrefs.unregisterOnSharedPreferenceChangeListener(mSharedPrefsListener);
     }
 
     /**
