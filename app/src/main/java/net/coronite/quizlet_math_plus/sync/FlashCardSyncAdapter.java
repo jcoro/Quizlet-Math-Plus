@@ -36,10 +36,9 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class FlashCardSyncAdapter extends AbstractThreadedSyncAdapter {
 
     // Interval at which to sync with quizlet, in seconds.
-    // 60 seconds (1 minute) * 180 = 3 hours
+    // 60 seconds (1 minute) * 60 * 24 = 24 hours
     public static final int SYNC_INTERVAL = 60 * 60 * 24;
     public static final int SYNC_FLEXTIME = SYNC_INTERVAL / 3;
-
 
     List<Set> mUserSets;
     List<StudiedSet> mStudiedSets;
@@ -53,15 +52,16 @@ public class FlashCardSyncAdapter extends AbstractThreadedSyncAdapter {
     @Override
     public void onPerformSync(Account account, Bundle bundle, String s, ContentProviderClient contentProviderClient, SyncResult syncResult) {
 
-        Log.d("SYNC_ADAPTER", "Starting sync");
+        //Log.d("SYNC_ADAPTER", "Starting sync");
 
         // First, delete old set and term data so we don't build up an endless history
         getContext().getContentResolver().delete(FlashCardContract.SetEntry.CONTENT_URI, null, null);
         getContext().getContentResolver().delete(FlashCardContract.TermEntry.CONTENT_URI, null, null);
 
         String username = Utility.getUsername(getContext());
+        // Only try to fetch data if a username exists
         if (username != null) {
-            Log.d("SYNC_ADAPTER_USERNAME", username);
+            //Log.d("SYNC_ADAPTER_USERNAME", username);
             Retrofit retrofit = new Retrofit.Builder()
                     .baseUrl("https://api.quizlet.com/2.0/users/")
                     .addConverterFactory(GsonConverterFactory.create())
@@ -74,6 +74,7 @@ public class FlashCardSyncAdapter extends AbstractThreadedSyncAdapter {
             try {
                 SetList setList = call.execute().body();
                 if(setList != null) {
+                    // Make sure data is refreshed so old data isn't used.
                     mUserSets = setList.getSets();
                     mStudiedSets = setList.getStudiedSets();
                 } else {
@@ -105,7 +106,7 @@ public class FlashCardSyncAdapter extends AbstractThreadedSyncAdapter {
                         setValues.put(FlashCardContract.SetEntry.COLUMN_SET_TITLE, set.getTitle());
                         setValues.put(FlashCardContract.SetEntry.COLUMN_SET_CREATED_BY, set.getCreatedBy());
                         totalSetsVector.add(setValues);
-                        Log.d("US CREATED_BY: ", set.getCreatedBy());
+                        //Log.d("US CREATED_BY: ", set.getCreatedBy());
 
                         retrofit = new Retrofit.Builder()
                                 .baseUrl(QuizletTermsAPI.ENDPOINT)
@@ -136,7 +137,7 @@ public class FlashCardSyncAdapter extends AbstractThreadedSyncAdapter {
                             termsVector.toArray(termsCvArray);
                             getContext().getContentResolver().bulkInsert(FlashCardContract.TermEntry.CONTENT_URI, termsCvArray);
                         }
-                        Log.d("SYNC ADAPTER", termsVector.size() + " USER TERMS Inserted");
+                        //Log.d("SYNC ADAPTER", termsVector.size() + " USER TERMS Inserted");
                     }
                 }
 
@@ -149,7 +150,7 @@ public class FlashCardSyncAdapter extends AbstractThreadedSyncAdapter {
                         studiedSetValues.put(FlashCardContract.SetEntry.COLUMN_SET_TITLE, studiedSet.getSet().getTitle());
                         studiedSetValues.put(FlashCardContract.SetEntry.COLUMN_SET_CREATED_BY, studiedSet.getSet().getCreatedBy());
                         totalSetsVector.add(studiedSetValues);
-                        Log.d("USS CREATED_BY: ", studiedSet.getSet().getCreatedBy());
+                        //Log.d("USS CREATED_BY: ", studiedSet.getSet().getCreatedBy());
 
                         retrofit = new Retrofit.Builder()
                                 .baseUrl(QuizletTermsAPI.ENDPOINT)
@@ -181,7 +182,7 @@ public class FlashCardSyncAdapter extends AbstractThreadedSyncAdapter {
                             getContext().getContentResolver().bulkInsert(FlashCardContract.TermEntry.CONTENT_URI, studiedTermsCvArray);
                         }
 
-                        Log.d("SYNC ADAPTER", studiedTermsVector.size() + " STUDIED TERMS Inserted");
+                        //Log.d("SYNC ADAPTER", studiedTermsVector.size() + " STUDIED TERMS Inserted");
                     }
 
                     // add to database

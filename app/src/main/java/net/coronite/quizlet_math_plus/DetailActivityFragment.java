@@ -33,7 +33,6 @@ public class DetailActivityFragment extends Fragment {
     private int mCardNumber;
     private String mSetTitle;
     private Boolean mShowTerm;
-    private ShareActionProvider mShareActionProvider;
 
     public DetailActivityFragment() {
         setHasOptionsMenu(true);
@@ -66,9 +65,6 @@ public class DetailActivityFragment extends Fragment {
             if (mTerm != null) {
                 mv.setData(mTerm.getTerm(), mTerm.getDefinition(), mShowTerm);
             }
-
-
-
         return view;
     }
 
@@ -81,7 +77,7 @@ public class DetailActivityFragment extends Fragment {
         MenuItem menuItem = menu.findItem(R.id.action_share);
 
         // Get the provider and hold onto it to set/change the share intent.
-        mShareActionProvider = (ShareActionProvider) MenuItemCompat.getActionProvider(menuItem);
+        ShareActionProvider mShareActionProvider = (ShareActionProvider) MenuItemCompat.getActionProvider(menuItem);
 
         // If onLoadFinished happens before this, we can go ahead and set the share intent now.
         if (mTerm != null) {
@@ -89,8 +85,12 @@ public class DetailActivityFragment extends Fragment {
         }
     }
 
+    /**
+     * Method for creating the share Intent
+     * @return The Intent to share the current Term/Card
+     */
     private Intent createShareTermIntent() {
-        String shareTerm = String.format(Locale.US, "Term: \n%1$s\n Definition: \n%2$s", mTerm.getTerm(), mTerm.getDefinition());
+        String shareTerm = Utility.getShareString(getContext(), mTerm.getTerm(), mTerm.getDefinition());
         Intent shareIntent = new Intent(Intent.ACTION_SEND);
         shareIntent.setType("text/plain");
         shareIntent.putExtra(Intent.EXTRA_TEXT, shareTerm);

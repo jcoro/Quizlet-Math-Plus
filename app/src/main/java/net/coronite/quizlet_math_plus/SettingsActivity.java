@@ -3,6 +3,7 @@ package net.coronite.quizlet_math_plus;
 
 import android.annotation.TargetApi;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
@@ -119,8 +120,6 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
         }
     }
 
-
-
     /**
      * This method stops fragment injection in malicious applications.
      * Make sure to deny any unknown fragments here.
@@ -144,15 +143,21 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        // Set up a listener whenever a key changes
+        // Set up a listener
         mPrefs.registerOnSharedPreferenceChangeListener(mSharedPrefsListener);
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        // Unregister the listener whenever a key changes
+        // Unregister the listener
         mPrefs.unregisterOnSharedPreferenceChangeListener(mSharedPrefsListener);
+    }
+
+    @Override
+    public void onBackPressed(){
+        Intent intent = new Intent(this, MainActivity.class);
+        startActivity(intent);
     }
 
     /**

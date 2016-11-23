@@ -7,7 +7,7 @@ import android.os.Parcelable;
 import net.coronite.quizlet_math_plus.UserSetFragment;
 
 /**
- * The model for Sets
+ * Model for Flash Card Sets
  */
 public class Set implements Parcelable {
     String id;
@@ -15,6 +15,14 @@ public class Set implements Parcelable {
     String title;
     String created_by;
 
+
+    /**
+     * Constructor for Sets
+     * @param id The Quizlet-generated id for the set
+     * @param url The Quizlet url
+     * @param title The title for the set
+     * @param created_by The creator of the set
+     */
     public Set (String id, String url, String title, String created_by){
         this.id = id;
         this.url = url;
@@ -39,6 +47,11 @@ public class Set implements Parcelable {
 
     public String getCreatedBy() {return (created_by);}
 
+    /**
+     * Method for creating Set objects from a cursor
+     * @param cursor the cursor from the set query
+     * @return the Set
+     */
     public static Set fromCursor(Cursor cursor){
         Set set= null;
         // if Cursor contains results

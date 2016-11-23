@@ -160,11 +160,16 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
 
     }
 
+    /**
+     * A helper method for building Terms from the cursor
+     * @param cursor the cursor from the above query
+     * @return the List of Terms
+     */
     private List<Term> buildTerms(Cursor cursor) {
         List<Term> mCursorTerms = new ArrayList<>();
         // if Cursor contains results
         if (cursor.moveToFirst()) {
-            do {
+            for (int i = 0; i < cursor.getCount(); i++) {
                 //String _id = cursor.getString(INDEX_COLUMN_AUTO_ID);
                 String id = cursor.getString(INDEX_COLUMN_SET_ID);
                 String url = cursor.getString(INDEX_COLUMN_TERM);
@@ -173,7 +178,7 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
                 String rank = cursor.getString(INDEX_COLUMN_RANK);
                 Term singleTerm = new Term(id, url, term, definition, rank);
                 mCursorTerms.add(singleTerm);
-            } while (cursor.moveToNext());
+            }
         }
 
         return mCursorTerms;

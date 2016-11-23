@@ -38,8 +38,6 @@ public class FlashCardDbHelper extends SQLiteOpenHelper {
                  TermEntry.COLUMN_RANK + " INTEGER " +
                 " );";
 
-
-
         sqLiteDatabase.execSQL(SQL_CREATE_SET_TABLE);
         sqLiteDatabase.execSQL(SQL_CREATE_TERM_TABLE);
     }

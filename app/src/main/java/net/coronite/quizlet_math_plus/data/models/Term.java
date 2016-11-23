@@ -13,6 +13,15 @@ public class Term implements Parcelable {
     private String image;
     private String rank;
 
+    /**
+     * Each flashcard Set consists of Terms which themselves consist of a term and a definition.
+     * @param quizlet_id the Quizlet-generated id of the Set the Term belongs to
+     * @param trm The term (i.e., question) of the term.
+     * @param def The definition
+     * @param img An image associated with a Term
+     * @param rnk The order of the Term in the Set
+     */
+
     public Term(String quizlet_id, String trm, String def, String img, String rnk){
         this.id = quizlet_id;
         this.term = trm;

@@ -7,6 +7,8 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.view.View;
 
+import java.util.Locale;
+
 
 public class Utility {
 
@@ -60,5 +62,15 @@ public class Utility {
                         view.setVisibility(toVisibility);
                     }
                 });
+    }
+
+    public static String getCreatedByString(Context context, String string ) {
+        int formatId = R.string.created_by;
+        return String.format(Locale.US, context.getString(formatId), string);
+    }
+
+    public static String getShareString(Context context, String term, String definition ) {
+        int formatId = R.string.share_string;
+        return String.format(Locale.US, context.getString(formatId), term, definition);
     }
 }

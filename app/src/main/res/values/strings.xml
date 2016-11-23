@@ -1,4 +1,4 @@
-<resources>
+<resources xmlns:xliff="http://schemas.android.com/tools">
     <string name="app_name">Quizlet-Math-Plus</string>
     <string name="action_settings">Settings</string>
     <string name="title_activity_detail">DetailActivity</string>
@@ -12,6 +12,8 @@
     <string name="title_activity_settings">Settings</string>
     <string name="action_share">Share</string>
     <string name="username_message">Please Set Your Quizlet Username</string>
+    <string name="created_by">Created By: <xliff:g id="user">%1$s</xliff:g></string>
+    <string name="share_string">Term: <xliff:g id="term">\n%1$s\n</xliff:g> Definition: <xliff:g>\n%2$s</xliff:g></string>
 
     <!-- Strings related to Settings -->
 
@@ -30,7 +32,7 @@
     <!-- AdMob related -->
     <!-- This is an ad unit ID for a test ad. Replace with your own banner ad unit id. -->
     <string name="banner_ad_unit_id">ca-app-pub-3940256099942544/6300978111</string>
-    <string name="native_test_ad_unit_id">ca-app-pub-3940256099942544/1072772517</string>
-    <string name="interstitial_ad_unit_id">ca-app-pub-3940256099942544/1033173712</string>
+    <!--<string name="native_test_ad_unit_id">ca-app-pub-3940256099942544/1072772517</string>
+    <string name="interstitial_ad_unit_id">ca-app-pub-3940256099942544/1033173712</string>-->
 
 </resources>

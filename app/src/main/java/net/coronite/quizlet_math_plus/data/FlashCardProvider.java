@@ -10,7 +10,6 @@ import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.util.Log;
 
 public class FlashCardProvider extends ContentProvider {
 
@@ -47,8 +46,8 @@ public class FlashCardProvider extends ContentProvider {
     public String getType(@NonNull Uri uri) {
         final int match = sUriMatcher.match(uri);
 
-        Log.d("CONTENT_TYPE", FlashCardContract.SetEntry.CONTENT_TYPE);
-        Log.d("CONTENT_ITEM_TYPE", FlashCardContract.SetEntry.CONTENT_ITEM_TYPE);
+        //Log.d("CONTENT_TYPE", FlashCardContract.SetEntry.CONTENT_TYPE);
+        //Log.d("CONTENT_ITEM_TYPE", FlashCardContract.SetEntry.CONTENT_ITEM_TYPE);
 
         switch (match){
             case SETS:
@@ -146,12 +145,12 @@ public class FlashCardProvider extends ContentProvider {
         switch (match){
             case TERMS: {
                 rowsDeleted = db.delete(FlashCardContract.TermEntry.TABLE_NAME, selection, selectionArgs);
-                Log.d("TERM ROWS DELETED:", Integer.toString(rowsDeleted));
+                //Log.d("TERM ROWS DELETED:", Integer.toString(rowsDeleted));
                 break;
             }
             case SETS: {
                 rowsDeleted = db.delete(FlashCardContract.SetEntry.TABLE_NAME, selection, selectionArgs);
-                Log.d("SET ROWS DELETED:", Integer.toString(rowsDeleted));
+                //Log.d("SET ROWS DELETED:", Integer.toString(rowsDeleted));
                 break;
             }
             default:

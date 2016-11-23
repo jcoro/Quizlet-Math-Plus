@@ -20,7 +20,6 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 
@@ -41,8 +40,6 @@ public class MainActivity extends AppCompatActivity {
     private Context mContext = this;
     private FirebaseAnalytics mFirebaseAnalytics;
     static private AdView mAdView;
-    private UserSetFragment m1stFragment;
-    private UserStudiedFragment m2ndFragment;
     SharedPreferences mPrefs;
     SharedPreferences.OnSharedPreferenceChangeListener mSharedPrefsListener;
 
@@ -102,6 +99,11 @@ public class MainActivity extends AppCompatActivity {
         mAdView.loadAd(adRequest);
     }
 
+    /**
+     * Because the MainActivity is set to: android:launchMode="singleTop"
+     * OnResume is called when the user presses the Up or back button from the
+     * SettingsActivity. If the user changed their username, the data is fetched.
+     */
     @Override
     protected void onResume() {
         super.onResume();
@@ -125,6 +127,9 @@ public class MainActivity extends AppCompatActivity {
         FlashCardSyncAdapter.syncImmediately(this);
     }
 
+    /**
+     * Show the overlay when the data is loading
+     */
     static void showOverlay(){
         if (mProgressOverlay != null && mProgressOverlay.getVisibility() == View.GONE) {
             Log.d("SHOW OVERLAY", "SHOW OVERLAY");
@@ -132,6 +137,9 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Dismiss the overlay (called in UserStudiedFragment when the data is finished downloading)
+     */
     public static void dismissOverlay(){
         if (mProgressOverlay != null && mProgressOverlay.getVisibility() == View.VISIBLE) {
             Log.d("DISMISS OVERLAY", "DISMISS OVERLAY");
@@ -139,6 +147,9 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * On the first run of the app, show an Alert where the user can enter the username.
+     */
     public void checkFirstRun() {
         boolean mFirstRun = Utility.getIsFirstRun(mContext);
         if (mFirstRun){
@@ -171,6 +182,11 @@ public class MainActivity extends AppCompatActivity {
         return true;
     }
 
+    /**
+     * When the user selects Settings from the options menu, log it with Firebase Analytics.
+     * @param item the item selected from the options menu.
+     * @return true.
+     */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
@@ -188,6 +204,10 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    /**
+     * Method for adding Fragments to the ViewPagerAdapter, and setting the Adapter to the ViewPager
+     * @param viewPager the ViewPager to which the Adapter is set
+     */
     private void setupViewPager(ViewPager viewPager) {
         mViewPagerAdapter = new ViewPagerAdapter(getSupportFragmentManager());
 
@@ -221,7 +241,8 @@ public class MainActivity extends AppCompatActivity {
         // FragmentManger). Simply save the returned Fragment from
         // super.instantiateItem() into an appropriate reference depending
         // on the ViewPager position.
-        @Override
+        /**
+        //@Override
         public Object instantiateItem(ViewGroup container, int position) {
             Fragment createdFragment = (Fragment) super.instantiateItem(container, position);
             // save the appropriate reference depending on position
@@ -235,6 +256,7 @@ public class MainActivity extends AppCompatActivity {
             }
             return createdFragment;
         }
+         **/
 
         @Override
         public int getCount() {

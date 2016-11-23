@@ -6,6 +6,12 @@ import android.database.Cursor;
 import android.database.DataSetObserver;
 import android.support.v7.widget.RecyclerView;
 
+/**
+ * A custom CursorAdapter for use with RecyclerViews, sourced from:
+ * https://gist.github.com/skyfishjy/443b7448f59be978bc59
+ * @param <VH> The RecyclerView ViewHolder
+ */
+
 public abstract class CursorRecyclerViewAdapter<VH extends RecyclerView.ViewHolder> extends RecyclerView.Adapter<VH> {
 
     private Context mContext;

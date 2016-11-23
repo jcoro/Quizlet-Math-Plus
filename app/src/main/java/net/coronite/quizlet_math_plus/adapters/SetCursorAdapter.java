@@ -12,16 +12,19 @@ import android.widget.TextView;
 
 import net.coronite.quizlet_math_plus.DetailActivity;
 import net.coronite.quizlet_math_plus.R;
+import net.coronite.quizlet_math_plus.Utility;
 import net.coronite.quizlet_math_plus.data.models.Set;
 
-public class MyListCursorAdapter extends CursorRecyclerViewAdapter<MyListCursorAdapter.ViewHolder>{
+public class SetCursorAdapter extends CursorRecyclerViewAdapter<SetCursorAdapter.ViewHolder>{
 
     private static final String EXTRA_SET_ID = "SET_ID";
     private static final String EXTRA_SET_TITLE = "SET_TITLE";
     private static final String EXTRA_SET_CREATED_BY = "SET_CREATED_BY";
+    private static Context mContext;
 
-    public MyListCursorAdapter(Context context,Cursor cursor){
+    public SetCursorAdapter(Context context, Cursor cursor){
         super(context,cursor);
+        mContext = context;
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
@@ -45,7 +48,7 @@ public class MyListCursorAdapter extends CursorRecyclerViewAdapter<MyListCursorA
             mSetTitle = mSet.getTitle();
             mSetCreatedBy = mSet.getCreatedBy();
             mTitleTextView.setText(mSetTitle);
-            mSetCreatedByTextView.setText("Created By: " + mSetCreatedBy);
+            mSetCreatedByTextView.setText(Utility.getCreatedByString(mContext, mSetCreatedBy));
         }
 
         @Override

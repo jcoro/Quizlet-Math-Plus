@@ -20,12 +20,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import net.coronite.quizlet_math_plus.adapters.MyListCursorAdapter;
+import net.coronite.quizlet_math_plus.adapters.SetCursorAdapter;
 import net.coronite.quizlet_math_plus.data.FlashCardContract;
 
 
 /**
- * A simple {@link Fragment} subclass.
+ * A Fragment for displaying the user's studied flashcard sets.
  */
 public class UserStudiedFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>  {
     private static final int SET_LOADER = 0;
@@ -46,7 +46,7 @@ public class UserStudiedFragment extends Fragment implements LoaderManager.Loade
     };
 
 
-    private MyListCursorAdapter mAdapter;
+    private SetCursorAdapter mAdapter;
     private TextView mEmptyView;
     private RecyclerView mSetRecyclerView;
 
@@ -64,7 +64,7 @@ public class UserStudiedFragment extends Fragment implements LoaderManager.Loade
         View view =  inflater.inflate(R.layout.fragment_user_set, container, false);
         mSetRecyclerView = (RecyclerView) view.findViewById(R.id.user_set_recycler_view);
         mSetRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        mAdapter = new MyListCursorAdapter(getActivity(), null);
+        mAdapter = new SetCursorAdapter(getActivity(), null);
         mSetRecyclerView.setAdapter(mAdapter);
         mEmptyView = (TextView) view.findViewById(R.id.empty_view);
         return view;
@@ -89,6 +89,9 @@ public class UserStudiedFragment extends Fragment implements LoaderManager.Loade
         super.onPause();
     }
 
+    /**
+     * Method to restart loader via a broadcast from the sync adapter.
+     */
     private void restartLoaderFromBroadcast(){
         Log.d( "USS BROADCAST RECEIVED", "USS BROADCAST RECEIVED" );
         getLoaderManager().restartLoader(SET_LOADER, null, this);
