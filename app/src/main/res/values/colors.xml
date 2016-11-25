@@ -3,7 +3,12 @@
     <color name="colorPrimary">#0073BC</color>
     <color name="colorPrimaryDark">#125688</color>
     <color name="textColorPrimary">#000000</color>
+    <color name="white">#FFFFFF</color>
     <color name="windowBackground">#eaeaea</color>
     <color name="navigationBarColor">#000000</color>
     <color name="colorAccent">#FF4081</color>
+    <color name="about_description_color">#595959</color>
+    <color name="about_separator_color">#e1e1e1</color>
+    <color name="about_item_text_color">#7c7c7c</color>
+    <color name="about_text_color">#595959</color>
 </resources>

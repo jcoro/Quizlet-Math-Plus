@@ -178,6 +178,9 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
                 String rank = cursor.getString(INDEX_COLUMN_RANK);
                 Term singleTerm = new Term(id, url, term, definition, rank);
                 mCursorTerms.add(singleTerm);
+                if(!cursor.isLast()) {
+                    cursor.moveToNext();
+                }
             }
         }
 

@@ -4,9 +4,10 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="#FFFFFF"
     android:layout_margin="12dp"
-    android:elevation="4dp">
+    android:elevation="4dp"
+    android:background="@drawable/rect_ripple"
+    android:colorControlHighlight="@color/colorPrimary">
 
         <TextView
             android:id="@+id/created_by"

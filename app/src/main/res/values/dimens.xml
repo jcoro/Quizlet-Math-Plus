@@ -7,4 +7,14 @@
     <dimen name="tab_padding_bottom">16dp</dimen>
     <dimen name="tab_label">14sp</dimen>
     <dimen name="custom_tab_layout_height">72dp</dimen>
+
+    <dimen name="about_image_padding">72dp</dimen>
+    <dimen name="about_icon_size">34dp</dimen>
+    <dimen name="about_icon_padding">8dp</dimen>
+    <dimen name="about_separator_height">0.5dp</dimen>
+    <dimen name="about_description_text_size">16sp</dimen>
+    <dimen name="about_item_text_size">16sp</dimen>
+    <dimen name="about_group_item_text_size">18sp</dimen>
+    <dimen name="about_text_padding">16dp</dimen>
+    <dimen name="detail_margin">0dp</dimen>
 </resources>
