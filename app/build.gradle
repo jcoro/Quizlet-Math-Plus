@@ -20,6 +20,9 @@ android {
     buildTypes.each {
         it.buildConfigField 'String', 'TEST_DEVICE_ID', ' "5305B8C6893FE4F3FF66234C569F0D5A" '
     }
+    testOptions {
+        unitTests.returnDefaultValues = true
+    }
 }
 
 ext {
@@ -39,6 +42,13 @@ dependencies {
     compile 'com.google.android.gms:play-services-analytics:9.8.0'
     compile 'com.google.firebase:firebase-core:9.8.0'
     compile 'com.android.support:design:25.0.1'
+    // Required -- JUnit 4 framework
+    testCompile 'junit:junit:4.12'
+    // Optional -- Mockito framework
+    testCompile 'org.mockito:mockito-core:1.10.19'
+    testCompile 'org.powermock:powermock-api-mockito:1.4.12'
+    testCompile 'org.powermock:powermock-module-junit4:1.6.2'
 }
+
 apply plugin: 'com.google.gms.google-services'
 

@@ -17,26 +17,26 @@ public class Utility {
         return prefs.getString(context.getString(R.string.username_key), null);
     }
 
-    public static void setUsername(Context context, String username){
+    static void setUsername(Context context, String username){
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
         SharedPreferences.Editor editor = preferences.edit();
         editor.putString("username", username);
         editor.apply();
     }
 
-    public static Boolean getIsFirstRun(Context context){
+    static Boolean getIsFirstRun(Context context){
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         return prefs.getBoolean("isFirstRun", true);
     }
 
-    public static void setIsFirstRun(Context context, Boolean isFirstRun){
+    static void setIsFirstRun(Context context, Boolean isFirstRun){
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
         SharedPreferences.Editor editor = preferences.edit();
         editor.putBoolean("isFirstRun", isFirstRun);
         editor.apply();
     }
 
-    public static Boolean getShowTermBoolean(Context context) {
+    static Boolean getShowTermBoolean(Context context) {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         return prefs.getBoolean(context.getString(R.string.show_term_key), true);
     }
@@ -47,7 +47,7 @@ public class Utility {
      * @param toAlpha      Alpha at the end of animation
      * @param duration     Animation duration in ms
      */
-    public static void animateView(final View view, final int toVisibility, float toAlpha, int duration) {
+    static void animateView(final View view, final int toVisibility, float toAlpha, int duration) {
         boolean show = toVisibility == View.VISIBLE;
         if (show) {
             view.setAlpha(0);
@@ -69,7 +69,7 @@ public class Utility {
         return String.format(Locale.US, context.getString(formatId), string);
     }
 
-    public static String getShareString(Context context, String term, String definition ) {
+    static String getShareString(Context context, String term, String definition ) {
         int formatId = R.string.share_string;
         return String.format(Locale.US, context.getString(formatId), term, definition);
     }
