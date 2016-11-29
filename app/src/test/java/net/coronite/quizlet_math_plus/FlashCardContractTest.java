@@ -28,17 +28,22 @@ public class FlashCardContractTest {
     @Before
     public void setup() throws Exception{
         PowerMockito.mockStatic(Uri.class);
+        PowerMockito.mockStatic(Uri.Builder.class);
         Uri uri = mock(Uri.class);
+        Uri.Builder builder= mock(Uri.Builder.class);
         PowerMockito.when(Uri.class, "parse", anyString()).thenReturn(uri);
+        PowerMockito.when(uri, "buildUpon").thenReturn(builder);
+        PowerMockito.when(builder, "appendPath", anyString()).thenReturn(builder);
+        PowerMockito.when(builder, "build").thenReturn(uri);
         mockSetUri = FlashCardContract.SetEntry.buildSetUri(SET_ID);
     }
 
     @Test
     public void testBuildSetUri(){
         String setIdString = Long.toString(SET_ID);
-        assertNotNull("Error: Null Uri returned", mockSetUri);
-        assertEquals("Error: id not appended", setIdString, mockSetUri.getLastPathSegment());
-        assertEquals("Error: Unexpected Uri", mockSetUri.toString(), "content://net.coronite.quizlet_math_plus/set/12345");
+        assertNotNull("Error: Null Uri returned" + mockSetUri.toString(), mockSetUri);
+        assertEquals("Error: id not appended" + mockSetUri.toString(), setIdString, mockSetUri.getLastPathSegment());
+        assertEquals("Error: Unexpected Uri"+ mockSetUri.toString(), mockSetUri.toString(), "content://net.coronite.quizlet_math_plus/set/12345");
     //assertEquals("test", true, true);
     }
 

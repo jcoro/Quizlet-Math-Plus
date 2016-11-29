@@ -34,7 +34,8 @@ public class FlashCardContract {
         public static final String COLUMN_SET_CREATED_BY = "set_created_by";
 
         public static Uri buildSetUri(long id) {
-            return ContentUris.withAppendedId(CONTENT_URI, id);
+            return Uri.parse("content://net.coronite.quizlet_math_plus/set/" + id);
+            //return ContentUris.withAppendedId(CONTENT_URI, id);
             // content://net.coronite.quizlet_math_plus/set/#
         }
     }
