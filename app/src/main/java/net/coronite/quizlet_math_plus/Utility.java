@@ -59,7 +59,7 @@ public class Utility {
     /**
      * Gets a boolean from SharedPreferences indicating if the user wants the flashcard TERM to be visible
      * with the DEFINITION hidden.
-     * @param context
+     * @param context the context
      * @return the boolean indicating the user's preference.
      */
     static Boolean getShowTermBoolean(Context context) {
