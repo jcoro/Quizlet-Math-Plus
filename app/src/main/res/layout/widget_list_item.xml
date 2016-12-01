@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/widget_list_item"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="12dp"
+    android:divider="@drawable/divider"
+    android:showDividers="end"
+    android:background="@drawable/rect_ripple"
+    android:colorControlHighlight="@color/colorPrimary">
+
+    <TextView
+        android:id="@+id/widget_created_by"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        tools:text="Set Created By: Coronite Creative"
+        android:textSize="14sp"
+        android:paddingLeft="12dp"
+        android:paddingTop="12dp"
+        android:paddingRight="12dp"
+        android:textColor="#000000"/>
+
+    <TextView
+        android:id="@+id/widget_set_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        tools:text="Set Title"
+        android:textSize="24sp"
+        android:paddingLeft="12dp"
+        android:paddingRight="12dp"
+        android:paddingBottom="12dp"
+        android:textColor="#000000"/>
+
+</LinearLayout>

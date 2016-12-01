@@ -59,8 +59,8 @@
             android:label="@string/title_activity_about"
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data
-            android:name="android.support.PARENT_ACTIVITY"
-            android:value="net.coronite.quizlet_math_plus.MainActivity" />
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="net.coronite.quizlet_math_plus.MainActivity" />
         </activity>
 
         <provider
@@ -93,7 +93,21 @@
                 android:resource="@xml/syncadapter" />
         </service>
 
+        <receiver android:name=".widget.FlashCardAppWidgetProvider">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+                <action android:name="net.coronite.quizlet_math_plus.ACTION_DATA_UPDATED"/>
+            </intent-filter>
 
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/new_app_widget_info" />
+        </receiver>
+
+        <service
+            android:name=".widget.FlashCardRemoteViewsService"
+            android:exported="false"
+            android:permission="android.permission.BIND_REMOTEVIEWS" />
     </application>
 
 </manifest>

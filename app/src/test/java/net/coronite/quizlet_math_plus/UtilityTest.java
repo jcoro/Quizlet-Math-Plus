@@ -18,7 +18,6 @@ public class UtilityTest {
     private static final String CREATED_BY = "Created By: someUsername";
     private static final String TERM = "A Test Term";
     private static final String DEFINITION = "A Test Definition";
-    private static final String TEST_USERNAME = "testUsername";
 
     @Mock
     Context mContext;

@@ -37,15 +37,17 @@ public class FlashCardSyncAdapter extends AbstractThreadedSyncAdapter {
 
     // Interval at which to sync with quizlet, in seconds.
     // 60 seconds (1 minute) * 60 * 24 = 24 hours
-    public static final int SYNC_INTERVAL = 60 * 60 * 24;
-    public static final int SYNC_FLEXTIME = SYNC_INTERVAL / 3;
+    private static final int SYNC_INTERVAL = 60 * 60 * 24;
+    private static final int SYNC_FLEXTIME = SYNC_INTERVAL / 3;
 
-    List<Set> mUserSets;
-    List<StudiedSet> mStudiedSets;
-    List<Term> mTermList;
-    List<Term> mStudiedTermList;
+    public static final String ACTION_DATA_UPDATED = "net.coronite.quizlet_math_plus.ACTION_DATA_UPDATED";
 
-    public FlashCardSyncAdapter(Context context, boolean autoInitialize) {
+    private List<Set> mUserSets;
+    private List<StudiedSet> mStudiedSets;
+    private List<Term> mTermList;
+    private List<Term> mStudiedTermList;
+
+    FlashCardSyncAdapter(Context context, boolean autoInitialize) {
         super(context, autoInitialize);
     }
 
@@ -201,12 +203,20 @@ public class FlashCardSyncAdapter extends AbstractThreadedSyncAdapter {
             }
         }
         getContext().sendBroadcast(new Intent(MainActivity.ACTION_FINISHED_SYNC));
+        updateWidgets();
+    }
+
+    private void updateWidgets() {
+        // Setting the package ensures that only components in our app will receive the broadcast
+        Intent dataUpdatedIntent = new Intent(ACTION_DATA_UPDATED)
+                .setPackage(getContext().getPackageName());
+        getContext().sendBroadcast(dataUpdatedIntent);
     }
 
     /**
      * Helper method to schedule the sync adapter periodic execution
      */
-    public static void configurePeriodicSync(Context context, int syncInterval, int flexTime) {
+    private static void configurePeriodicSync(Context context, int syncInterval, int flexTime) {
         Account account = getSyncAccount(context);
         String authority = context.getString(R.string.content_authority);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
@@ -242,7 +252,7 @@ public class FlashCardSyncAdapter extends AbstractThreadedSyncAdapter {
      * @param context The context used to access the account service
      * @return a fake account.
      */
-    public static Account getSyncAccount(Context context) {
+    private static Account getSyncAccount(Context context) {
         // Get an instance of the Android account manager
         AccountManager accountManager =
                 (AccountManager) context.getSystemService(Context.ACCOUNT_SERVICE);
