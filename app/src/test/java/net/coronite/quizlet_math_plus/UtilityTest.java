@@ -1,5 +1,6 @@
 package net.coronite.quizlet_math_plus;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
@@ -7,12 +8,21 @@ import android.preference.PreferenceManager;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
-import static org.junit.Assert.*;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.when;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.junit4.PowerMockRunner;
 
-@RunWith(MockitoJUnitRunner.class)
+import static org.junit.Assert.*;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyBoolean;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.powermock.api.mockito.PowerMockito.mockStatic;
+import static org.powermock.api.mockito.PowerMockito.verifyStatic;
+
+@RunWith(PowerMockRunner.class)
+@PrepareForTest(PreferenceManager.class)
 public class UtilityTest {
 
     private static final String CREATED_BY = "Created By: someUsername";
@@ -22,6 +32,11 @@ public class UtilityTest {
     @Mock
     Context mContext;
 
+    @Mock
+    SharedPreferences mMockSharedPreferences;
+
+    @Mock
+    SharedPreferences.Editor mEditor;
 
     @Test
     public void testCreatedBy(){
@@ -39,6 +54,22 @@ public class UtilityTest {
                 .thenReturn("Term: " + TERM + "Definition: " + DEFINITION);
         String expected = Utility.getShareString(mContext, TERM, DEFINITION);
         assertEquals("message", actual, expected);
+    }
+
+    @SuppressLint("CommitPrefEdits")
+    @Test
+    public void testSetIsFirstRun() {
+        mockStatic(PreferenceManager.class);
+        when(PreferenceManager.getDefaultSharedPreferences(any(Context.class))).thenReturn((mMockSharedPreferences));
+        when(mMockSharedPreferences.edit()).thenReturn(mEditor);
+        when(mEditor.putBoolean(anyString(), anyBoolean())).thenReturn(mEditor);
+        doNothing().when(mEditor).apply();
+
+        Utility.setIsFirstRun(mContext, true);
+
+        verify(mEditor).apply();
+        verifyStatic();
+
     }
 
 }
