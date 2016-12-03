@@ -38,8 +38,9 @@ public class UtilityTest {
     @Mock
     SharedPreferences.Editor mEditor;
 
+
     @Test
-    public void testCreatedBy(){
+    public void testGetCreatedBy(){
         String actual = CREATED_BY;
         when(mContext.getString(R.string.created_by))
                 .thenReturn(CREATED_BY);
@@ -48,7 +49,7 @@ public class UtilityTest {
     }
 
     @Test
-    public void testShareString(){
+    public void testGetShareString(){
         String actual = "Term: " + TERM + "Definition: " + DEFINITION;
         when(mContext.getString(R.string.share_string))
                 .thenReturn("Term: " + TERM + "Definition: " + DEFINITION);
@@ -68,6 +69,30 @@ public class UtilityTest {
         Utility.setIsFirstRun(mContext, true);
 
         verify(mEditor).apply();
+        verifyStatic();
+
+    }
+
+    @Test
+    public void testGetIsFirstRunTrue() {
+        mockStatic(PreferenceManager.class);
+        when(PreferenceManager.getDefaultSharedPreferences(any(Context.class))).thenReturn((mMockSharedPreferences));
+        when(mMockSharedPreferences.getBoolean(anyString(), anyBoolean())).thenReturn(true);
+        Boolean result = Utility.getIsFirstRun(mContext);
+        assertSame(result, true);
+        verify(mMockSharedPreferences).getBoolean(anyString(), anyBoolean());
+        verifyStatic();
+
+    }
+
+    @Test
+    public void testGetIsFirstRunFalse() {
+        mockStatic(PreferenceManager.class);
+        when(PreferenceManager.getDefaultSharedPreferences(any(Context.class))).thenReturn((mMockSharedPreferences));
+        when(mMockSharedPreferences.getBoolean(anyString(), anyBoolean())).thenReturn(false);
+        Boolean result = Utility.getIsFirstRun(mContext);
+        assertSame(result, false);
+        verify(mMockSharedPreferences).getBoolean(anyString(), anyBoolean());
         verifyStatic();
 
     }
