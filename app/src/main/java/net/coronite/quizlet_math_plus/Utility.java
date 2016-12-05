@@ -79,15 +79,13 @@ public class Utility {
             view.setAlpha(0);
         }
         view.setVisibility(View.VISIBLE);
+        CustomAnimatorListenerAdapter myAnimatorListenerAdapter = new CustomAnimatorListenerAdapter();
+        myAnimatorListenerAdapter.setVisibility(toVisibility);
+        myAnimatorListenerAdapter.setView(view);
         view.animate()
                 .setDuration(duration)
                 .alpha(show ? toAlpha : 0)
-                .setListener(new AnimatorListenerAdapter() {
-                    @Override
-                    public void onAnimationEnd(Animator animation) {
-                        view.setVisibility(toVisibility);
-                    }
-                });
+                .setListener(myAnimatorListenerAdapter);
     }
 
     /**
@@ -112,5 +110,25 @@ public class Utility {
     static String getShareString(Context context, String term, String definition ) {
         int formatId = R.string.share_string;
         return String.format(Locale.US, context.getString(formatId), term, definition);
+    }
+
+    static class CustomAnimatorListenerAdapter extends AnimatorListenerAdapter {
+
+        View view;
+        int toVisibility;
+
+        public void setView(View v) {
+            view = v;
+        }
+
+        public void setVisibility(int visibility){
+            toVisibility = visibility;
+        }
+
+        @Override
+        public void onAnimationEnd(Animator animation){
+            view.setVisibility(toVisibility);
+
+        }
     }
 }

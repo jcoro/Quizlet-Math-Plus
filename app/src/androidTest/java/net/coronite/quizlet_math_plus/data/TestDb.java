@@ -6,11 +6,13 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.runner.AndroidJUnit4;
+import android.util.Log;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import java.util.Arrays;
 import java.util.HashSet;
 
 import static junit.framework.Assert.assertEquals;
@@ -78,6 +80,9 @@ public class TestDb {
         setColumnHashSet.add(FlashCardContract.SetEntry.COLUMN_SET_CREATED_BY);
 
         int columnNameIndex = c.getColumnIndex("name");
+        // Columns in cursor returned from Pragma table_info: [cid, name, type, notnull, dflt_value, pk]
+        // String[] pragmaColumnNames = c.getColumnNames();
+        // Log.v ("COLUMN NAME:", Arrays.toString(pragmaColumnNames));
         do {
             String columnName = c.getString(columnNameIndex);
             setColumnHashSet.remove(columnName);

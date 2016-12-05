@@ -1,9 +1,12 @@
 package net.coronite.quizlet_math_plus;
 
+import android.animation.Animator;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
+import android.view.View;
+import android.view.ViewPropertyAnimator;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -14,6 +17,8 @@ import org.powermock.modules.junit4.PowerMockRunner;
 import static org.junit.Assert.*;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyBoolean;
+import static org.mockito.Matchers.anyFloat;
+import static org.mockito.Matchers.anyLong;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.verify;
@@ -37,6 +42,21 @@ public class UtilityTest {
 
     @Mock
     SharedPreferences.Editor mEditor;
+
+    @Mock
+    View mMockedView;
+
+    @Mock
+    ViewPropertyAnimator mMockedViewPropertyAnimator;
+
+    @Mock
+    Utility.CustomAnimatorListenerAdapter mMockedAnimatorListenerAdapter;
+
+    @Mock
+    Animator mMockAnimation;
+
+    @Mock
+    Utility.CustomAnimatorListenerAdapter mGoneMockedAnimatorListenerAdapter;
 
 
     @Test
@@ -96,5 +116,67 @@ public class UtilityTest {
         verifyStatic();
 
     }
+
+    @Test
+    public void testAnimateViewVisible(){
+        when(mMockedView.animate()).thenReturn(mMockedViewPropertyAnimator);
+        when(mMockedViewPropertyAnimator.setDuration(anyLong())).thenReturn(mMockedViewPropertyAnimator);
+        when(mMockedViewPropertyAnimator.alpha(anyFloat())).thenReturn(mMockedViewPropertyAnimator);
+        when(mMockedViewPropertyAnimator.setListener(any(Animator.AnimatorListener.class))).thenReturn(mMockedViewPropertyAnimator);
+        mMockedAnimatorListenerAdapter.onAnimationEnd(mMockAnimation);
+        Utility.animateView(mMockedView, View.VISIBLE, 0.4f, 200);
+        verify(mMockedView).setAlpha(0);
+        verify(mMockedView).setVisibility(View.VISIBLE );
+        verify(mMockedView).animate();
+        verify(mMockedViewPropertyAnimator).setDuration(anyLong());
+        verify(mMockedViewPropertyAnimator).alpha(anyFloat());
+        verify(mMockedViewPropertyAnimator).setListener(any(Animator.AnimatorListener.class));
+        verify(mMockedAnimatorListenerAdapter).onAnimationEnd(mMockAnimation);
+    }
+
+
+    @Test
+    public void testAnimateViewGone(){
+        when(mMockedView.animate()).thenReturn(mMockedViewPropertyAnimator);
+        when(mMockedViewPropertyAnimator.setDuration(anyLong())).thenReturn(mMockedViewPropertyAnimator);
+        when(mMockedViewPropertyAnimator.alpha(anyFloat())).thenReturn(mMockedViewPropertyAnimator);
+        when(mMockedViewPropertyAnimator.setListener(any(Utility.CustomAnimatorListenerAdapter.class))).thenReturn(mMockedViewPropertyAnimator);
+        mGoneMockedAnimatorListenerAdapter.onAnimationEnd(mMockAnimation);
+        Utility.animateView(mMockedView, View.GONE, 0, 200);
+        verify(mMockedView).animate();
+        verify(mMockedViewPropertyAnimator).setDuration(anyLong());
+        verify(mMockedViewPropertyAnimator).alpha(anyFloat());
+        verify(mMockedViewPropertyAnimator).setListener(any(Animator.AnimatorListener.class));
+        verify(mGoneMockedAnimatorListenerAdapter).onAnimationEnd(mMockAnimation);
+    }
+
+    @Test
+    public void testMyAnimatorListenerAdapter(){
+        mMockedAnimatorListenerAdapter.setView(mMockedView);
+        mMockedAnimatorListenerAdapter.setVisibility(View.GONE);
+        mMockedAnimatorListenerAdapter.onAnimationEnd(mMockAnimation);
+        verify(mMockedAnimatorListenerAdapter).setView(mMockedView);
+        verify(mMockedAnimatorListenerAdapter).setVisibility(View.GONE);
+        verify(mMockedAnimatorListenerAdapter).onAnimationEnd(mMockAnimation);
+
+    }
+
+    @Test
+    public void testSetVisibility(){
+        Utility.CustomAnimatorListenerAdapter realAdapter = new Utility.CustomAnimatorListenerAdapter(){
+            @Override
+            public void onAnimationEnd(Animator animation){
+                mMockedView.setVisibility(View.GONE);
+
+            }
+        };
+        realAdapter.setView(mMockedView);
+        realAdapter.setVisibility(View.GONE);
+        mMockedViewPropertyAnimator.setListener(realAdapter);
+        realAdapter.onAnimationEnd(mMockAnimation);
+        verify(mMockedView).setVisibility(View.GONE);
+    }
+
+
 
 }
