@@ -49,6 +49,8 @@ public class FlashCardRemoteViewsService extends RemoteViewsService {
                 if (data != null) {
                     data.close();
                 }
+                // Reset the identity of the incoming IPC on the current thread.
+                // so any of our other concurrent permission checks pass
                 final long identityToken = Binder.clearCallingIdentity();
 
                 Uri uri = FlashCardContract.SetEntry.CONTENT_URI;
@@ -59,6 +61,8 @@ public class FlashCardRemoteViewsService extends RemoteViewsService {
                         null,           // selection
                         null,           // selectionArgs
                         null);          // sort order
+
+                //Restore the identity of the incoming IPC on the current thread
                 Binder.restoreCallingIdentity(identityToken);
             }
 

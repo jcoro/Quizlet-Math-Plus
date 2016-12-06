@@ -10,16 +10,16 @@
         android:id="@+id/studied_sets_recycler_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="#eaeaea" />
+        android:background="@color/windowBackground" />
 
     <TextView android:id="@+id/studied_empty_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/no_sets_found"
-        android:padding="12dp"
-        android:textSize="24sp"
-        android:background="#FFFFFF"
-        android:layout_margin="12dp"
+        android:padding="@dimen/spacing_below_normal"
+        android:textSize="@dimen/text_size_xxl"
+        android:background="@color/white"
+        android:layout_margin="@dimen/spacing_below_normal"
         xmlns:android="http://schemas.android.com/apk/res/android" />
 
 </LinearLayout>

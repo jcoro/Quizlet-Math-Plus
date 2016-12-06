@@ -207,6 +207,7 @@ public class FlashCardSyncAdapter extends AbstractThreadedSyncAdapter {
     }
 
     private void updateWidgets() {
+        // This sends the data to FlashCardAppWidgetProvider
         // Setting the package ensures that only components in our app will receive the broadcast
         Intent dataUpdatedIntent = new Intent(ACTION_DATA_UPDATED)
                 .setPackage(getContext().getPackageName());

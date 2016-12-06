@@ -20,11 +20,11 @@
                 android:layout_height="wrap_content"
                 android:scaleType="fitCenter"
                 android:adjustViewBounds="true"
-                android:paddingStart="@dimen/about_image_padding"
-                android:paddingEnd="@dimen/about_image_padding"
+                android:paddingStart="@dimen/spacing_xxxlarge"
+                android:paddingEnd="@dimen/spacing_xxxlarge"
                 android:contentDescription="@string/cd_about_image"
-                android:maxWidth="128dp"
-                android:maxHeight="128dp" />
+                android:maxWidth="@dimen/large_image_width"
+                android:maxHeight="@dimen/large_image_width" />
             <TextView android:id="@+id/description" style="@style/about_description"/>
         </LinearLayout>
 
@@ -33,12 +33,12 @@
         <LinearLayout
             android:id="@+id/about_providers"
             style="@style/about_sub_wrapper"
-            android:padding="0dp">
+            android:padding="@dimen/spacing_none">
 
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:padding="@dimen/about_text_padding"
+                android:padding="@dimen/spacing_normal"
                 android:textStyle="bold"
                 android:background="?attr/selectableItemBackground"
                 android:text="@string/version_number"
@@ -50,7 +50,7 @@
                 android:id="@+id/github_textview"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:padding="@dimen/about_text_padding"
+                android:padding="@dimen/spacing_normal"
                 android:textStyle="bold"
                 android:background="?attr/selectableItemBackground"
                 android:drawableStart="@drawable/about_icon_github"

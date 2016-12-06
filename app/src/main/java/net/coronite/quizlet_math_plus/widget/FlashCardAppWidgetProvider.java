@@ -16,7 +16,7 @@ import net.coronite.quizlet_math_plus.R;
 import net.coronite.quizlet_math_plus.sync.FlashCardSyncAdapter;
 
 /**
- * Implementation of App Widget functionality.
+ * AppWidgetProvider extends BroadcastReceiver and will respond to Broadcasts from the SyncAdapter
  */
 public class FlashCardAppWidgetProvider extends AppWidgetProvider {
 
@@ -24,6 +24,7 @@ public class FlashCardAppWidgetProvider extends AppWidgetProvider {
                                 int appWidgetId) {
 
         // Construct the RemoteViews object
+        // Tapping the widget (but not a particular item [below] launches the MainActivity)
         RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.widget_container);
         Intent intent = new Intent(context, MainActivity.class);
         PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, 0);
@@ -32,10 +33,15 @@ public class FlashCardAppWidgetProvider extends AppWidgetProvider {
 
         Intent clickIntentTemplate = new Intent(context, DetailActivity.class);
         PendingIntent clickPendingIntentTemplate = TaskStackBuilder.create(context)
-                .addNextIntentWithParentStack(clickIntentTemplate)
+                .addNextIntentWithParentStack(clickIntentTemplate)  //clickIntentTemplate will be topmost activity in synthesized task stack
                 .getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
         views.setPendingIntentTemplate(R.id.widget_list, clickPendingIntentTemplate);
 
+        // .getPending intent creates the PendingIntent from the TaskStack Builder
+        // FLAG_UPDATE_CURRENT allows the extras to be different for each intent in the list.
+
+        // .setPendingIntentTemplate is used to set a single PendingIntent on the collection and individual
+        // items can differentiate their on-click behavior using setOnClickFillInIntent(int, Intent) (In FlashCardRemoteViewsService).
 
         // Instruct the widget manager to update the widget
         appWidgetManager.updateAppWidget(appWidgetId, views);

@@ -11,6 +11,7 @@
 
     <application
         android:allowBackup="true"
+        android:fullBackupContent="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
@@ -61,6 +62,12 @@
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="net.coronite.quizlet_math_plus.MainActivity" />
+            <intent-filter android:label="@string/app_name">
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="http"/>
+            </intent-filter>
         </activity>
 
         <provider
@@ -70,7 +77,9 @@
             android:syncable="true" />
 
         <!-- SyncAdapter's dummy authentication service -->
-        <service android:name=".sync.FlashCardAuthenticatorService">
+        <service android:name=".sync.FlashCardAuthenticatorService"
+            android:exported="true"
+            android:permission="normal">
             <intent-filter>
                 <action android:name="android.accounts.AccountAuthenticator" />
             </intent-filter>
@@ -83,7 +92,9 @@
         <!-- The SyncAdapter service -->
         <service
             android:name=".sync.FlashCardSyncService"
-            android:exported="true">
+            android:exported="true"
+            android:permission="normal">
+
             <intent-filter>
                 <action android:name="android.content.SyncAdapter" />
             </intent-filter>
@@ -101,7 +112,7 @@
 
             <meta-data
                 android:name="android.appwidget.provider"
-                android:resource="@xml/new_app_widget_info" />
+                android:resource="@xml/app_widget_info" />
         </receiver>
 
         <service

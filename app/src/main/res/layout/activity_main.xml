@@ -49,7 +49,8 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
         android:layout_alignParentBottom="true"
-        ads:adSize="BANNER"
+        android:paddingBottom="@dimen/spacing_below_normal"
+        ads:adSize="@string/banner_ad_size"
         ads:adUnitId="@string/banner_ad_unit_id">
     </com.google.android.gms.ads.AdView>
 

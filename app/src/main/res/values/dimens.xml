@@ -8,21 +8,31 @@
     <dimen name="tab_label">14sp</dimen>
     <dimen name="custom_tab_layout_height">72dp</dimen>
 
-    <dimen name="about_image_padding">72dp</dimen>
-    <dimen name="about_icon_size">34dp</dimen>
-    <dimen name="about_icon_padding">8dp</dimen>
-    <dimen name="about_separator_height">0.5dp</dimen>
-    <dimen name="about_description_text_size">16sp</dimen>
-    <dimen name="about_item_text_size">16sp</dimen>
-    <dimen name="about_group_item_text_size">18sp</dimen>
-    <dimen name="about_text_padding">16dp</dimen>
+    <!-- detail_margin changes on land > 600dp -->
     <dimen name="detail_margin">0dp</dimen>
 
-    <!-- Padding -->
-    <dimen name="padding_xsmall">3dp</dimen>
-    <dimen name="padding_small">8dp</dimen>
-    <dimen name="padding_large">16dp</dimen>
-    <dimen name="padding_xlarge">32dp</dimen>
+    <!--TextSizes-->
+    <dimen name="text_size_small">14sp</dimen>
+    <dimen name="text_size_large">16sp</dimen>
+    <dimen name="text_size_xl">18sp</dimen>
+    <dimen name="text_size_xxl">24sp</dimen>
+
+    <!-- Large Image -->
+    <dimen name="large_image_width">128dp</dimen>
+
+    <!-- typical spacing (margins and padding) -->
+    <dimen name="spacing_xxxlarge">72dp</dimen>
+    <dimen name="spacing_xxlarge">60dp</dimen>
+    <dimen name="spacing_xlarge">40dp</dimen>
+    <dimen name="spacing_large">24dp</dimen>
+    <dimen name="spacing_normal">16dp</dimen>
+    <dimen name="spacing_below_normal">12dp</dimen>
+    <dimen name="spacing_small">8dp</dimen>
+    <dimen name="spacing_tiny">4dp</dimen>
+    <dimen name="spacing_single">1dp</dimen>
+    <dimen name="spacing_none">0dp</dimen>
+
+    <dimen name="about_separator_height">0.5dp</dimen>
 
     <!--
 Refer to App Widget Documentation for margin information

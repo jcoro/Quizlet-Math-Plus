@@ -19,6 +19,17 @@ allprojects {
     }
 }
 
+ext {
+    supportLibVersion = "25.0.1"
+    junitVersion = "4.12"
+    retrofitVersion = "2.1.0"
+    playServicesVersion = "10.0.0"
+    testRunnerVersion = "0.5"
+    mockitoCoreVersion = "1.10.19"
+    powermockApiVersion = "1.4.12"
+    powermockJunitVersion ="1.6.2"
+}
+
 task clean(type: Delete) {
     delete rootProject.buildDir
 }
