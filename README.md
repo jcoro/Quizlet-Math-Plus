@@ -4,7 +4,7 @@ The Quizlet Math Plus app allows user to add mathematical formulas, links and cu
 ![Quizlet App](http://www.coronite.net/assets/img/github/QuizletApp.jpg)
 
 ## Features
-- Uses the MathJax JavaScript library to display mathematical formulas in Quizlet.com flash cards.
+- Uses the MathJax JavaScript library to display mathematical formulas in Quizlet.com flash cards. 
 - Allows teachers and students to add links to relevant online content for each card.
 - Allows the creator of the card set to add “branding” links for businesses and schools.
 - Toggles the flash card term and description in the same view, so both are visible at the same time.
@@ -13,52 +13,44 @@ The Quizlet Math Plus app allows user to add mathematical formulas, links and cu
 - Properly displays “standard format” flash card data as well.
 
 ## Implementation
-Quizlet Math Plus requires entering flash card terms and definitions on Quizlet.com using a "JSON-like" syntax (like that shown below). Quizlet Math Plus allows for the following data fields:
 
 ### Term
-
-- "id": An identifier for the flash card (shown in the upper-left).
-- "link-text": Text for a link to relevant web content (shown in the upper-right).
-- "link-href": URL for the link to relevant web content.
-- "branding-text": Text for a link to "branding" for an organization or educational institution (shown in the lower-right).
-- "branding-url": URL for the link to "branding" for an organization or educational institution.
-- "header": The main text for the term / question.
-- "list-style-type": CSS list-style-type property (e.g., "none", "lower-alpha", "lower-roman", etc.) to display multiple-part or multiple-choice questions.
-"list-items": An array of strings representing the list items.
-
-### Term JSON
 ```json
 {
-  "meta": {
-    "id": "Definition 1.1",
-    "link-text": "1.1 Variables and Statements",
-    "link-href": "http://www.coronite.net/training/discrete_mathematics/discrete_mathematics_lesson1.php#section-1",
-    "branding-text": "Set Created By: Coronite Creative",
-    "branding-url": "http://www.coronite.net"
-  },
-  "header": "Define the following term:",
-  "list-style-type": "none",
-  "list-items": [
-    "Statement"
-  ]
+ "meta": {
+ "id": "Problem 2",
+ "link-text": "1.2 Set Elements And Subsets",
+ "link-href": "http://www.coronite.net/training/discrete_mathematics/discrete_mathematics_lesson1.php#section-2",
+ "image-url": "",
+ "branding-text": "Set Created By: Coronite Creative",
+ "branding-url": "http://www.coronite.net"
+ },
+ "header": "List the elements of each set where \\( \\mathbf{N}= \\{ 1, 2, 3, \\dots \\} .\\)",
+ "list-style-type": "lower-alpha",
+ "list-items": [
+ "\\( A=\\{ x \\in \\mathbf{N} \\; | \\; 3 \\lt x \\lt 9 \\} \\)",
+ "\\( B=\\{ x \\in \\mathbf{N} \\; | \\; x \\; is \\; even, x \\lt 11 \\} \\)",
+ "\\( C=\\{ x \\in \\mathbf{N} \\; | \\; 4 + x = 3 \\} \\)"
+ ]
 }
 ```
 ### Definition
-- "header": The definition or answer to the question.
-- "list-style-type": CSS list-style-type property (e.g., "none", "lower-alpha", "lower-roman", etc.) to display answers tomultiple-part or multiple-choice questions.
-"list-items": An array of strings representing the list item answers.
-
-
-### Definition JSON
 ```json
 {
-  "header": "A universal declarative sentence which is either true or false.",
-  "list-style-type": "lower-alpha",
-  "list-items": []
+ "header": "",
+ "list-style-type": "lower-alpha",
+ "list-items": [
+ "\\( A=\\{ 3, 4, 5, 6, 7, 8 \\} \\)",
+ "\\( B=\\{ 2, 4, 6, 8, 10 \\} \\)",
+ "\\( C= \\emptyset \\)"
+ ]
 }
 ```
+The various flash card elements created from the above json are shown below:
 
-Quizlet Math Plus also displays "standard-format" Quizlet flash cards appropriately.
+![Quizlet App](http://www.coronite.net/assets/img/github/Quizlet2.jpg)
+
+
 
 ## Android Features Implemented:
 
