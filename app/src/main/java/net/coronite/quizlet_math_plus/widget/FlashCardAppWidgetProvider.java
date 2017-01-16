@@ -16,10 +16,21 @@ import net.coronite.quizlet_math_plus.R;
 import net.coronite.quizlet_math_plus.sync.FlashCardSyncAdapter;
 
 /**
- * AppWidgetProvider extends BroadcastReceiver and will respond to Broadcasts from the SyncAdapter
+ * The {@code FlashCardAppWidgetProvider} extends {@code AppWidgetProvider} for interacting with
+ * the homescreen widget, i.e., it receives broadcasts when the widget is enabled, updated, deleted,
+ * disabled, etc.
+ * Note: AppWidgetProvider extends BroadcastReceiver and will respond to Broadcasts
+ * from the SyncAdapter when the data is changed.
  */
 public class FlashCardAppWidgetProvider extends AppWidgetProvider {
 
+    /**
+     * Updates the App Widget when the data is changed.
+     * @param context - the current context or Interface to global information about an
+     *                application environment.
+     * @param appWidgetManager - the appWidgetManager needed to update the App Widget state.
+     * @param appWidgetId - the Id of the App Widget (we may have multiple).
+     */
     public void updateAppWidget(Context context, AppWidgetManager appWidgetManager,
                                 int appWidgetId) {
 
@@ -76,6 +87,12 @@ public class FlashCardAppWidgetProvider extends AppWidgetProvider {
         // Enter relevant functionality for when the last widget is disabled
     }
 
+    /**
+     * Sets the remote adapter which allows our widget to display a list of flash card sets.
+     * @param context - the current context or Interface to global information about an
+     *                application environment.
+     * @param views - the views to be poulated.
+     */
     private void setRemoteAdapter(Context context, @NonNull final RemoteViews views) {
         views.setRemoteAdapter(R.id.widget_list,
                 new Intent(context, FlashCardRemoteViewsService.class));

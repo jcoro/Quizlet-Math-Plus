@@ -25,6 +25,10 @@ import net.coronite.quizlet_math_plus.data.models.Term;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * The {@code DetailActivity} contains the {@code ViewPager} which allows the user to swipe through
+ * the cards (fragments) of a selected flash card set.
+ */
 public class DetailActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
     private static final int SET_LOADER = 0;
     private static final String EXTRA_SET_ID = "SET_ID";
@@ -86,6 +90,9 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
         mPagerAdapter = new ScreenSlidePagerAdapter(mFragmentManager);
     }
 
+    /**
+     * Set up the ActionBar to display the Up button.
+     */
     private void setupActionBar() {
         Toolbar toolbar = (Toolbar) findViewById(R.id.detail_toolbar);
         setSupportActionBar(toolbar);
@@ -187,8 +194,20 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
         return mCursorTerms;
     }
 
+    /**
+     * The {@code ScreenSlidePagerAdapter} allows the user to swipe through each flash card
+     * as a fragment.
+     *
+     * Note that this extends {@code FragmentStatePagerAdapter} which is a better choice than
+     * {@code FragmentPagerAdapter} when there may exist a large number of items.
+     * When pages are not visible, their fragment may be destroyed thus allowing the adapter to
+     * hold on to less memory. The tradeoff is greater overhead when switching between fragments.
+     *
+     * We use the alternative {@code FragmentPagerAdapter} for paging between the two tabs in the
+     * {@code MainActivity}.
+     */
     private class ScreenSlidePagerAdapter extends FragmentStatePagerAdapter {
-        public ScreenSlidePagerAdapter(FragmentManager fm) {
+        ScreenSlidePagerAdapter(FragmentManager fm) {
             super(fm);
         }
 
@@ -204,7 +223,7 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
                 args.putBoolean(ARG_SHOW_TERM, mShowTerm);
             }
             Fragment fragment = new DetailActivityFragment();
-            if (args.size()>0){
+            if (args.size() > 0){
                 fragment.setArguments(args);
             }
 

@@ -11,21 +11,28 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
 import net.coronite.quizlet_math_plus.adapters.SetCursorAdapter;
+import net.coronite.quizlet_math_plus.callback.DataLoadedCallback;
 import net.coronite.quizlet_math_plus.data.FlashCardContract;
 
 /**
- * A Fragment for displaying the flashcard sets created by the user.
+ * A Fragment for displaying the list of flashcard sets created by the user.
  */
-public class UserSetFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
+public class UserSetFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>, DataLoadedCallback {
+
+    @Override
+    public void dataIsLoaded(){
+
+    }
+
     private static final int SET_LOADER = 1;
     private static IntentFilter syncIntentFilter = new IntentFilter(MainActivity.ACTION_FINISHED_SYNC);
     private BroadcastReceiver syncBroadcastReceiver = new BroadcastReceiver() {
@@ -44,8 +51,10 @@ public class UserSetFragment extends Fragment implements LoaderManager.LoaderCal
     };
 
     // these indices must match the projection
+    @SuppressWarnings("unused")
     public static final int INDEX_COLUMN_AUTO_ID = 0;
     public static final int INDEX_COLUMN_SET_ID = 1;
+    @SuppressWarnings("unused")
     public static final int INDEX_COLUMN_SET_STUDIED = 2;
     public static final int INDEX_COLUMN_SET_URL = 3;
     public static final int INDEX_COLUMN_SET_TITLE = 4;
@@ -86,12 +95,12 @@ public class UserSetFragment extends Fragment implements LoaderManager.LoaderCal
     public void onResume() {
         super.onResume();
         getLoaderManager().initLoader(SET_LOADER, null, this);
-        getActivity().registerReceiver(syncBroadcastReceiver, syncIntentFilter);
+        LocalBroadcastManager.getInstance(getActivity()).registerReceiver(syncBroadcastReceiver, syncIntentFilter);
     }
 
     @Override
     public void onPause() {
-        getActivity().unregisterReceiver(syncBroadcastReceiver);
+        LocalBroadcastManager.getInstance(getActivity()).unregisterReceiver(syncBroadcastReceiver);
         super.onPause();
     }
 
@@ -99,7 +108,7 @@ public class UserSetFragment extends Fragment implements LoaderManager.LoaderCal
      * Method to restart loader via a broadcast from the sync adapter.
      */
     private void restartLoaderFromBroadcast(){
-        Log.d( "US BROADCAST RECEIVED", "US BROADCAST RECEIVED" );
+        //Log.d( "US BROADCAST RECEIVED", "US BROADCAST RECEIVED" );
         getLoaderManager().restartLoader(SET_LOADER, null, this);
     }
 
@@ -120,17 +129,20 @@ public class UserSetFragment extends Fragment implements LoaderManager.LoaderCal
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         if(data.moveToFirst()) {
-            Log.d( "US CURSOR RETURNED", Integer.toString(data.getCount()) );
+            // Use swapCursor() with a CursorLoader as per:
+            // https://developer.android.com/guide/components/loaders.html
+            //Log.d( "US CURSOR RETURNED", Integer.toString(data.getCount()) );
             mAdapter.swapCursor(data);
             if (mSetRecyclerView.getVisibility() == View.GONE){
                 mSetRecyclerView.setVisibility(View.VISIBLE);
                 mEmptyView.setVisibility(View.GONE);
             }
         } else {
-            Log.d( "US CURSOR EMPTY", "CURSOR EMPTY" );
+            //Log.d( "US CURSOR EMPTY", "CURSOR EMPTY" );
             mSetRecyclerView.setVisibility(View.GONE);
             mEmptyView.setVisibility(View.VISIBLE);
         }
+        ((DataLoadedCallback) getActivity()).dataIsLoaded();
     }
 
     @Override

@@ -12,22 +12,30 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
 import net.coronite.quizlet_math_plus.adapters.SetCursorAdapter;
+import net.coronite.quizlet_math_plus.callback.DataLoadedCallback;
 import net.coronite.quizlet_math_plus.data.FlashCardContract;
 
 
 /**
- * A Fragment for displaying the user's studied flashcard sets.
+ * A Fragment for displaying the list of flashcard sets the user didn't create, but is studying.
  */
-public class UserStudiedFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>  {
+public class UserStudiedFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>,
+        DataLoadedCallback {
+
+    @Override
+    public void dataIsLoaded(){
+
+    }
+
     private static final int SET_LOADER = 0;
     private static IntentFilter syncIntentFilter = new IntentFilter(MainActivity.ACTION_FINISHED_SYNC);
     private BroadcastReceiver syncBroadcastReceiver = new BroadcastReceiver() {
@@ -44,7 +52,6 @@ public class UserStudiedFragment extends Fragment implements LoaderManager.Loade
             FlashCardContract.SetEntry.COLUMN_SET_TITLE,
             FlashCardContract.SetEntry.COLUMN_SET_CREATED_BY
     };
-
 
     private SetCursorAdapter mAdapter;
     private TextView mEmptyView;
@@ -80,12 +87,12 @@ public class UserStudiedFragment extends Fragment implements LoaderManager.Loade
     public void onResume() {
         super.onResume();
         getLoaderManager().initLoader(SET_LOADER, null, this);
-        getActivity().registerReceiver(syncBroadcastReceiver, syncIntentFilter);
+        LocalBroadcastManager.getInstance(getActivity()).registerReceiver(syncBroadcastReceiver, syncIntentFilter);
     }
 
     @Override
     public void onPause() {
-        getActivity().unregisterReceiver(syncBroadcastReceiver);
+        LocalBroadcastManager.getInstance(getActivity()).unregisterReceiver(syncBroadcastReceiver);
         super.onPause();
     }
 
@@ -93,7 +100,7 @@ public class UserStudiedFragment extends Fragment implements LoaderManager.Loade
      * Method to restart loader via a broadcast from the sync adapter.
      */
     private void restartLoaderFromBroadcast(){
-        Log.d( "USS BROADCAST RECEIVED", "USS BROADCAST RECEIVED" );
+        //Log.d( "USS BROADCAST RECEIVED", "USS BROADCAST RECEIVED" );
         getLoaderManager().restartLoader(SET_LOADER, null, this);
     }
 
@@ -115,7 +122,9 @@ public class UserStudiedFragment extends Fragment implements LoaderManager.Loade
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         if(data.moveToFirst()) {
-            Log.d( "USS CURSOR RETURNED", Integer.toString(data.getCount()) );
+            // Log.d( "USS CURSOR RETURNED", Integer.toString(data.getCount()) );
+            // Use swapCursor() with a CursorLoader as per:
+            // https://developer.android.com/guide/components/loaders.html
             mAdapter.swapCursor(data);
             if (mSetRecyclerView.getVisibility() == View.GONE){
                 mSetRecyclerView.setVisibility(View.VISIBLE);
@@ -123,13 +132,11 @@ public class UserStudiedFragment extends Fragment implements LoaderManager.Loade
 
             }
         } else {
-            Log.d( "USS CURSOR EMPTY", "CURSOR EMPTY" );
+            // Log.d( "USS CURSOR EMPTY", "CURSOR EMPTY" );
             mSetRecyclerView.setVisibility(View.GONE);
             mEmptyView.setVisibility(View.VISIBLE);
         }
-        MainActivity.dismissOverlay();
-
-
+        ((DataLoadedCallback) getActivity()).dataIsLoaded();
     }
 
     @Override

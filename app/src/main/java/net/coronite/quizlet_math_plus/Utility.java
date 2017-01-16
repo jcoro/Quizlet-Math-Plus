@@ -9,7 +9,9 @@ import android.view.View;
 
 import java.util.Locale;
 
-
+/**
+ * The {@code Utility} class contains static methods for various tasks.
+ */
 public class Utility {
 
     /**
@@ -68,6 +70,8 @@ public class Utility {
     }
 
     /**
+     * Animates the appearance and disappearance of the overlay that's shown when the app is
+     * fetching data remotely.
      * @param view         View to animate
      * @param toVisibility Visibility at the end of animation
      * @param toAlpha      Alpha at the end of animation

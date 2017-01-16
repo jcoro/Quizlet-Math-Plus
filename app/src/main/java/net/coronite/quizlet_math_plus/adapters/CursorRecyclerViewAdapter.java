@@ -24,7 +24,7 @@ public abstract class CursorRecyclerViewAdapter<VH extends RecyclerView.ViewHold
 
     private DataSetObserver mDataSetObserver;
 
-    public CursorRecyclerViewAdapter(Context context, Cursor cursor) {
+    CursorRecyclerViewAdapter(Context context, Cursor cursor) {
         mContext = context;
         mCursor = cursor;
         mDataValid = cursor != null;
@@ -77,7 +77,7 @@ public abstract class CursorRecyclerViewAdapter<VH extends RecyclerView.ViewHold
      * Change the underlying cursor to a new cursor. If there is an existing cursor it will be
      * closed.
      */
-    public void changeCursor(Cursor cursor) {
+    private void changeCursor(Cursor cursor) {
         Cursor old = swapCursor(cursor);
         if (old != null) {
             old.close();

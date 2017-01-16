@@ -7,13 +7,16 @@ import android.database.sqlite.SQLiteOpenHelper;
 import net.coronite.quizlet_math_plus.data.FlashCardContract.SetEntry;
 import net.coronite.quizlet_math_plus.data.FlashCardContract.TermEntry;
 
-public class FlashCardDbHelper extends SQLiteOpenHelper {
+/**
+ * A helper class for creating the SQL necessary for creating the database.
+ */
+class FlashCardDbHelper extends SQLiteOpenHelper {
     // If you change the database schema, you must increment the database version.
     private static final int DATABASE_VERSION = 1;
 
     static final String DATABASE_NAME = "flashcard.db";
 
-    public FlashCardDbHelper(Context context) {
+    FlashCardDbHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
 

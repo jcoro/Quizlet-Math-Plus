@@ -7,11 +7,14 @@ import android.os.Binder;
 import android.widget.AdapterView;
 import android.widget.RemoteViews;
 import android.widget.RemoteViewsService;
-
 import net.coronite.quizlet_math_plus.R;
-import net.coronite.quizlet_math_plus.adapters.SetCursorAdapter;
 import net.coronite.quizlet_math_plus.data.FlashCardContract;
 
+
+/**
+ * The {@code FlashCardRemoteViewsService } allows our remote adapter to request remote views
+ * for creating a list in our home page widget.
+ */
 public class FlashCardRemoteViewsService extends RemoteViewsService {
 
     private static final String EXTRA_SET_ID = "SET_ID";
@@ -30,7 +33,9 @@ public class FlashCardRemoteViewsService extends RemoteViewsService {
     // these indices must match the projection
     public static final int INDEX_COLUMN_AUTO_ID = 0;
     public static final int INDEX_COLUMN_SET_ID = 1;
+    @SuppressWarnings("unused")
     public static final int INDEX_COLUMN_SET_STUDIED = 2;
+    @SuppressWarnings("unused")
     public static final int INDEX_COLUMN_SET_URL = 3;
     public static final int INDEX_COLUMN_SET_TITLE = 4;
     public static final int INDEX_COLUMN_SET_CREATED_BY = 5;

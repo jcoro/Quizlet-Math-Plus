@@ -12,6 +12,7 @@ import android.content.SyncRequest;
 import android.content.SyncResult;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
 import net.coronite.quizlet_math_plus.MainActivity;
@@ -33,6 +34,10 @@ import retrofit2.Call;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
+/**
+ * {@code FlashCardSyncAdapter} extends {@code AbstractThreadedSyncAdapter } and is responsible for
+ * fetching flash card data and updating this data in the database.
+ */
 public class FlashCardSyncAdapter extends AbstractThreadedSyncAdapter {
 
     // Interval at which to sync with quizlet, in seconds.
@@ -54,7 +59,7 @@ public class FlashCardSyncAdapter extends AbstractThreadedSyncAdapter {
     @Override
     public void onPerformSync(Account account, Bundle bundle, String s, ContentProviderClient contentProviderClient, SyncResult syncResult) {
 
-        Log.d("SYNC_ADAPTER", "Starting sync");
+        //Log.d("SYNC_ADAPTER", "Starting sync");
 
         // First, delete old set and term data so we don't build up an endless history
         getContext().getContentResolver().delete(FlashCardContract.SetEntry.CONTENT_URI, null, null);
@@ -99,7 +104,7 @@ public class FlashCardSyncAdapter extends AbstractThreadedSyncAdapter {
             if (mStudiedSets != null || mUserSets != null) {
                 totalSetsVector = new Vector<>(totalNumOfSets);
 
-                Log.d("TOTAL NUMBER OF SETS: ", Integer.toString(totalNumOfSets));
+                //Log.d("TOTAL NUMBER OF SETS: ", Integer.toString(totalNumOfSets));
 
                 if (mUserSets != null) {
 
@@ -111,7 +116,7 @@ public class FlashCardSyncAdapter extends AbstractThreadedSyncAdapter {
                         setValues.put(FlashCardContract.SetEntry.COLUMN_SET_TITLE, set.getTitle());
                         setValues.put(FlashCardContract.SetEntry.COLUMN_SET_CREATED_BY, set.getCreatedBy());
                         totalSetsVector.add(setValues);
-                        Log.d("US CREATED_BY: ", set.getCreatedBy());
+                        //Log.d("US CREATED_BY: ", set.getCreatedBy());
 
                         retrofit = new Retrofit.Builder()
                                 .baseUrl(QuizletTermsAPI.ENDPOINT)
@@ -142,7 +147,7 @@ public class FlashCardSyncAdapter extends AbstractThreadedSyncAdapter {
                             termsVector.toArray(termsCvArray);
                             getContext().getContentResolver().bulkInsert(FlashCardContract.TermEntry.CONTENT_URI, termsCvArray);
                         }
-                        Log.d("SYNC ADAPTER", termsVector.size() + " USER TERMS Inserted");
+                        //Log.d("SYNC ADAPTER", termsVector.size() + " USER TERMS Inserted");
                     }
                 }
 
@@ -155,7 +160,7 @@ public class FlashCardSyncAdapter extends AbstractThreadedSyncAdapter {
                         studiedSetValues.put(FlashCardContract.SetEntry.COLUMN_SET_TITLE, studiedSet.getSet().getTitle());
                         studiedSetValues.put(FlashCardContract.SetEntry.COLUMN_SET_CREATED_BY, studiedSet.getSet().getCreatedBy());
                         totalSetsVector.add(studiedSetValues);
-                        Log.d("USS CREATED_BY: ", studiedSet.getSet().getCreatedBy());
+                        //Log.d("USS CREATED_BY: ", studiedSet.getSet().getCreatedBy());
 
                         retrofit = new Retrofit.Builder()
                                 .baseUrl(QuizletTermsAPI.ENDPOINT)
@@ -187,7 +192,7 @@ public class FlashCardSyncAdapter extends AbstractThreadedSyncAdapter {
                             getContext().getContentResolver().bulkInsert(FlashCardContract.TermEntry.CONTENT_URI, studiedTermsCvArray);
                         }
 
-                        Log.d("SYNC ADAPTER", studiedTermsVector.size() + " STUDIED TERMS Inserted");
+                        //Log.d("SYNC ADAPTER", studiedTermsVector.size() + " STUDIED TERMS Inserted");
                     }
 
                     // add to database
@@ -199,15 +204,18 @@ public class FlashCardSyncAdapter extends AbstractThreadedSyncAdapter {
                     }
                 }
 
-                Log.d("SYNC ADAPTER", "Sync Complete. " + totalSetsVector.size() + " SETS Inserted");
+                //Log.d("SYNC ADAPTER", "Sync Complete. " + totalSetsVector.size() + " SETS Inserted");
             }
         }
-        getContext().sendBroadcast(new Intent(MainActivity.ACTION_FINISHED_SYNC));
+        LocalBroadcastManager.getInstance(getContext()).sendBroadcast(new Intent(MainActivity.ACTION_FINISHED_SYNC));
+        //getContext().sendBroadcast(new Intent(MainActivity.ACTION_FINISHED_SYNC));
         updateWidgets();
     }
 
+    /**
+     * This sends the data to FlashCardAppWidgetProvider
+     */
     private void updateWidgets() {
-        // This sends the data to FlashCardAppWidgetProvider
         // Setting the package ensures that only components in our app will receive the broadcast
         Intent dataUpdatedIntent = new Intent(ACTION_DATA_UPDATED)
                 .setPackage(getContext().getPackageName());

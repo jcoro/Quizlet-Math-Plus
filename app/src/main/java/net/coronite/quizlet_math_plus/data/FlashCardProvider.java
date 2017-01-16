@@ -11,6 +11,9 @@ import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+/**
+ * A Content Provider for flash card data.
+ */
 public class FlashCardProvider extends ContentProvider {
 
     private static final UriMatcher sUriMatcher = buildUriMatcher();
@@ -22,6 +25,7 @@ public class FlashCardProvider extends ContentProvider {
     private static final SQLiteQueryBuilder sSetQueryBuilder;
     private static final SQLiteQueryBuilder sTermQueryBuilder;
 
+    // static initialization block - run once to initialize class variables.
     static {
         sSetQueryBuilder = new SQLiteQueryBuilder();
         sSetQueryBuilder.setTables(FlashCardContract.SetEntry.TABLE_NAME);
@@ -29,6 +33,10 @@ public class FlashCardProvider extends ContentProvider {
         sTermQueryBuilder.setTables(FlashCardContract.TermEntry.TABLE_NAME);
     }
 
+    /**
+     * Builds a {@code UriMatcher} for sets and terms.
+     * @return the {@code UriMatcher}
+     */
     static UriMatcher buildUriMatcher() {
 
         final UriMatcher matcher = new UriMatcher(UriMatcher.NO_MATCH);

@@ -16,7 +16,6 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.InputType;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -27,14 +26,20 @@ import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 import com.google.firebase.analytics.FirebaseAnalytics;
 
+import net.coronite.quizlet_math_plus.callback.DataLoadedCallback;
 import net.coronite.quizlet_math_plus.sync.FlashCardSyncAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity {
-    public static final String ACTION_FINISHED_SYNC = "net.coronite.quizlet_math_plus.ACTION_FINISHED_SYNC";
-    static FrameLayout mProgressOverlay;
+/**
+ * {@code MainActivity} launches the app. On the first run of the app, the user is prompted to
+ * enter his or her Quizlet.com username. Data is then fetched and stored to the database.
+ */
+public class MainActivity extends AppCompatActivity implements DataLoadedCallback {
+    public static final String ACTION_FINISHED_SYNC =
+            "net.coronite.quizlet_math_plus.ACTION_FINISHED_SYNC";
+    FrameLayout mProgressOverlay;
     private String mUsername;
     static ViewPagerAdapter mViewPagerAdapter;
     private Context mContext = this;
@@ -42,6 +47,14 @@ public class MainActivity extends AppCompatActivity {
     static private AdView mAdView;
     SharedPreferences mPrefs;
     SharedPreferences.OnSharedPreferenceChangeListener mSharedPrefsListener;
+
+    @Override
+    public synchronized void dataIsLoaded(){
+        if (mProgressOverlay != null && mProgressOverlay.getVisibility() == View.VISIBLE) {
+            //Log.d("DISMISS OVERLAY", "DISMISS OVERLAY");
+            Utility.animateView(mProgressOverlay, View.GONE, 0, 200);
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,7 +69,7 @@ public class MainActivity extends AppCompatActivity {
                 if (username != null && !username.equals(mUsername)) {
                     showOverlay();
                     fetchData();
-                    Log.d("USERNAME CHANGE", "INITIAL");
+                    //Log.d("USERNAME CHANGE", "INITIAL");
                     mUsername = username;
                 }
             }
@@ -110,7 +123,7 @@ public class MainActivity extends AppCompatActivity {
         mPrefs.registerOnSharedPreferenceChangeListener(mSharedPrefsListener);
         String username = Utility.getUsername(this);
         if(username != null && !username.equals(mUsername)) {
-            Log.d("USERNAME", "Usernames are different");
+            //Log.d("USERNAME", "Usernames are different");
             fetchData();
         }
     }
@@ -128,27 +141,19 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /**
-     * Show the overlay when the data is loading
+     * Show the overlay when the app is fetching remote data.
+     * This occurs when the user enters or changes his or her username.
      */
-    static void showOverlay(){
+    public void showOverlay(){
+        //Log.d("SHOW OVERLAY", "SHOW OVERLAY CALLED");
         if (mProgressOverlay != null && mProgressOverlay.getVisibility() == View.GONE) {
-            Log.d("SHOW OVERLAY", "SHOW OVERLAY");
+            //Log.d("SHOW OVERLAY", "ANIMATE INITIATED");
             Utility.animateView(mProgressOverlay, View.VISIBLE, 0.4f, 200);
         }
     }
 
     /**
-     * Dismiss the overlay (called in UserStudiedFragment when the data is finished downloading)
-     */
-    public static void dismissOverlay(){
-        if (mProgressOverlay != null && mProgressOverlay.getVisibility() == View.VISIBLE) {
-            Log.d("DISMISS OVERLAY", "DISMISS OVERLAY");
-            Utility.animateView(mProgressOverlay, View.GONE, 0, 200);
-        }
-    }
-
-    /**
-     * On the first run of the app, show an Alert where the user can enter the username.
+     * On the first run of the app, show an Alert where the user can enter their username.
      */
     public void checkFirstRun() {
         boolean mFirstRun = Utility.getIsFirstRun(mContext);
@@ -171,9 +176,9 @@ public class MainActivity extends AppCompatActivity {
             AlertDialog alert = builder.create();
             alert.show();
 
-        } else {
-            Log.d("NOT FIRST RUN", "NOT FIRST RUN");
-        }
+        } //else {
+            //Log.d("NOT FIRST RUN", "NOT FIRST RUN");
+        //}
     }
 
     @Override
@@ -208,7 +213,7 @@ public class MainActivity extends AppCompatActivity {
 
     /**
      * Method for adding Fragments to the ViewPagerAdapter, and setting the Adapter to the ViewPager
-     * @param viewPager the ViewPager to which the Adapter is set
+     * @param viewPager the ViewPager to which the Adapter is set.
      */
     private void setupViewPager(ViewPager viewPager) {
         mViewPagerAdapter = new ViewPagerAdapter(getSupportFragmentManager());
@@ -223,13 +228,29 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-
-
+    /**
+     * {@code ViewPagerAdapter} allows users to swipe between a list of sets they've created and
+     * a list of sets they're studying. Each list is in a fragment used in a {@code TabLayout}.
+     *
+     * * Note that this extends {@code FragmentPagerAdapter} which is a better choice than
+     * {@code FragmentStatePagerAdapter} when the number of items (tabs in this case) is
+     * relatively small (we have only two).
+     *
+     * The fragments are kept in memory and there is relatively little
+     * overhead when switching between fragments.
+     *
+     * We use the alternative {@code FragmentStatePagerAdapter} in the {@code DetailActivity}
+     * for paging between individual flash cards.
+     */
     class ViewPagerAdapter extends FragmentPagerAdapter {
         private final List<Fragment> mFragmentList = new ArrayList<>();
         private final List<String> mFragmentTitleList = new ArrayList<>();
 
-        public ViewPagerAdapter(FragmentManager manager) {
+        /**
+         * Constructor
+         * @param manager - the FragmentManager.
+         */
+        ViewPagerAdapter(FragmentManager manager) {
             super(manager);
         }
 
@@ -238,34 +259,20 @@ public class MainActivity extends AppCompatActivity {
             return mFragmentList.get(position);
         }
 
-        // Here we can finally safely save a reference to the created
-        // Fragment, no matter where it came from (either getItem() or
-        // FragmentManger). Simply save the returned Fragment from
-        // super.instantiateItem() into an appropriate reference depending
-        // on the ViewPager position.
-        /**
-        //@Override
-        public Object instantiateItem(ViewGroup container, int position) {
-            Fragment createdFragment = (Fragment) super.instantiateItem(container, position);
-            // save the appropriate reference depending on position
-            switch (position) {
-                case 0:
-                    m1stFragment = (UserSetFragment) createdFragment;
-                    break;
-                case 1:
-                    m2ndFragment = (UserStudiedFragment) createdFragment;
-                    break;
-            }
-            return createdFragment;
-        }
-         **/
 
         @Override
         public int getCount() {
             return mFragmentList.size();
         }
 
-        public void addFragment(Fragment fragment, String title) {
+        /**
+         * Adds a fragment to the fragment list and the tab's title to the tab title list.
+         * @param fragment - one of two fragments to be added to the {@code ViewPagerAdapter} -
+         *                 one for each tab.
+         * @param title - either "Your Sets" or "Studied Sets" to indicate the sets the user
+         *              created, and is studying respectively.
+         */
+        void addFragment(Fragment fragment, String title) {
             mFragmentList.add(fragment);
             mFragmentTitleList.add(title);
         }

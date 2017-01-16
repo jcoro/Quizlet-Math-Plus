@@ -15,19 +15,31 @@ import net.coronite.quizlet_math_plus.R;
 import net.coronite.quizlet_math_plus.Utility;
 import net.coronite.quizlet_math_plus.data.models.Set;
 
+/**
+ * {@code SetCursorAdapter} exposes flash card {@code Set} data from a Cursor to a RecyclerView.
+ */
+
 public class SetCursorAdapter extends CursorRecyclerViewAdapter<SetCursorAdapter.ViewHolder>{
 
     private static final String EXTRA_SET_ID = "SET_ID";
     private static final String EXTRA_SET_TITLE = "SET_TITLE";
     private static final String EXTRA_SET_CREATED_BY = "SET_CREATED_BY";
-    private static Context mContext;
+    private Context mContext;
 
+    /**
+     * Constructor for {@code SetCursorAdapter}
+     * @param context - the {@code Context} of the adapter.
+     * @param cursor - the {@code Cursor} from which data is obtained.
+     */
     public SetCursorAdapter(Context context, Cursor cursor){
         super(context,cursor);
         mContext = context;
     }
 
-    public static class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+    /**
+     * A {@code RecyclerView.ViewHolder } for listing the {@code Set}s in the {@code MainActivity}.
+     */
+    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         private TextView mTitleTextView;
         private TextView mSetCreatedByTextView;
         private Set mSet;
@@ -35,6 +47,11 @@ public class SetCursorAdapter extends CursorRecyclerViewAdapter<SetCursorAdapter
         private String mSetTitle;
         private String mSetCreatedBy;
 
+
+        /**
+         * Constructor for {@code ViewHolder}
+         * @param itemView - The {@code View} to which the data is set.
+         */
         public ViewHolder(View itemView) {
             super(itemView);
             itemView.setOnClickListener(this);
@@ -42,6 +59,10 @@ public class SetCursorAdapter extends CursorRecyclerViewAdapter<SetCursorAdapter
             mSetCreatedByTextView = (TextView) itemView.findViewById(R.id.created_by);
         }
 
+        /**
+         * Binds the {@code Set} data to the {@code View}.
+         * @ param set - the {@code Set} to bind.
+         */
         public void bindSet(Set set) {
             mSet = set;
             mSetId = mSet.getQuizletSetId();

@@ -20,7 +20,8 @@ import net.coronite.quizlet_math_plus.data.models.Term;
 import java.util.Locale;
 
 /**
- * A placeholder fragment containing a simple view.
+ * {@code DetailActivityFragment} contains the custom MathView which allows each flash card in a set
+ * to be displayed.
  */
 public class DetailActivityFragment extends Fragment {
     private Term mTerm;

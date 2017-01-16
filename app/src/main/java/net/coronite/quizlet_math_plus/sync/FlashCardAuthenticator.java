@@ -7,9 +7,13 @@ import android.accounts.NetworkErrorException;
 import android.content.Context;
 import android.os.Bundle;
 
-public class FlashCardAuthenticator extends AbstractAccountAuthenticator {
+/**
+ * An extension of {@code AbstractAccountAuthenticator} is needed for the Content Provider.
+ * We do not actually add an account to the device.
+ */
+class FlashCardAuthenticator extends AbstractAccountAuthenticator {
 
-    public FlashCardAuthenticator(Context context){
+    FlashCardAuthenticator(Context context){
         super(context);
     }
 

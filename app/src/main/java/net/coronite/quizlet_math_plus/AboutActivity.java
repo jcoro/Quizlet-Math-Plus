@@ -9,6 +9,9 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.TextView;
 
+/**
+ * The {@code AboutActivity} provides links and info about the app.
+ */
 public class AboutActivity extends AppCompatActivity {
 
     @Override
