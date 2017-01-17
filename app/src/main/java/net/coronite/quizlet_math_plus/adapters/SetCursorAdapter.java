@@ -24,6 +24,8 @@ public class SetCursorAdapter extends CursorRecyclerViewAdapter<SetCursorAdapter
     private static final String EXTRA_SET_ID = "SET_ID";
     private static final String EXTRA_SET_TITLE = "SET_TITLE";
     private static final String EXTRA_SET_CREATED_BY = "SET_CREATED_BY";
+    private static final String EXTRA_SET_TERM_COUNT = "SET_TERM_COUNT";
+
     private Context mContext;
 
     /**
@@ -39,20 +41,21 @@ public class SetCursorAdapter extends CursorRecyclerViewAdapter<SetCursorAdapter
     /**
      * A {@code RecyclerView.ViewHolder } for listing the {@code Set}s in the {@code MainActivity}.
      */
-    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+    class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         private TextView mTitleTextView;
         private TextView mSetCreatedByTextView;
         private Set mSet;
         private String mSetId;
         private String mSetTitle;
         private String mSetCreatedBy;
+        private String mSetTermCount;
 
 
         /**
          * Constructor for {@code ViewHolder}
          * @param itemView - The {@code View} to which the data is set.
          */
-        public ViewHolder(View itemView) {
+        ViewHolder(View itemView) {
             super(itemView);
             itemView.setOnClickListener(this);
             mTitleTextView = (TextView) itemView.findViewById(R.id.list_item_set_title_text_view);
@@ -63,11 +66,12 @@ public class SetCursorAdapter extends CursorRecyclerViewAdapter<SetCursorAdapter
          * Binds the {@code Set} data to the {@code View}.
          * @ param set - the {@code Set} to bind.
          */
-        public void bindSet(Set set) {
+        void bindSet(Set set) {
             mSet = set;
             mSetId = mSet.getQuizletSetId();
             mSetTitle = mSet.getTitle();
             mSetCreatedBy = mSet.getCreatedBy();
+            mSetTermCount = mSet.getTerm_count();
             mTitleTextView.setText(mSetTitle);
             mSetCreatedByTextView.setText(Utility.getCreatedByString(mContext, mSetCreatedBy));
         }
@@ -79,6 +83,7 @@ public class SetCursorAdapter extends CursorRecyclerViewAdapter<SetCursorAdapter
             intent.putExtra(EXTRA_SET_ID, mSetId);
             intent.putExtra(EXTRA_SET_TITLE, mSetTitle);
             intent.putExtra(EXTRA_SET_CREATED_BY, mSetCreatedBy);
+            intent.putExtra(EXTRA_SET_TERM_COUNT, mSetTermCount);
             context.startActivity(intent);
         }
     }

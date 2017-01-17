@@ -36,6 +36,7 @@ public class FlashCardContract {
         public static final String COLUMN_SET_URL = "set_url";
         public static final String COLUMN_SET_TITLE = "set_title";
         public static final String COLUMN_SET_CREATED_BY = "set_created_by";
+        public static final String COLUMN_SET_TERM_COUNT = "term_count";
 
         /**
          * Builds a {@code Uri} for an individual flash card set.

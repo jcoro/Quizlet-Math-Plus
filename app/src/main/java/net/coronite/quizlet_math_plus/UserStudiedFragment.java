@@ -50,7 +50,8 @@ public class UserStudiedFragment extends Fragment implements LoaderManager.Loade
             FlashCardContract.SetEntry.COLUMN_SET_STUDIED,
             FlashCardContract.SetEntry.COLUMN_SET_URL,
             FlashCardContract.SetEntry.COLUMN_SET_TITLE,
-            FlashCardContract.SetEntry.COLUMN_SET_CREATED_BY
+            FlashCardContract.SetEntry.COLUMN_SET_CREATED_BY,
+            FlashCardContract.SetEntry.COLUMN_SET_TERM_COUNT
     };
 
     private SetCursorAdapter mAdapter;

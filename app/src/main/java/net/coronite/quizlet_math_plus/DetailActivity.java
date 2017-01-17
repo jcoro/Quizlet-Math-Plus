@@ -13,6 +13,7 @@ import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v4.view.PagerAdapter;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -23,8 +24,8 @@ import net.coronite.quizlet_math_plus.data.models.Term;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
-import static net.coronite.quizlet_math_plus.R.id.fragment;
 
 /**
  * The {@code DetailActivity} contains the {@code ViewPager} which allows the user to swipe through
@@ -34,6 +35,7 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
     private static final int SET_LOADER = 0;
     private static final String EXTRA_SET_ID = "SET_ID";
     private static final String EXTRA_SET_TITLE = "SET_TITLE";
+    private static final String EXTRA_TERM_COUNT = "SET_TERM_COUNT";
     private static final String ARG_SET_COUNT = "SET_COUNT";
     private static final String ARG_SET_TITLE = "ARG_SET_TITLE";
     private static final String ARG_SET_ID = "arg_set_id";
@@ -44,13 +46,12 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
     private ProgressDialog pd = null;
     private Context mContext = this;
     private String mSetTitle;
-    private int mSetCount;
     private Boolean mShowTerm;
     private String mSetId;
     private PagerAdapter mPagerAdapter;
     private FragmentManager mFragmentManager;
-
-
+    private int mCardNumber;
+    private String mTermCount;
 
     private static final String[] TERM_COLUMNS = new String[]{
             //FlashCardContract.TermEntry.ID,
@@ -80,13 +81,34 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
             pd.show();
         }
         mSetTitle = getIntent().getStringExtra(EXTRA_SET_TITLE);
+        mTermCount = getIntent().getStringExtra(EXTRA_TERM_COUNT);
         mShowTerm = Utility.getShowTermBoolean(mContext);
         setContentView(R.layout.activity_detail);
-        setupActionBar();
+        mCardNumber = mCardNumber == 0 ? 1 : mCardNumber;
+        setupActionBar(mSetTitle, mCardNumber, mTermCount);
         getSupportLoaderManager().initLoader(SET_LOADER, null, this);
 
         // Instantiate a ViewPager.
         mPager = (CustomViewPager) findViewById(R.id.pager);
+        mPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+
+            @Override
+            public void onPageSelected(int pos) {
+                if (mTerms != null){
+                    setupActionBar(mSetTitle, pos+1, mTermCount);
+                }
+                mCardNumber = pos;
+            }
+
+            @Override
+            public void onPageScrolled(int pos, float positionOffset, int positionOffsetPixels) {
+
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int arg0) {
+            }
+        });
         mFragmentManager = getSupportFragmentManager();
         mPagerAdapter = new ScreenSlidePagerAdapter(mFragmentManager);
     }
@@ -94,14 +116,15 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
     /**
      * Set up the ActionBar to display the Up button.
      */
-    private void setupActionBar() {
+    private void setupActionBar(String setTitle, int position, String termCount) {
         Toolbar toolbar = (Toolbar) findViewById(R.id.detail_toolbar);
         setSupportActionBar(toolbar);
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
             // Show the Up button in the action bar.
             actionBar.setDisplayHomeAsUpEnabled(true);
-            actionBar.setTitle(mSetTitle);
+            String title = String.format(Locale.US, "%1$s Card %2$d of %3$s", setTitle, position, termCount);
+            actionBar.setTitle(title);
         }
     }
 
@@ -151,7 +174,6 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
             if(mTerms == null) {
                 mTerms = buildTerms(data);
             }
-            mSetCount = mTerms.size();
             if(pd.isShowing()) {
                 pd.dismiss();
             }
@@ -218,8 +240,8 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
             if (mTerms !=null) {
                 Term term = mTerms.get(position);
                 args.putParcelable(ARG_SET_ID, term);
-                args.putInt(ARG_SET_COUNT, mSetCount);
-                args.putInt(ARG_CARD_NUM, Integer.parseInt(term.getRank())  + 1);
+                args.putInt(ARG_CARD_NUM, mCardNumber);
+                args.putString(ARG_SET_COUNT, mTermCount);
                 args.putString(ARG_SET_TITLE, mSetTitle);
                 args.putBoolean(ARG_SHOW_TERM, mShowTerm);
             }

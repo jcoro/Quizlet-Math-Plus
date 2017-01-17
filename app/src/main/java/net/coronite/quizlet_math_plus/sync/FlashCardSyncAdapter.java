@@ -115,6 +115,7 @@ public class FlashCardSyncAdapter extends AbstractThreadedSyncAdapter {
                         setValues.put(FlashCardContract.SetEntry.COLUMN_SET_URL, set.getUrl());
                         setValues.put(FlashCardContract.SetEntry.COLUMN_SET_TITLE, set.getTitle());
                         setValues.put(FlashCardContract.SetEntry.COLUMN_SET_CREATED_BY, set.getCreatedBy());
+                        setValues.put(FlashCardContract.SetEntry.COLUMN_SET_TERM_COUNT, set.getTerm_count());
                         totalSetsVector.add(setValues);
                         //Log.d("US CREATED_BY: ", set.getCreatedBy());
 
@@ -159,6 +160,7 @@ public class FlashCardSyncAdapter extends AbstractThreadedSyncAdapter {
                         studiedSetValues.put(FlashCardContract.SetEntry.COLUMN_SET_URL, studiedSet.getSet().getUrl());
                         studiedSetValues.put(FlashCardContract.SetEntry.COLUMN_SET_TITLE, studiedSet.getSet().getTitle());
                         studiedSetValues.put(FlashCardContract.SetEntry.COLUMN_SET_CREATED_BY, studiedSet.getSet().getCreatedBy());
+                        studiedSetValues.put(FlashCardContract.SetEntry.COLUMN_SET_TERM_COUNT, studiedSet.getSet().getTerm_count());
                         totalSetsVector.add(studiedSetValues);
                         //Log.d("USS CREATED_BY: ", studiedSet.getSet().getCreatedBy());
 

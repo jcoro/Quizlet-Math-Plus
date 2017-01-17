@@ -47,7 +47,8 @@ public class UserSetFragment extends Fragment implements LoaderManager.LoaderCal
             FlashCardContract.SetEntry.COLUMN_SET_STUDIED,
             FlashCardContract.SetEntry.COLUMN_SET_URL,
             FlashCardContract.SetEntry.COLUMN_SET_TITLE,
-            FlashCardContract.SetEntry.COLUMN_SET_CREATED_BY
+            FlashCardContract.SetEntry.COLUMN_SET_CREATED_BY,
+            FlashCardContract.SetEntry.COLUMN_SET_TERM_COUNT
     };
 
     // these indices must match the projection
@@ -59,6 +60,8 @@ public class UserSetFragment extends Fragment implements LoaderManager.LoaderCal
     public static final int INDEX_COLUMN_SET_URL = 3;
     public static final int INDEX_COLUMN_SET_TITLE = 4;
     public static final int INDEX_COLUMN_SET_CREATED_BY = 5;
+    public static final int INDEX_COLUMN_SET_TERM_COUNT = 6;
+
 
     private SetCursorAdapter mAdapter;
     private TextView mEmptyView;

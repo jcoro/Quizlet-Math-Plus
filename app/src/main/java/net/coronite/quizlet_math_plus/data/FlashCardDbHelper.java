@@ -29,7 +29,8 @@ class FlashCardDbHelper extends SQLiteOpenHelper {
                 SetEntry.COLUMN_SET_STUDIED + " INTEGER NOT NULL, " +
                 SetEntry.COLUMN_SET_URL + " TEXT, " +
                 SetEntry.COLUMN_SET_TITLE + " TEXT, " +
-                SetEntry.COLUMN_SET_CREATED_BY + " TEXT " +
+                SetEntry.COLUMN_SET_CREATED_BY + " TEXT, " +
+                SetEntry.COLUMN_SET_TERM_COUNT + " TEXT " +
                 " );";
         // Create a table to hold Term data i.e., data for each card.
         final String SQL_CREATE_TERM_TABLE = "CREATE TABLE " + TermEntry.TABLE_NAME + " (" +

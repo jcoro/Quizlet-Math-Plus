@@ -10,10 +10,11 @@ import net.coronite.quizlet_math_plus.UserSetFragment;
  * Model for Flash Card Sets
  */
 public class Set implements Parcelable {
-    String id;
-    String url;
-    String title;
-    String created_by;
+    private String id;
+    private String url;
+    private String title;
+    private String created_by;
+    private String term_count;
 
 
     /**
@@ -23,11 +24,12 @@ public class Set implements Parcelable {
      * @param title The title for the set
      * @param created_by The creator of the set
      */
-    public Set (String id, String url, String title, String created_by){
+    public Set (String id, String url, String title, String created_by, String term_count){
         this.id = id;
         this.url = url;
         this.title = title;
         this.created_by = created_by;
+        this.term_count = term_count;
     }
 
     @Override
@@ -47,6 +49,8 @@ public class Set implements Parcelable {
 
     public String getCreatedBy() {return (created_by);}
 
+    public String getTerm_count() {return (term_count);}
+
     /**
      * Method for creating Set objects from a cursor
      * @param cursor the cursor from the set query
@@ -61,7 +65,8 @@ public class Set implements Parcelable {
             String url = cursor.getString(UserSetFragment.INDEX_COLUMN_SET_URL);
             String title = cursor.getString(UserSetFragment.INDEX_COLUMN_SET_TITLE);
             String created_by = cursor.getString(UserSetFragment.INDEX_COLUMN_SET_CREATED_BY);
-            set = new Set(id, url, title, created_by);
+            String term_count = cursor.getString(UserSetFragment.INDEX_COLUMN_SET_TERM_COUNT);
+            set = new Set(id, url, title, created_by, term_count);
         }
         return set;
     }
@@ -71,6 +76,7 @@ public class Set implements Parcelable {
         url = in.readString();
         title = in.readString();
         created_by = in.readString();
+        term_count = in.readString();
     }
 
     /**
@@ -84,6 +90,7 @@ public class Set implements Parcelable {
         parcel.writeString(url);
         parcel.writeString(title);
         parcel.writeString(created_by);
+        parcel.writeString(term_count);
     }
 
     /**
