@@ -7,6 +7,7 @@ import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.ShareActionProvider;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -60,6 +61,7 @@ public class DetailActivityFragment extends Fragment {
         ActionBar actionBar = ((AppCompatActivity)getActivity()).getSupportActionBar();
         if (actionBar != null) {
             String title = String.format(Locale.US, "%1$s Card %2$d of %3$d", mSetTitle, mCardNumber, mSetCount);
+            Log.d("CARDNUMBER", "" + mCardNumber);
             actionBar.setTitle(title);
         }
         MathView mv = (MathView) view.findViewById(R.id.mathview_text);

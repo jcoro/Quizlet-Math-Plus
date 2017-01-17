@@ -16,7 +16,6 @@ import android.support.v4.view.PagerAdapter;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.MenuItem;
 
 import net.coronite.quizlet_math_plus.data.FlashCardContract;
@@ -24,6 +23,8 @@ import net.coronite.quizlet_math_plus.data.models.Term;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static net.coronite.quizlet_math_plus.R.id.fragment;
 
 /**
  * The {@code DetailActivity} contains the {@code ViewPager} which allows the user to swipe through
@@ -132,8 +133,8 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         Uri uri = FlashCardContract.TermEntry.CONTENT_URI;
-        Log.d("Detail Activity - Uri", uri.toString());
-        Log.d("mSetId", mSetId);
+        //Log.d("Detail Activity - Uri", uri.toString());
+        //Log.d("mSetId", mSetId);
         return new CursorLoader(
                 mContext,             // context
                 uri,                  // uri
@@ -218,7 +219,7 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
                 Term term = mTerms.get(position);
                 args.putParcelable(ARG_SET_ID, term);
                 args.putInt(ARG_SET_COUNT, mSetCount);
-                args.putInt(ARG_CARD_NUM, position);
+                args.putInt(ARG_CARD_NUM, Integer.parseInt(term.getRank())  + 1);
                 args.putString(ARG_SET_TITLE, mSetTitle);
                 args.putBoolean(ARG_SHOW_TERM, mShowTerm);
             }
