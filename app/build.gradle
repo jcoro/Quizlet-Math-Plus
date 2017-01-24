@@ -37,29 +37,26 @@ android {
 
 
 dependencies {
-    compile fileTree(include: ['*.jar'], dir: 'libs')
-    compile project(':MathView')
-    compile 'com.android.support:appcompat-v7:' + rootProject.ext.supportLibVersion
-    compile 'com.android.support:support-v4:' + rootProject.ext.supportLibVersion
-    compile 'com.android.support:recyclerview-v7:' + rootProject.ext.supportLibVersion
-    compile 'com.android.support:design:' + rootProject.ext.supportLibVersion
-
-    compile 'com.squareup.retrofit2:retrofit:' + rootProject.ext.retrofitVersion
-    compile 'com.squareup.retrofit2:converter-gson:' + rootProject.ext.retrofitVersion
-
-    compile 'com.google.android.gms:play-services-ads:' + rootProject.ext.playServicesVersion
-    compile 'com.google.android.gms:play-services-analytics:' + rootProject.ext.playServicesVersion
-    compile 'com.google.firebase:firebase-core:' + rootProject.ext.playServicesVersion
-
+    compile fileTree(include: ['*.jar'], dir: 'libs');
+    compile project(':MathView');
+    compile 'com.android.support:appcompat-v7:' + rootProject.ext.supportLibVersion;
+    compile 'com.android.support:support-v4:' + rootProject.ext.supportLibVersion;
+    compile 'com.android.support:recyclerview-v7:' + rootProject.ext.supportLibVersion;
+    compile 'com.android.support:design:' + rootProject.ext.supportLibVersion;
+    compile 'com.squareup.retrofit2:retrofit:' + rootProject.ext.retrofitVersion;
+    compile 'com.squareup.retrofit2:converter-gson:' + rootProject.ext.retrofitVersion;
+    compile 'com.google.android.gms:play-services-ads:' + rootProject.ext.playServicesVersion;
+    compile 'com.google.android.gms:play-services-analytics:' + rootProject.ext.playServicesVersion;
+    compile 'com.google.firebase:firebase-core:' + rootProject.ext.playServicesVersion;
     // Required -- JUnit 4 framework
-    testCompile 'junit:junit:' + rootProject.ext.junitVersion
+    testCompile 'junit:junit:' + rootProject.ext.junitVersion;
     // Optional -- Mockito framework
-    testCompile 'org.mockito:mockito-core:' + rootProject.ext.mockitoCoreVersion
-    testCompile 'org.powermock:powermock-api-mockito:' + rootProject.ext.powermockApiVersion
-    testCompile 'org.powermock:powermock-module-junit4:'  + rootProject.ext.powermockJunitVersion
+    testCompile 'org.mockito:mockito-core:' + rootProject.ext.mockitoCoreVersion;
+    testCompile 'org.powermock:powermock-api-mockito:' + rootProject.ext.powermockApiVersion;
+    testCompile 'org.powermock:powermock-module-junit4:' + rootProject.ext.powermockJunitVersion;
     // Required for instrumented tests
-    androidTestCompile 'com.android.support:support-annotations:' + rootProject.ext.supportLibVersion
-    androidTestCompile 'com.android.support.test:runner:' + rootProject.ext.testRunnerVersion
+    androidTestCompile 'com.android.support:support-annotations:' + rootProject.ext.supportLibVersion;
+    androidTestCompile 'com.android.support.test:runner:' + rootProject.ext.testRunnerVersion;
 }
 
 apply plugin: 'com.google.gms.google-services'

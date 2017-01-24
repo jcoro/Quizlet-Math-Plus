@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Color;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 
@@ -45,6 +46,11 @@ public class MathView extends WebView {
     }
 
     public void setData(String data, String definition, Boolean showTerm) {
+        data = data.replace("\n", "");
+        definition = definition.replace("\n", "");
+        //Log.v("STRINGDATA", data);
+        //Log.v("STRINGDEFINITION", definition);
+
         Chunk chunk = getChunk();
         String TAG_DATA = "data";
         String TAG_DEFINITION = "definition";
