@@ -73,7 +73,9 @@ public class SetCursorAdapter extends CursorRecyclerViewAdapter<SetCursorAdapter
             mSetCreatedBy = mSet.getCreatedBy();
             mSetTermCount = mSet.getTerm_count();
             mTitleTextView.setText(mSetTitle);
+            mTitleTextView.setContentDescription(mSetTitle);
             mSetCreatedByTextView.setText(Utility.getCreatedByString(mContext, mSetCreatedBy));
+            mSetCreatedByTextView.setContentDescription(Utility.getCreatedByString(mContext, mSetCreatedBy));
         }
 
         @Override

@@ -25,7 +25,8 @@
                 android:contentDescription="@string/cd_about_image"
                 android:maxWidth="@dimen/large_image_width"
                 android:maxHeight="@dimen/large_image_width" />
-            <TextView android:id="@+id/description" style="@style/about_description"/>
+            <TextView android:id="@+id/description" style="@style/about_description"
+                android:contentDescription="@string/about_page_description" />
         </LinearLayout>
 
         <View style="@style/about_separator"/>
@@ -42,7 +43,7 @@
                 android:textStyle="bold"
                 android:background="?attr/selectableItemBackground"
                 android:text="@string/version_number"
-                />
+                android:contentDescription="@string/version_number" />
 
             <View style="@style/about_separator"/>
 
@@ -55,7 +56,8 @@
                 android:background="?attr/selectableItemBackground"
                 android:drawableStart="@drawable/about_icon_github"
                 android:gravity="center_vertical"
-                android:text="@string/github" />
+                android:text="@string/github"
+                android:contentDescription="@string/github" />
 
             <View style="@style/about_separator"/>
 
